@@ -1,23 +1,3 @@
-//! Error types
+//! Error types - re-exports from domain for convenience
 
-use thiserror::Error;
-
-#[derive(Debug, Error)]
-pub enum Error {
-    #[error("Agent error: {0}")]
-    Agent(String),
-
-    #[error("Skill error: {0}")]
-    Skill(String),
-
-    #[error("Tool error: {0}")]
-    Tool(String),
-
-    #[error("Memory error: {0}")]
-    Memory(String),
-
-    #[error("LLM error: {0}")]
-    LLM(String),
-}
-
-pub type Result<T> = std::result::Result<T, Error>;
+pub use crate::domain::errors::{Error, Result};
