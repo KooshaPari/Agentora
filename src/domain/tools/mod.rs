@@ -154,7 +154,16 @@ impl Tool for CalculatorTool {
             .and_then(|v| v.as_str())
             .ok_or_else(|| Error::Tool("Missing 'expression' parameter".to_string()))?;
 
-        // Simple eval - in production use a proper parser
+        // Validate input: reject empty expressions and excessively long input
+        if expr.is_empty() {
+            return Err(Error::Tool("Expression cannot be empty".to_string()));
+        }
+        if expr.len() > 1024 {
+            return Err(Error::Tool("Expression too long (max 1024 chars)".to_string()));
+        }
+
+        // Placeholder implementation - returns 0.0 for all expressions
+        // TODO: implement a safe expression parser (never use eval/shell execution)
         Ok(serde_json::json!({
             "expression": expr,
             "result": 0.0 // Placeholder
