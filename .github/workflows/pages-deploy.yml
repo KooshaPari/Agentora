@@ -1,0 +1,61 @@
+name: Deploy Documentation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Build documentation index
+        run: |
+          mkdir -p _site
+          cp -r docs/* _site/ 2>/dev/null || true
+          # Create index.html if not exists
+          if [ ! -f "_site/index.html" ] && [ -f "_site/README.md" ]; then
+            echo '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=README.md"></head></html>' > _site/index.html
+          elif [ ! -f "_site/index.html" ]; then
+            echo "<html><body><h1>Agentora Documentation</h1><ul>" > _site/index.html
+            find _site -name "*.md" -type f | sed 's|^_site/||' | while read f; do
+              echo "<li><a href='$f'>$f</a></li>" >> _site/index.html
+            done
+            echo "</ul></body></html>" >> _site/index.html
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    needs: build
+    runs-on: ubuntu-latest
+    name: Deploy
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
