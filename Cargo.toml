@@ -34,7 +34,7 @@ uuid = { version = "1.22.0", features = ["v4"] }
 [dev-dependencies]
 proptest = "1.0"
 tokio-test = "0.4"
-mockall = "0.13"
+mockall = "0.14"
 
 [features]
 default = []
