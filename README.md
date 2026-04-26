@@ -1,5 +1,11 @@
 # agentkit - Agent Framework
 
+[![Build](https://img.shields.io/github/actions/workflow/status/KooshaPari/Agentora/ci.yml?branch=main&label=build)](https://github.com/KooshaPari/Agentora/actions)
+[![Release](https://img.shields.io/github/v/release/KooshaPari/Agentora?include_prereleases&sort=semver)](https://github.com/KooshaPari/Agentora/releases)
+[![License](https://img.shields.io/github/license/KooshaPari/Agentora)](LICENSE)
+[![Phenotype](https://img.shields.io/badge/Phenotype-org-blueviolet)](https://github.com/KooshaPari)
+
+
 > A hexagonal architecture framework for building AI agents with skill systems, tool registries, and memory management.
 
 ## Overview
