@@ -27,7 +27,7 @@ reqwest = { version = "0.12", features = ["json"], optional = true }
 
 # Memory backends (optional)
 redis = { version = "0.27", optional = true }
-rusqlite = { version = "0.32", optional = true }
+rusqlite = { version = "0.39", optional = true }
 chrono = { version = "0.4.44", features = ["serde"] }
 uuid = { version = "1.22.0", features = ["v4"] }
 
