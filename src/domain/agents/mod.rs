@@ -60,20 +60,15 @@ impl AgentConfig {
 }
 
 /// Agent state
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub enum AgentState {
+    #[default]
     Idle,
     Thinking,
     Acting,
     WaitingForTool,
     Done,
     Error(String),
-}
-
-impl Default for AgentState {
-    fn default() -> Self {
-        Self::Idle
-    }
 }
 
 /// Execution step for tracing

@@ -1,7 +1,7 @@
 //! Domain ports - Interfaces
 
 use async_trait::async_trait;
-use crate::domain::{Context, Output, Result, ToolCall, ToolResponse, MemoryEntry};
+use crate::domain::{Context, Result, ToolCall, ToolResponse, MemoryEntry};
 
 /// LLM port - for language model integration
 #[async_trait]

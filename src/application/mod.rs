@@ -2,7 +2,7 @@
 
 use async_trait::async_trait;
 use crate::domain::{
-    Agent, AgentConfig, Context, Output, Result, Error,
+    Agent, AgentConfig, Context, Output, Result,
     SkillRegistry, ToolRegistry,
     ShortTermMemory, MemoryEntry,
 };
@@ -10,9 +10,11 @@ use std::sync::Arc;
 
 /// Agent executor service
 pub struct AgentExecutor {
+    #[allow(dead_code)]
     config: AgentConfig,
     skills: Arc<SkillRegistry>,
     tools: Arc<ToolRegistry>,
+    #[allow(dead_code)]
     memory: ShortTermMemory,
 }
 
