@@ -1,0 +1,27 @@
+[version]
+version = 2
+
+[licenses]
+version = 2
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "Zlib",
+    "MPL-2.0",
+    "0BSD",
+    "CC0-1.0",
+    "Unicode-3.0",
+    "BSL-1.0",
+    "Unlicense",
+]
+
+[advisories]
+db-path = "$CARGO_HOME/advisory-db"
+
+# Ignore advisories on transitive deps that have no safe replacement yet
+[advisories.ignore]
+# rusqlite pulls in bundled sqlite3 — no way to opt out in older versions
+rusqlite = { id = "RUSTSEC-0000", reason = "bundled sqlite3; no alternative required" }
