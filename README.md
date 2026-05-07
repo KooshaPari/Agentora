@@ -4,6 +4,7 @@
 [![Release](https://img.shields.io/github/v/release/KooshaPari/Agentora?include_prereleases&sort=semver)](https://github.com/KooshaPari/Agentora/releases)
 [![License](https://img.shields.io/github/license/KooshaPari/Agentora)](LICENSE)
 [![Phenotype](https://img.shields.io/badge/Phenotype-org-blueviolet)](https://github.com/KooshaPari)
+[![AI Slop Inside](https://sladge.net/badge.svg)](https://sladge.net)
 
 
 > A hexagonal architecture framework for building AI agents with skill systems, tool registries, and memory management.
