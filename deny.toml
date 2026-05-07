@@ -1,11 +1,3 @@
-[bans]
-workspace-features = "deny"
-multiple-mains = "deny"
-main = "deny"
-unnameable-traits = "deny"
-unnameable-types = "deny"
-unknown-lints = "deny"
-
 [licenses]
 allow = [
     "MIT",
