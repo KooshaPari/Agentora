@@ -1,0 +1,31 @@
+[bans]
+workspace-features = "deny"
+multiple-mains = "deny"
+main = "deny"
+unnameable-traits = "deny"
+unnameable-types = "deny"
+unknown-lints = "deny"
+
+[licenses]
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "Zlib",
+    "MPL-2.0",
+    "0BSD",
+    "CC0-1.0",
+    "Unicode-3.0",
+    "BSL-1.0",
+    "Unlicense",
+]
+
+[advisories]
+db-path = "$CARGO_HOME/advisory-db"
+
+# No advisories ignored — all deps use maintained crates
+
+[sources]
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
