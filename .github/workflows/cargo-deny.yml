@@ -1,4 +1,4 @@
-name: Cargo Deny
+name: cargo-deny
 
 on:
   push:
@@ -7,14 +7,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   cargo-deny:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: taiki-e/upload-rust-binary-action@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tool: cargo-deny
-      - name: Check advisories and licenses
-        run: cargo deny check advisories licenses
+    uses: KooshaPari/phenotype-tooling/.github/workflows/reusable/cargo-deny.yml@ci/org-shared-ci-fix-2026-05-31
