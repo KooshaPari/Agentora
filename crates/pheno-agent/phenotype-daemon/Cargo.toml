@@ -60,7 +60,7 @@ sysinfo = "0.30"
 
 # Platform-specific sockets
 [target.'cfg(unix)'.dependencies]
-tokio-unix-ipc = { version = "0.2", optional = true }
+tokio-unix-ipc = { version = "0.4", optional = true }
 
 [features]
 default = ["unix-socket"]
