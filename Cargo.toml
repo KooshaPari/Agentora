@@ -1,4 +1,14 @@
 [workspace]
+members = [
+    ".",
+    "crates/pheno-agent/phenotype-skills",
+    "crates/pheno-agent/phenotype-daemon",
+    "crates/pheno-proc-runtime/pheno-proc-core",
+    "crates/pheno-proc-runtime/pheno-proc-dedup",
+    "crates/pheno-proc-runtime/pheno-proc-queue",
+    "crates/pheno-proc-runtime/pheno-proc-shm",
+    "crates/pheno-proc-runtime/pheno-proc-uds",
+]
 
 [package]
 name = "agentkit"

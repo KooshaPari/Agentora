@@ -1,0 +1,13 @@
+[package]
+name = "pheno-proc-dedup"
+version = "0.1.0"
+edition = "2021"
+description = "Command deduplication and locking for PhenoProc"
+license = "MIT"
+
+[dependencies]
+anyhow = "1.0"
+
+[lib]
+name = "pheno_proc_dedup"
+path = "src/lib.rs"
