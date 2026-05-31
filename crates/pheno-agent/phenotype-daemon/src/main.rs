@@ -12,7 +12,9 @@ mod rpc;
 use rpc::{RpcHandler, SharedState};
 use std::path::PathBuf;
 use std::sync::Arc;
-use tokio::net::{TcpListener, UnixListener};
+use tokio::net::TcpListener;
+#[cfg(unix)]
+use tokio::net::UnixListener;
 use tracing::{error, info, warn};
 
 use protocol::VersionInfo;
@@ -147,6 +149,7 @@ async fn main() -> anyhow::Result<()> {
             warn!("TCP server exited");
         }
         _ = async {
+            #[cfg(unix)]
             if let Some(h) = unix_handle {
                 let _ = h.await;
             }

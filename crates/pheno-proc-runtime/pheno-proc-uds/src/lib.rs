@@ -1,4 +1,8 @@
 //! Unix Domain Socket IPC for PhenoProc
+//!
+//! This crate is Unix-only. On non-Unix targets (e.g. Windows) it compiles to
+//! an empty crate so the workspace remains buildable cross-platform.
+#![cfg(unix)]
 
 use std::path::Path;
 use tokio::net::{UnixListener, UnixStream};
