@@ -1,15 +1,1 @@
-name: cargo-deny
-
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-  workflow_dispatch:
-
-permissions:
-  contents: read
-
-jobs:
-  cargo-deny:
-    uses: KooshaPari/phenotype-tooling/.github/workflows/reusable-cargo-deny.yml@main
+name: Cargo Deny concurrency:   group: ${{ github.workflow }}-${{ github.ref }}   cancel-in-progress: true   on:   push:     branches: [main]   pull_request:     branches: [main]   workflow_dispatch: permissions:   contents: read  jobs:   cargo-deny:     runs-on: ubuntu-24.04     steps:       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2       - uses: taiki-e/upload-rust-binary-action@f0d45ae91ee7b8ee928de7a9d04d893a08bcbec6 # v1.30.2         with:           token: ${{ secrets.GITHUB_TOKEN }}           tool: cargo-deny       - name: Check advisories and licenses         run: cargo deny check advisories licenses
