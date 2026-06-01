@@ -56,7 +56,7 @@ thiserror = "1"
 clap = { version = "4", features = ["derive", "env"] }
 
 # Process management for auto-spawn detection
-sysinfo = "0.30"
+sysinfo = "0.39"
 
 # Platform-specific sockets
 [target.'cfg(unix)'.dependencies]
