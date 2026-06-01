@@ -10,4 +10,4 @@ permissions:
 
 jobs:
   trufflehog:
-    uses: KooshaPari/phenotype-tooling/.github/workflows/reusable/trufflehog.yml@main
+    uses: KooshaPari/phenotype-tooling/.github/workflows/reusable-trufflehog.yml@main
