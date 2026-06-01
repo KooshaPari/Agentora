@@ -12,4 +12,4 @@ permissions:
 
 jobs:
   cargo-deny:
-    uses: KooshaPari/phenotype-tooling/.github/workflows/reusable/cargo-deny.yml@ci/org-shared-ci-fix-2026-05-31
+    uses: KooshaPari/phenotype-tooling/.github/workflows/reusable/cargo-deny.yml@main
