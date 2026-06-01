@@ -1,0 +1,15 @@
+[package]
+name = "pheno-proc-uds"
+version = "0.1.0"
+edition = "2021"
+description = "Unix Domain Socket IPC for PhenoProc"
+
+[dependencies]
+tokio = { version = "1", features = ["rt", "net", "macros", "io-util", "sync", "time"] }
+futures = "0.3"
+tokio-util = { version = "0.7", features = ["codec"] }
+thiserror = "2.0"
+
+[lib]
+name = "pheno_proc_uds"
+path = "src/lib.rs"

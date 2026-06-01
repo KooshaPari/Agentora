@@ -1,0 +1,31 @@
+{
+  "name": "@phenotype/shim",
+  "version": "1.0.0",
+  "description": "Thin TypeScript shim for phenotype-daemon (Unix socket / msgpack-rpc)",
+  "main": "dist/client.js",
+  "types": "dist/client.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "keywords": [
+    "phenotype",
+    "daemon",
+    "sidecar",
+    "skills",
+    "ipc"
+  ],
+  "author": "Phenotype Contributors",
+  "license": "MIT",
+  "dependencies": {
+    "msgpack-lite": "^0.1.26"
+  },
+  "devDependencies": {
+    "@types/msgpack-lite": "^0.1.11",
+    "@types/node": "^20",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
