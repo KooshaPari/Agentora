@@ -1,3 +1,6 @@
+> **Work state:** ACTIVE · **Progress:** `██████░░░░ 60%`
+> Hexagonal agent runtime (agentkit); collapsing vendored 2nd runtime into core · updated 2026-06-02
+
 # agentkit - Agent Framework
 
 [![Build](https://img.shields.io/github/actions/workflow/status/KooshaPari/Agentora/ci.yml?branch=main&label=build)](https://github.com/KooshaPari/Agentora/actions)
