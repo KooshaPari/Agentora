@@ -1,3 +1,8 @@
+> **Work state:** ACTIVE · **Progress:** `███████░░░ 70%`
+> Rust hexagonal agent framework (agentkit): skills, tool registry, two-tier memory, lifecycle events · updated 2026-06-02
+
+---
+
 # agentkit - Agent Framework
 
 [![Build](https://img.shields.io/github/actions/workflow/status/KooshaPari/Agentora/ci.yml?branch=main&label=build)](https://github.com/KooshaPari/Agentora/actions)
