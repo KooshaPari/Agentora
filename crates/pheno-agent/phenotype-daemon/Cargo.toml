@@ -20,6 +20,8 @@ codegen-units = 1
 strip = true
 opt-level = 3
 
+[workspace]
+
 [dependencies]
 # Core async runtime
 tokio = { version = "1", features = ["full"] }
@@ -37,9 +39,8 @@ bytes = { version = "1", features = ["serde"] }
 dashmap = "6"
 arc-swap = "1"
 
-# Local phenotype-skills crate (stub providing core skill types)
-# In full architecture, this would be generated from Python phenotype-skills via PyO3
-phenotype_skills = { path = "../phenotype-skills" }
+# Skill model now provided by the unified agentkit runtime (collapsed from the
+agentkit = { path = "../../.." }
 
 # Optional: NATS for clustering
 async-nats = { version = "0.49", optional = true }

@@ -1,9 +1,15 @@
 //! Skill domain - Modular agent capabilities
 
+use crate::domain::{Error, Result};
 use async_trait::async_trait;
 use serde_json::Value;
 use std::collections::HashMap;
-use crate::domain::{Result, Error};
+
+pub mod manifest;
+pub use manifest::{
+    DeclaredSkill, DeclaredSkillRegistry, DependencyResolver, SkillDependency, SkillId,
+    SkillManifest, SkillMetadata, SkillStatus,
+};
 
 /// Skill trait - implement this to create a skill
 #[async_trait]
@@ -100,7 +106,8 @@ impl Skill for WebSearchSkill {
     }
 
     async fn execute(&self, params: Value) -> Result<SkillResult> {
-        let query = params.get("query")
+        let query = params
+            .get("query")
             .and_then(|v| v.as_str())
             .ok_or_else(|| Error::Skill("Missing 'query' parameter".to_string()))?;
 
@@ -120,7 +127,8 @@ mod tests {
     async fn test_skill_registry() {
         let mut registry = SkillRegistry::new();
 
-        registry.register(Box::new(WebSearchSkill))
+        registry
+            .register(Box::new(WebSearchSkill))
             .expect("Failed to register skill");
 
         assert!(registry.has("web_search"));
