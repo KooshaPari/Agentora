@@ -11,7 +11,7 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           fetch-depth: 0
-      - uses: trufflehog/actions/setup@main
+      - uses: trufflehog/actions/setup@3fc0c2a225a9d249aea9b97a1c40c40a5ff7e0c0 # pinned from @main
       - run: trufflehog github --only-verified --no-update
         env:
           GH_TOKEN: \${{ secrets.GITHUB_TOKEN }}
