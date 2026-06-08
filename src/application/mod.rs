@@ -1,11 +1,10 @@
 //! Application layer - Use cases
 
-use async_trait::async_trait;
 use crate::domain::{
-    Agent, AgentConfig, Context, Output, Result,
-    SkillRegistry, ToolRegistry,
-    ShortTermMemory, MemoryEntry,
+    Agent, AgentConfig, Context, MemoryEntry, Output, Result, ShortTermMemory, SkillRegistry,
+    ToolRegistry,
 };
+use async_trait::async_trait;
 use std::sync::Arc;
 
 /// Agent executor service
@@ -42,7 +41,8 @@ impl AgentExecutor {
         let mut ctx = Context::new(input);
 
         // Add system prompt to memory
-        ctx.memory.push(MemoryEntry::system("You are a helpful assistant."));
+        ctx.memory
+            .push(MemoryEntry::system("You are a helpful assistant."));
 
         // Run agent
         agent.run(&ctx).await

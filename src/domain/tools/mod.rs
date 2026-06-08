@@ -1,9 +1,9 @@
 //! Tool domain - Extensible tool system
 
+use crate::domain::{Error, Result};
 use async_trait::async_trait;
 use serde_json::Value;
 use std::collections::HashMap;
-use crate::domain::{Result, Error};
 
 /// Tool call request
 #[derive(Debug, Clone)]
@@ -107,7 +107,9 @@ impl ToolRegistry {
     }
 
     pub async fn call(&self, call: ToolCall) -> Result<ToolResponse> {
-        let tool = self.tools.get(&call.name)
+        let tool = self
+            .tools
+            .get(&call.name)
             .ok_or_else(|| Error::Tool(format!("Tool '{}' not found", call.name)))?;
 
         match tool.call(call.clone()).await {
@@ -150,7 +152,9 @@ impl Tool for CalculatorTool {
     }
 
     async fn call(&self, call: ToolCall) -> Result<Value> {
-        let expr = call.params.get("expression")
+        let expr = call
+            .params
+            .get("expression")
             .and_then(|v| v.as_str())
             .ok_or_else(|| Error::Tool("Missing 'expression' parameter".to_string()))?;
 
@@ -159,7 +163,9 @@ impl Tool for CalculatorTool {
             return Err(Error::Tool("Expression cannot be empty".to_string()));
         }
         if expr.len() > 1024 {
-            return Err(Error::Tool("Expression too long (max 1024 chars)".to_string()));
+            return Err(Error::Tool(
+                "Expression too long (max 1024 chars)".to_string(),
+            ));
         }
 
         // Placeholder implementation - returns 0.0 for all expressions
@@ -179,7 +185,8 @@ mod tests {
     async fn test_tool_registry() {
         let mut registry = ToolRegistry::new();
 
-        registry.register(Box::new(CalculatorTool))
+        registry
+            .register(Box::new(CalculatorTool))
             .expect("Failed to register tool");
 
         assert!(registry.has("calculator"));

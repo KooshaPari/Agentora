@@ -127,7 +127,8 @@ impl MemoryStore for InMemoryStore {
     }
 
     fn search(&self, query: &str, limit: usize) -> Result<Vec<MemoryEntry>, String> {
-        let results: Vec<_> = self.entries
+        let results: Vec<_> = self
+            .entries
             .iter()
             .filter(|e| e.content.contains(query))
             .take(limit)

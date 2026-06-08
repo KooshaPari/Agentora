@@ -36,9 +36,7 @@ impl MemoryPort for InMemoryAdapter {
             .inner
             .lock()
             .map_err(|e| crate::domain::Error::Memory(format!("lock poisoned: {e}")))?;
-        store
-            .save(&entry)
-            .map_err(crate::domain::Error::Memory)
+        store.save(&entry).map_err(crate::domain::Error::Memory)
     }
 
     fn recent(&self, limit: usize) -> Result<Vec<MemoryEntry>> {

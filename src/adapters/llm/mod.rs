@@ -297,8 +297,8 @@ impl LLM for OpenAIChatLLM {
             .unwrap_or_default()
             .into_iter()
             .map(|tc| {
-                let params: serde_json::Value = serde_json::from_str(&tc.function.arguments)
-                    .unwrap_or(serde_json::json!({}));
+                let params: serde_json::Value =
+                    serde_json::from_str(&tc.function.arguments).unwrap_or(serde_json::json!({}));
                 crate::domain::ToolCall {
                     id: tc.id,
                     name: tc.function.name,
@@ -306,7 +306,10 @@ impl LLM for OpenAIChatLLM {
                 }
             })
             .collect();
-        Ok(GenerationResult::with_tools(choice.message.content, tool_calls))
+        Ok(GenerationResult::with_tools(
+            choice.message.content,
+            tool_calls,
+        ))
     }
 }
 

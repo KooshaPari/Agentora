@@ -1,7 +1,7 @@
 //! Agent domain - Core agent entities
 
+use crate::domain::{Context, Output, Result};
 use async_trait::async_trait;
-use crate::domain::{Context, Result, Output};
 
 /// Agent trait - implement this to create an agent
 #[async_trait]
@@ -10,10 +10,14 @@ pub trait Agent: Send + Sync {
     async fn run(&self, ctx: &Context) -> Result<Output>;
 
     /// Get agent name
-    fn name(&self) -> &str { "agent" }
+    fn name(&self) -> &str {
+        "agent"
+    }
 
     /// Get agent version
-    fn version(&self) -> &str { "1.0.0" }
+    fn version(&self) -> &str {
+        "1.0.0"
+    }
 }
 
 /// Agent configuration
@@ -99,9 +103,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_agent_config() {
-        let config = AgentConfig::new("test")
-            .model("gpt-3.5")
-            .temperature(0.5);
+        let config = AgentConfig::new("test").model("gpt-3.5").temperature(0.5);
 
         assert_eq!(config.name, "test");
         assert_eq!(config.model, "gpt-3.5");
