@@ -7,6 +7,8 @@
 
 [![Build](https://img.shields.io/github/actions/workflow/status/KooshaPari/Agentora/ci.yml?branch=main&label=build)](https://github.com/KooshaPari/Agentora/actions)
 [![Release](https://img.shields.io/github/v/release/KooshaPari/Agentora?include_prereleases&sort=semver)](https://github.com/KooshaPari/Agentora/releases)
+[![crates.io](https://img.shields.io/crates/v/agentkit)](https://crates.io/crates/agentkit)
+[![docs.rs](https://img.shields.io/docsrs/agentkit)](https://docs.rs/agentkit)
 [![License](https://img.shields.io/github/license/KooshaPari/Agentora)](LICENSE)
 [![Phenotype](https://img.shields.io/badge/Phenotype-org-blueviolet)](https://github.com/KooshaPari)
 
