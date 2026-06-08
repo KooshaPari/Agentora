@@ -107,6 +107,7 @@ pub trait MemoryStore: Send + Sync {
 }
 
 /// In-memory store (for testing)
+#[derive(Debug, Default)]
 pub struct InMemoryStore {
     entries: Vec<MemoryEntry>,
 }
@@ -119,12 +120,6 @@ impl InMemoryStore {
     }
 }
 
-impl Default for InMemoryStore {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 impl MemoryStore for InMemoryStore {
     fn save(&mut self, entry: &MemoryEntry) -> Result<(), String> {
         self.entries.push(entry.clone());
@@ -132,7 +127,8 @@ impl MemoryStore for InMemoryStore {
     }
 
     fn search(&self, query: &str, limit: usize) -> Result<Vec<MemoryEntry>, String> {
-        let results: Vec<_> = self.entries
+        let results: Vec<_> = self
+            .entries
             .iter()
             .filter(|e| e.content.contains(query))
             .take(limit)

@@ -1,4 +1,6 @@
 [toolchain]
-channel = "stable"
+# Pinned to a specific stable version for reproducible builds. Bump with
+# `rustup update` and update this file. MSRV remains 1.75 (see Cargo.toml).
+channel = "1.95.0"
 components = ["rustfmt", "clippy"]
 profile = "minimal"
