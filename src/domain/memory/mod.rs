@@ -107,6 +107,7 @@ pub trait MemoryStore: Send + Sync {
 }
 
 /// In-memory store (for testing)
+#[derive(Debug, Default)]
 pub struct InMemoryStore {
     entries: Vec<MemoryEntry>,
 }
@@ -116,12 +117,6 @@ impl InMemoryStore {
         Self {
             entries: Vec::new(),
         }
-    }
-}
-
-impl Default for InMemoryStore {
-    fn default() -> Self {
-        Self::new()
     }
 }
 

@@ -13,6 +13,7 @@
 //! `crate::domain::ports`.
 
 use async_trait::async_trait;
+#[cfg(feature = "openai")]
 use serde::{Deserialize, Serialize};
 
 use crate::domain::ports::{GenerationResult, LLM};
