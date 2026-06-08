@@ -5,6 +5,12 @@
 
 # agentkit - Agent Framework
 
+## State
+
+Progress: `[███████░░░] 70%` — Rust hexagonal agent framework (agentkit).
+
+_Updated 2026-06-08 — audit pass._
+
 [![Build](https://img.shields.io/github/actions/workflow/status/KooshaPari/Agentora/ci.yml?branch=main&label=build)](https://github.com/KooshaPari/Agentora/actions)
 [![Release](https://img.shields.io/github/v/release/KooshaPari/Agentora?include_prereleases&sort=semver)](https://github.com/KooshaPari/Agentora/releases)
 [![crates.io](https://img.shields.io/crates/v/agentkit)](https://crates.io/crates/agentkit)
@@ -565,3 +571,11 @@ cargo run --bin agentkit
 ## License
 
 MIT OR Apache-2.0
+
+## Description
+
+Hexagonal (ports & adapters) Rust framework for building AI agents — `agentkit`. Pluggable skill system, JSON-schema tool registry, two-tier memory (short-term ring buffer + long-term persistent stores), and serializable domain events.
+
+## Contributing
+
+PRs welcome. See `CONTRIBUTING.md`. New capabilities belong in the domain layer (`domain/skills/`, `domain/tools/`, `domain/memory/`); new LLM or storage backends implement the `LLM` / `MemoryStore` ports in `adapters/`.
