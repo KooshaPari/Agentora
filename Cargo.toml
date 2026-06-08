@@ -15,6 +15,14 @@ documentation = "https://docs.rs/agentkit"
 keywords = ["agent", "ai", "framework", "skills", "tools"]
 categories = ["artificial-intelligence", "development-tools"]
 
+# Crate-wide lints. Centralized here (SOTA) so a single edit changes the
+# policy for the whole crate. CI runs `cargo clippy -- -D warnings` to
+# enforce these. `missing_docs = "warn"` is intentionally deferred —
+# several pub items still need `///` docs; flipping it on now would
+# break `-D warnings`. See API_CONTRACT_AUDIT.md.
+[lints.rust]
+unsafe_code = "forbid"
+
 [dependencies]
 # Core domain
 thiserror = "2.0"
