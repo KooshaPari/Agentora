@@ -1,0 +1,17 @@
+[package]
+name = "agent-platform-tests"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Integration and contract tests across the hexagon."
+
+[lints]
+workspace = true
+
+[dependencies]
+agent-platform-core = { path = "../agent-platform-core" }
+agent-platform-ports = { path = "../agent-platform-ports" }
+agent-platform-adapters = { path = "../agent-platform-adapters" }
+tokio = { workspace = true }
+tokio-test = { workspace = true }

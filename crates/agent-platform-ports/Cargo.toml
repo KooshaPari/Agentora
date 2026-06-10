@@ -1,0 +1,15 @@
+[package]
+name = "agent-platform-ports"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Port (trait) definitions — the boundary between the domain and the outside world."
+
+[lints]
+workspace = true
+
+[dependencies]
+agent-platform-core = { path = "../agent-platform-core" }
+serde = { workspace = true }
+thiserror = { workspace = true }

@@ -1,0 +1,19 @@
+[package]
+name = "agent-platform-adapters"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Concrete adapter implementations: MCP transports, HTTP, file I/O."
+
+[lints]
+workspace = true
+
+[dependencies]
+agent-platform-core = { path = "../agent-platform-core" }
+agent-platform-ports = { path = "../agent-platform-ports" }
+reqwest = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }

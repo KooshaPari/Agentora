@@ -1,0 +1,35 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/agent-platform-core",
+    "crates/agent-platform-ports",
+    "crates/agent-platform-adapters",
+    "crates/agent-platform-app",
+    "crates/agent-platform-tests",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.75"
+license = "MIT"
+repository = "https://github.com/Phenotype/agent-platform"
+
+[workspace.dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "1"
+uuid = { version = "1", features = ["v4", "serde"] }
+tokio = { version = "1", features = ["full"] }
+tokio-test = "0.4"
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+clap = { version = "4", features = ["derive"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
