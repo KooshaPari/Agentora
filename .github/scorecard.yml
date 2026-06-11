@@ -1,0 +1,16 @@
+# OpenSSF Scorecard configuration.
+# See: https://github.com/ossf/scorecard
+# Documents the security posture checks applied to this repository and
+# declares the public badge policy so consumers can audit our hygiene.
+name: scorecard
+runs-on: ubuntu-latest
+permissions:
+  security-events: read
+  contents: read
+  pull-requests: read
+public_repositories:
+  - Agentora
+private_repositories: []
+results_format: sarif
+enable_branch_protection: true
+enable_dependabot: true
