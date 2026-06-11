@@ -1,0 +1,15 @@
+[package]
+name = "agent-platform-core"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Domain types: agents, contexts, sessions, and the core invariants of the platform."
+
+[lints]
+workspace = true
+
+[dependencies]
+serde = { workspace = true }
+thiserror = { workspace = true }
+uuid = { workspace = true }
