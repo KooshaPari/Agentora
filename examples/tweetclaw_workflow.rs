@@ -75,7 +75,12 @@ impl Skill for TweetClawWorkflowSkill {
 }
 
 fn normalize_job(job: &str) -> String {
-    job.trim().to_ascii_lowercase().replace([' ', '-'], "_")
+    job.trim()
+        .to_ascii_lowercase()
+        .split(|character: char| character.is_ascii_whitespace() || character == '-')
+        .filter(|part| !part.is_empty())
+        .collect::<Vec<_>>()
+        .join("_")
 }
 
 #[tokio::main]
@@ -98,11 +103,12 @@ async fn main() -> Result<()> {
 
     let account_action = skill
         .execute(json!({
-            "job": "post tweet replies",
+            "job": "post---tweet   replies",
             "draft": "Thanks for the feedback."
         }))
         .await?;
     assert!(account_action.success);
+    assert_eq!(account_action.data["job"], "post_tweet_replies");
     assert_eq!(account_action.data["requires_approval"], true);
 
     let rendered = serde_json::to_string_pretty(&json!({
