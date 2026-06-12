@@ -3,6 +3,7 @@ use agentkit::{Error, Result};
 use async_trait::async_trait;
 use serde_json::{json, Value};
 
+#[derive(Clone, Debug)]
 struct TweetClawWorkflowSkill;
 
 const SOURCE_COLLECTION_JOBS: &[&str] = &[
