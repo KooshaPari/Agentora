@@ -3,9 +3,11 @@ use agentkit::{Error, Result};
 use async_trait::async_trait;
 use serde_json::{json, Value};
 
+/// Routes TweetClaw jobs into Agentora skill result payloads.
 #[derive(Clone, Debug)]
 struct TweetClawWorkflowSkill;
 
+/// TweetClaw jobs that only collect or inspect public source material.
 const SOURCE_COLLECTION_JOBS: &[&str] = &[
     "scrape_tweets",
     "search_tweets",
@@ -15,6 +17,7 @@ const SOURCE_COLLECTION_JOBS: &[&str] = &[
     "media_download",
 ];
 
+/// TweetClaw jobs that need explicit operator approval before execution.
 const APPROVAL_REQUIRED_JOBS: &[&str] = &[
     "post_tweets",
     "post_tweet_replies",
@@ -27,14 +30,17 @@ const APPROVAL_REQUIRED_JOBS: &[&str] = &[
 
 #[async_trait]
 impl Skill for TweetClawWorkflowSkill {
+    /// Returns the registry key used by this example skill.
     fn name(&self) -> &str {
         "tweetclaw_workflow"
     }
 
+    /// Describes the workflow split exposed by this example skill.
     fn description(&self) -> String {
         "Route TweetClaw X/Twitter jobs through source or approval workflows".to_string()
     }
 
+    /// Routes a requested TweetClaw job to source collection or account action handling.
     async fn execute(&self, params: Value) -> Result<SkillResult> {
         let job = params
             .get("job")
@@ -74,6 +80,7 @@ impl Skill for TweetClawWorkflowSkill {
     }
 }
 
+/// Converts free-form job names into allowlist-compatible identifiers.
 fn normalize_job(job: &str) -> String {
     job.trim()
         .to_ascii_lowercase()
@@ -83,6 +90,7 @@ fn normalize_job(job: &str) -> String {
         .join("_")
 }
 
+/// Registers the example skill and demonstrates both routing outcomes.
 #[tokio::main]
 async fn main() -> Result<()> {
     let mut registry = SkillRegistry::new();
