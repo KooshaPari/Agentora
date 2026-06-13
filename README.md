@@ -438,6 +438,13 @@ fn main() {
 }
 ```
 
+For an external integration pattern, see
+[`examples/tweetclaw_workflow.rs`](examples/tweetclaw_workflow.rs). It registers
+a TweetClaw skill that separates scrape tweets, search tweets, search tweet
+replies, follower export, user lookup, and media download source-collection jobs
+from approval-gated post tweets, post tweet replies, direct messages, media
+upload, monitor tweets, webhooks, and giveaway draw actions.
+
 ### Registering Tools
 
 ```rust
