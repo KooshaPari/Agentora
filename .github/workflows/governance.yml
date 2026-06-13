@@ -1,0 +1,44 @@
+name: Governance
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'  # weekly Monday 06:00 UTC
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  governance-audit:
+    name: Governance file audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Verify required governance artifacts
+        run: |
+          set -euo pipefail
+          test -f SECURITY.md            || { echo "::error::Missing SECURITY.md"; exit 1; }
+          test -f CODEOWNERS             || { echo "::error::Missing CODEOWNERS"; exit 1; }
+          test -f .editorconfig          || { echo "::error::Missing .editorconfig"; exit 1; }
+          test -f .github/dependabot.yml || { echo "::error::Missing .github/dependabot.yml"; exit 1; }
+          test -f cliff.toml             || { echo "::error::Missing cliff.toml"; exit 1; }
+          test -f CHANGELOG.md           || { echo "::warning::Missing CHANGELOG.md"; }
+          echo "All required governance files present."
+
+      - name: git-cliff dry-run (best-effort)
+        run: |
+          if command -v git-cliff >/dev/null 2>&1; then
+            git-cliff --dry-run || echo "git-cliff dry-run failed (non-fatal)"
+          else
+            echo "git-cliff not installed; skipping"
+          fi
