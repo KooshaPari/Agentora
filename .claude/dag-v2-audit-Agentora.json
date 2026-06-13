@@ -1,0 +1,294 @@
+{
+  "audit_id": "dag-v2-L1-Agentora-2026-06-08",
+  "task": "DAG-L1-3",
+  "generated_at": "2026-06-08",
+  "repo": {
+    "name": "Agentora",
+    "path": "/Users/kooshapari/CodeProjects/Phenotype/repos/Agentora",
+    "remote": "https://github.com/KooshaPari/Agentora.git",
+    "branch": "docs/readme-hygiene-2026-06-08",
+    "head_sha": "3714b605657f0d11e39b4bb24eb275c235186260",
+    "main_sha": "86db668bed5acf2bf8d324a635849da0f5056677",
+    "last_commit_date": "2026-06-08T18:41:46-07:00",
+    "last_commit_subject": "chore(governance): confirm shared CODEOWNERS template is in use"
+  },
+  "language_stack": {
+    "primary": "Rust",
+    "edition": "2021",
+    "msrv": "1.75",
+    "toolchain_pinned": "1.95.0",
+    "detected_languages": ["Rust", "YAML", "TOML", "Markdown"],
+    "crate_name": "agentkit",
+    "version": "0.1.0",
+    "architecture": "4-layer hexagonal (domain / application / adapters / infrastructure)",
+    "runtime": "tokio (multi-threaded, full features)",
+    "key_deps": [
+      "tokio 1.x (full)",
+      "async-trait 0.1",
+      "serde 1 + serde_json 1",
+      "thiserror 2",
+      "tracing 0.1",
+      "reqwest 0.13 (optional, openai feature)",
+      "redis 1.2 (optional, redis-memory feature)",
+      "rusqlite 0.40 (optional, sqlite-memory feature)",
+      "proptest 1, mockall 0.14, tokio-test 0.4 (dev)"
+    ],
+    "traits": {
+      "Agent": "async-trait, manual registration via AgentExecutor",
+      "Skill": "async-trait, registered into SkillRegistry via .register()",
+      "Tool": "async-trait, registered into ToolRegistry via .register()",
+      "MemoryStore": "async-trait, manual swap",
+      "LLM / MemoryPort / ToolExecutor": "port traits in domain/ports"
+    },
+    "plugin_mechanism_observed": "Manual Box<dyn Trait> registration through registries (SkillRegistry, ToolRegistry). No inventory::submit!/ctor macros anywhere in the tree (verified with ripgrep: zero matches for `use inventory` or `use ctor`).",
+    "sub_crates": {
+      "root_crate": "agentkit (src/)",
+      "pheno_agent": {
+        "phenotype-daemon": "0.3.0, sidecar daemon binary (phenotype-daemon)",
+        "phenotype-skills": "0.1.0, in-tree skill type stub for the daemon"
+      },
+      "pheno_proc_runtime": {
+        "pheno-proc-core": "0.1.0, sysinfo-backed process primitives",
+        "pheno-proc-dedup": "0.1.0, command dedup + locking",
+        "pheno-proc-queue": "0.1.0, priority task queue (serde + uuid)",
+        "pheno-proc-shm": "0.1.0, shared-memory processing",
+        "pheno-proc-uds": "0.1.0, UDS IPC (tokio + tokio-util)"
+      },
+      "total_crates": 8,
+      "workspace_declaration": "Root Cargo.toml declares [workspace] and [workspace.package] but lists NO members; the 7 sub-crates are decoupled from the root workspace and built independently"
+    },
+    "discrepancy_with_task_brief": "Task brief states '12 plugin-trait crates using inventory+ctor'. The actual repo contains 8 crates (1 root + 7), and the plugin-trait pattern uses async-trait + manual registry, not inventory/ctor. The sub-crates are also not declared as workspace members."
+  },
+  "hygiene_score": {
+    "total": 100,
+    "max": 100,
+    "rubric": "10 pts each for: LICENSE, README, CHANGELOG, .editorconfig, CI, dependabot, CODEOWNERS, CONTRIBUTING, SECURITY, FUNDING",
+    "items": {
+      "LICENSE": {"present": true, "score": 10, "path": "LICENSE", "note": "MIT OR Apache-2.0 (matches Cargo.toml)"},
+      "README": {"present": true, "score": 10, "path": "README.md", "note": "581 lines, work-state header, badges, feature flags, architecture diagram, full agent overview"},
+      "CHANGELOG": {"present": true, "score": 10, "path": "CHANGELOG.md", "note": "Keep-a-Changelog 1.1.0 format, [Unreleased] section populated"},
+      ".editorconfig": {"present": true, "score": 10, "path": ".editorconfig", "note": "root=true, LF, utf-8, 2-space indent, .md trim-trailing off"},
+      "CI": {"present": true, "score": 10, "path": ".github/workflows/ci.yml", "note": "build + clippy (-D warnings) + test + fmt jobs on ubuntu-24.04, pinned actions"},
+      "dependabot": {"present": true, "score": 10, "path": ".github/dependabot.yml", "note": "v2, weekly, cargo + github-actions ecosystems, open-prs-limit 5"},
+      "CODEOWNERS": {"present": true, "score": 10, "path": "CODEOWNERS + .github/CODEOWNERS", "note": "Both root and .github/ copies; rule: * @KooshaPari"},
+      "CONTRIBUTING": {"present": true, "score": 10, "path": "CONTRIBUTING.md", "note": "Conventional Commits, fork workflow, links to CoC + Security"},
+      "SECURITY": {"present": true, "score": 10, "path": "SECURITY.md", "note": "kooshapari@kooshapapri.com disclosure + private advisory path"},
+      "FUNDING": {"present": true, "score": 10, "path": "FUNDING.yml + .github/FUNDING.yml", "note": "github sponsor (KooshaPari) configured"}
+    }
+  },
+  "dup_exposure": {
+    "description": "pheno-* / phenotype-* libraries present in the sibling repos directory that this repo could consume (or already partially overlaps with) to reduce duplication and converge on shared interfaces.",
+    "candidates": [
+      {
+        "name": "phenotype-skills",
+        "path": "../phenotype-skills",
+        "relevance": "DIRECT",
+        "reason": "Direct feature-name overlap (skill system). The in-tree crates/pheno-agent/phenotype-skills is currently a stub; a published phenotype-skills crate would replace it."
+      },
+      {
+        "name": "phenotype-bus",
+        "path": "../phenotype-bus",
+        "relevance": "HIGH",
+        "reason": "Domain event bus (AgentStarted, AgentCompleted, ToolCalled) is hand-rolled in src/domain/events; phenotype-bus would supply a battle-tested pub/sub."
+      },
+      {
+        "name": "phenotype-registry",
+        "path": "../phenotype-registry",
+        "relevance": "HIGH",
+        "reason": "SkillRegistry and ToolRegistry are bespoke; a shared registry crate with content-addressed registration would replace both."
+      },
+      {
+        "name": "phenotype-dep-guard",
+        "path": "../phenotype-dep-guard",
+        "relevance": "HIGH",
+        "reason": "Supply-chain and dependency-pinning governance; pair with the existing deny.toml + cargo-deny.yml workflow."
+      },
+      {
+        "name": "phenotype-request-id",
+        "path": "../phenotype-request-id",
+        "relevance": "HIGH",
+        "reason": "session_id is plumbed through Context; a shared request-id crate would unify correlation IDs across agent calls, tool calls, and event emissions."
+      },
+      {
+        "name": "phenoShared",
+        "path": "../phenoShared",
+        "relevance": "MEDIUM",
+        "reason": "Shared error + result types; the bespoke Error enum in src/domain/errors could be a re-export of the phenoShared type."
+      },
+      {
+        "name": "phenoUtils",
+        "path": "../phenoUtils",
+        "relevance": "MEDIUM",
+        "reason": "Builder / config helpers; the AgentConfig builder in src/domain/agents could be backed by phenoUtils::Configurable."
+      },
+      {
+        "name": "phenotype-tooling",
+        "path": "../phenotype-tooling",
+        "relevance": "MEDIUM",
+        "reason": "Tool/CLI helpers; the [[bin]] agentkit CLI under src/bin/ would benefit from standardized arg parsing and config loading."
+      },
+      {
+        "name": "phenotype-journeys",
+        "path": "../phenotype-journeys",
+        "relevance": "MEDIUM",
+        "reason": "Journey traceability; the in-tree docs/journeys/manifests and ExecutionStep model align naturally."
+      },
+      {
+        "name": "phenotype-hub",
+        "path": "../phenotype-hub",
+        "relevance": "MEDIUM",
+        "reason": "Service-discovery / hub coordination for multi-agent topologies that the Agent trait could federate against."
+      },
+      {
+        "name": "phenotype-infra",
+        "path": "../phenotype-infra",
+        "relevance": "LOW",
+        "reason": "Cross-cutting infra (logging init, telemetry bootstrap); would replace the bespoke tracing-subscriber wiring."
+      },
+      {
+        "name": "phenotype-voxel",
+        "path": "../phenotype-voxel",
+        "relevance": "LOW",
+        "reason": "Visualization substrate for agent traces / execution graphs; optional visualization layer."
+      }
+    ]
+  },
+  "sota_gaps": {
+    "description": "Features present in the broader Phenotype SOTA stack that are missing or weak here.",
+    "items": [
+      {
+        "gap": "SSOT for design tokens / configuration",
+        "severity": "P2",
+        "evidence": "No central tokens or single-source config surface; CHANGELOG / README / Cargo.toml all repeat versions manually."
+      },
+      {
+        "gap": "Coverage measurement (cargo-llvm-cov / cargo-tarpaulin)",
+        "severity": "P0",
+        "evidence": "docs/PATH_TO_SIDEKICK.md admits <1% coverage (3 tests). No coverage workflow in .github/workflows/. STANDARDS.md cites tarpaulin 80% gate but the gate is unenforced."
+      },
+      {
+        "gap": "Snapshot testing (insta)",
+        "severity": "P1",
+        "evidence": "Domain Output/Context/MemoryEntry types are not covered by snapshot tests; only proptest + mockall in dev-dependencies."
+      },
+      {
+        "gap": "YAML linting (yamllint) in CI",
+        "severity": "P2",
+        "evidence": ".pre-commit-config.yaml only runs pre-commit-hooks (trailing-ws, eof-fixer, check-yaml, check-merge-conflict). No yamllint step. No .yamllint config."
+      },
+      {
+        "gap": "OpenTelemetry / distributed tracing",
+        "severity": "P1",
+        "evidence": "Only tracing + tracing-subscriber are present. No opentelemetry / opentelemetry-otlp deps. No OTEL collector wiring."
+      },
+      {
+        "gap": "Workspace wiring for the 7 sub-crates",
+        "severity": "P0",
+        "evidence": "Root Cargo.toml declares [workspace] but omits `members`; CI `cargo build --workspace --verbose` therefore only builds agentkit. The 7 sub-crates (phenotype-daemon, phenotype-skills, pheno-proc-*) are invisible to CI gates."
+      },
+      {
+        "gap": "Feature registry (FR-AGK-NNN)",
+        "severity": "P1",
+        "evidence": "docs/PATH_TO_SIDEKICK.md marks 'Feature Registry' as Planned. No FUNCTIONAL_REQUIREMENTS.md at repo root (one exists only under crates/pheno-agent/)."
+      },
+      {
+        "gap": "API contract tests / JSON schema validation",
+        "severity": "P1",
+        "evidence": "API_CONTRACT_AUDIT.md exists but no schemars / jsonschema dep; no contract-test job in CI."
+      },
+      {
+        "gap": "Real LLM adapter (OpenAI / Anthropic)",
+        "severity": "P1",
+        "evidence": "src/adapters/llm/mod.rs is a placeholder; openai feature flag exists but no reqwest call site yet."
+      },
+      {
+        "gap": "Real memory adapter (Redis / SQLite) implementation",
+        "severity": "P1",
+        "evidence": "src/adapters/memory/mod.rs is a placeholder; feature flags exist (redis-memory, sqlite-memory) but adapter code is empty."
+      },
+      {
+        "gap": "Criterion benchmarks",
+        "severity": "P2",
+        "evidence": "No [[bench]] sections; no criterion dev-dep. PATH_TO_SIDEKICK.md mentions criterion as future work."
+      },
+      {
+        "gap": "cargo-machete (dead-code detection)",
+        "severity": "P2",
+        "evidence": "Not in dev-deps, no CI job. Some imported types in src/domain are likely unused (e.g. MemoryPort/ToolExecutor if not invoked)."
+      },
+      {
+        "gap": "cargo-audit (local advisory check)",
+        "severity": "P2",
+        "evidence": "cargo-deny.yml covers advisories via `cargo deny check advisories`, but no standalone cargo-audit workflow; deny advisory-db is path-dependent on $CARGO_HOME."
+      },
+      {
+        "gap": "Miri / unsafe sanity (irrelevant here since unsafe_code = 'forbid', but no formal marker in CI)",
+        "severity": "P3",
+        "evidence": "unsafe_code forbidden in [lints.rust], so Miri is low-value; mention only for completeness."
+      },
+      {
+        "gap": "License / version consistency in sub-crate Cargo.toml files",
+        "severity": "P2",
+        "evidence": "pheno-proc-uds/Cargo.toml omits `license`; pheno-proc-dedup omits `authors`; root agentkit has license but not all sub-crates spell it the same way. cargo-deny would flag this."
+      },
+      {
+        "gap": "Cross-repo adopter dependency graph",
+        "severity": "P1",
+        "evidence": "PATH_TO_SIDEKICK.md target is 2+ adopter repos (agileplus-agents, thegent-dispatch). No Cargo.toml in those repos currently depends on agentkit (verified by absence in sibling tree)."
+      }
+    ]
+  },
+  "convergence_cluster": {
+    "label": "other",
+    "rationale": "Pure single-stack Rust framework (agentkit) with two nested Rust sub-crate groups (pheno-agent, pheno-proc-runtime). No web frontend, no TypeScript, no Python bindings in active source. Not a web-stack (no React/Next/etc.), not multi-stack. Falls in 'other' as a single-language Rust framework cluster."
+  },
+  "action_items": [
+    {
+      "priority": "P0",
+      "title": "Wire the 7 sub-crates into the root [workspace] members",
+      "effort_estimate": "S (1-2h)",
+      "impact": "CI's `cargo build --workspace` and `cargo test --workspace` are currently scoped to agentkit only; the pheno-proc-* and pheno-agent sub-crates are invisible to gates. Adding `members = [\"crates/*/...\", \"crates/*/*\"]` to root Cargo.toml is a 5-line change that fixes the gap.",
+      "depends_on": []
+    },
+    {
+      "priority": "P0",
+      "title": "Add coverage workflow (cargo-llvm-cov + Codecov)",
+      "effort_estimate": "S (2h)",
+      "impact": "PATH_TO_SIDEKICK.md self-reports <1% coverage. STANDARDS.md demands 80%. Add a `.github/workflows/coverage.yml` running `cargo llvm-cov --workspace --lcov --output-path lcov.info` and upload to Codecov. Without this, the Sidekick promotion criteria cannot be met."
+    },
+    {
+      "priority": "P1",
+      "title": "Adopt OpenTelemetry for agent/tool/memory spans",
+      "effort_estimate": "M (4h)",
+      "impact": "Today the agent lifecycle is observable only via tracing macros with no exporter. Adding opentelemetry + opentelemetry-otlp + a tracing-opentelemetry layer gives the ExecutionStep / AgentStarted events a first-class span model and unifies with the rest of the Phenotype stack."
+    },
+    {
+      "priority": "P1",
+      "title": "Replace the 7 sub-crate stubs with shared pheno-* libraries",
+      "effort_estimate": "M (1d)",
+      "impact": "crates/pheno-agent/phenotype-skills duplicates ../phenotype-skills; the bespoke SkillRegistry/ToolRegistry/EventBus in src/domain/ are good candidates to back onto phenotype-bus + phenotype-registry. Each substitution shrinks the local surface and reduces drift risk across the org."
+    },
+    {
+      "priority": "P2",
+      "title": "Author FUNCTIONAL_REQUIREMENTS.md at repo root with FR-AGK-* IDs",
+      "effort_estimate": "S (1h)",
+      "impact": "Sidekick qualification requires a feature registry. Lift the existing crates/pheno-agent/FUNCTIONAL_REQUIREMENTS.md to the repo root, expand it to cover all 8 crates, and link each FR to a test file."
+    }
+  ],
+  "audit_notes": {
+    "task_brief_alignment": [
+      "Confirmed: 8 crates total (1 root + 7 sub-crates in 2 nested groups). The task brief's '12 plugin-trait crates' overstates the count.",
+      "Confirmed: NO inventory::submit! or ctor::ctor macro usage anywhere. Plugin traits are registered manually through Box<dyn Trait> registries. The task brief's 'inventory+ctor' wording is not accurate for this repo.",
+      "Confirmed: hygiene_score 100/100; all 10 rubric items are present.",
+      "Confirmed: convergence_cluster 'other' (single Rust stack, not web-stack or multi-stack)."
+    ],
+    "evidence": [
+      "src/lib.rs:11-25 — exports",
+      "src/domain/skills/mod.rs:50-87 — manual SkillRegistry, no inventory/ctor",
+      "src/domain/tools/mod.rs:77-126 — manual ToolRegistry, no inventory/ctor",
+      "Cargo.toml:1-2 — [workspace] declared without members",
+      "docs/PATH_TO_SIDEKICK.md:13-15 — <1% coverage, 3 tests",
+      ".github/workflows/ci.yml:1-67 — build/clippy/test/fmt only; no coverage job"
+    ]
+  }
+}
