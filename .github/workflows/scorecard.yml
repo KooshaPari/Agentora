@@ -1,0 +1,53 @@
+name: Scorecard supply-chain security
+on:
+  # For Branch-Protection check. Only the default branch is supported. See
+  # https://github.com/ossf/scorecard/blob/main/docs/checks.md#branch-protection
+  branch_protection_rule:
+  # To guarantee Maintained check is occasionally updated. See
+  # https://github.com/ossf/scorecard/blob/main/docs/checks.md#maintained
+  schedule:
+    - cron: '26 7 * * 0'
+  push:
+    branches: [ main ]
+
+# Declare default permissions as read only.
+permissions: read-all
+
+jobs:
+  analysis:
+    name: Scorecard analysis
+    runs-on: ubuntu-latest
+    permissions:
+      # Needed to upload the results to code-scanning dashboard.
+      security-events: write
+      # Needed to query private dependencies.
+      packages: read
+      # Needed to publish results to the scorecard GitHub Action.
+      id-token: write
+      # Read for repo contents API.
+      contents: read
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          persist-credentials: false
+      - name: "Run analysis"
+        uses: ossf/scorecard-action@05ac5b1b658a5dc16ebcacd56e7e9c9158254b35 # v2.3.3
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          # (Optional) "publish_results" will trigger a "SARIF file" to be
+          # uploaded to the "Code Scanning" tab of the repository.
+          publish_results: true
+      # Upload the results as a SARIF file to the "Code Scanning" tab.
+      - name: "Upload artifact"
+        uses: actions/upload-artifact@97a0f4bc7fdc10fd5533b6296167a1ce6ab2742d # v3.1.6
+        with:
+          name: SARIF file
+          path: results.sarif
+          if-no-files-found: error
+      - name: "Upload to code-scanning"
+        if: github.event_name != 'pull_request'
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: results.sarif
