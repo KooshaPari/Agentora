@@ -19,6 +19,7 @@
 > human operator. Bug reports and contributions are still welcome, but please
 > expect AI-generated code, comments, and documentation throughout.
 <!-- AI-DD-META:END -->
+<!-- work-state: active | [========8/10] Block B consolidation in progress -->
 > **Work state:** ACTIVE · **Progress:** `███████░░░ 70%`
 > Rust hexagonal agent framework (agentkit): skills, tool registry, two-tier memory, lifecycle events · updated 2026-06-02
 
