@@ -1,4 +1,24 @@
 [workspace]
+resolver = "2"
+# `agents/phenoagent/{phenotype-daemon,phenotype-skills}` are
+# legacy duplicates of `crates/pheno-agent/{phenotype-daemon,phenotype-skills}`.
+# The canonical daemon lives at KooshaPari/PhenoAgent (see plan:
+# PHENO_AGENT_RECONCILIATION_PLAN §2). Excluded here to allow the
+# 7 `crates/` members to be registered without a name collision.
+# A follow-up PR will `git rm` the `agents/phenoagent/` copies.
+exclude = [
+    "agents/phenoagent/phenotype-daemon",
+    "agents/phenoagent/phenotype-skills",
+]
+members = [
+    "crates/pheno-agent/phenotype-daemon",
+    "crates/pheno-agent/phenotype-skills",
+    "crates/pheno-proc-runtime/pheno-proc-core",
+    "crates/pheno-proc-runtime/pheno-proc-shm",
+    "crates/pheno-proc-runtime/pheno-proc-queue",
+    "crates/pheno-proc-runtime/pheno-proc-uds",
+    "crates/pheno-proc-runtime/pheno-proc-dedup",
+]
 [workspace.package]
 
 rust-version = "1.75"
