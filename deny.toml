@@ -17,7 +17,12 @@ allow = [
 [advisories]
 db-path = "$CARGO_HOME/advisory-db"
 
-# No advisories ignored — all deps use maintained crates
+ignore = [
+    # bincode 1.x is unmaintained (RUSTSEC-2025-0141); pulled transitively by
+    # phenotype-daemon's optional tokio-unix-ipc serde feature. No patched 1.x
+    # release exists and tokio-unix-ipc 0.4.0 is the latest on crates.io.
+    { id = "RUSTSEC-2025-0141", reason = "transitive unmaintained bincode via phenotype-daemon -> tokio-unix-ipc; no upgrade path" },
+]
 
 [sources]
 allow-registry = ["https://github.com/rust-lang/crates.io-index"]
