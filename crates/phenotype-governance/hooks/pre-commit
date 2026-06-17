@@ -1,0 +1,64 @@
+#!/bin/sh
+# pre-commit hook: Fast lint checks on staged files
+# Template: phenotype-governance (self-contained, no external dependencies)
+
+set -e
+
+echo "Running pre-commit checks..."
+
+# Check staged files for trailing whitespace
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null || echo "")
+
+if [ -n "$STAGED_FILES" ]; then
+    # Check for trailing whitespace
+    TRAILING_WS=0
+    for FILE in $STAGED_FILES; do
+        if [ -f "$FILE" ] && grep -q '[[:space:]]$' "$FILE" 2>/dev/null; then
+            echo "ERROR: Trailing whitespace found in: $FILE"
+            TRAILING_WS=1
+        fi
+    done
+    if [ "$TRAILING_WS" -eq 1 ]; then
+        echo "Fix trailing whitespace before committing."
+        exit 1
+    fi
+
+    # Check for large files (>5MB warning)
+    for FILE in $STAGED_FILES; do
+        if [ -f "$FILE" ]; then
+            SIZE=$(stat -f%z "$FILE" 2>/dev/null || stat -c%s "$FILE" 2>/dev/null || echo 0)
+            if [ "$SIZE" -gt 5242880 ]; then
+                echo "WARNING: Large file detected (>5MB): $FILE (${SIZE} bytes)"
+                echo "Consider using Git LFS for large files."
+            fi
+        fi
+    done
+    
+    # Check for secrets/tokens in staged files (basic patterns)
+    for FILE in $STAGED_FILES; do
+        if [ -f "$FILE" ]; then
+            # Skip binary files
+            if file "$FILE" 2>/dev/null | grep -q "text"; then
+                # Check for potential secrets
+                if grep -qE '(password|secret|token|key|api_key)\s*=\s*["\047][^"\047]+["\047]' "$FILE" 2>/dev/null; then
+                    echo "WARNING: Potential secret/credential pattern found in: $FILE"
+                    echo "Review to ensure no secrets are being committed."
+                fi
+            fi
+        fi
+    done
+fi
+
+# Run language-specific formatters if available
+REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo ".")
+
+if [ -f "$REPO_ROOT/Cargo.toml" ] && command -v cargo >/dev/null 2>&1; then
+    echo "Running cargo fmt check..."
+    cargo fmt --all -- --check 2>/dev/null || {
+        echo "Run 'cargo fmt --all' to fix formatting"
+        exit 1
+    }
+fi
+
+echo "Pre-commit checks passed!"
+exit 0

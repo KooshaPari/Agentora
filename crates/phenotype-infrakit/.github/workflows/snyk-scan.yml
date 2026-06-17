@@ -1,0 +1,86 @@
+name: Snyk Security Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 2 * * *'
+
+permissions:
+  contents: read
+  security-events: write
+  pull-requests: write
+
+jobs:
+  snyk-test:
+    name: Snyk Vulnerability Test
+    runs-on: ubuntu-latest
+    env:
+      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Snyk CLI
+        run: npm install -g snyk
+
+      - name: Authenticate with Snyk
+        run: snyk auth "$SNYK_TOKEN"
+
+      - name: Run Snyk test
+        id: snyk_test
+        continue-on-error: true
+        run: |
+          snyk test --severity-threshold=high --json-file-output=snyk-test-report.json --all-projects --detection-depth=3
+
+      - name: Generate SARIF report
+        if: always()
+        continue-on-error: true
+        run: |
+          snyk test --sarif-file-output=snyk.sarif --severity-threshold=low --all-projects --detection-depth=3 || true
+
+      - name: Upload SARIF to GitHub Code Scanning
+        if: always()
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: snyk.sarif
+          category: snyk-security-scan
+
+      - name: Add PR comment
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '## Snyk Security Scan Results\n\nSnyk vulnerability scan completed. View results in GitHub Code Scanning dashboard.'
+            });
+
+      - name: Fail on critical vulnerabilities
+        if: steps.snyk_test.outcome == 'failure'
+        run: echo "Critical vulnerabilities detected." && exit 1
+
+  snyk-monitor:
+    name: Snyk Monitor
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    env:
+      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Monitor dependencies
+        run: |
+          npm install -g snyk
+          snyk auth "$SNYK_TOKEN"
+          snyk monitor --all-projects --detection-depth=3 || true

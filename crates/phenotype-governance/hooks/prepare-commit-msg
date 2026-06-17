@@ -1,0 +1,35 @@
+#!/bin/sh
+# prepare-commit-msg hook: Add branch name to commit message if not present
+# Template: phenotype-governance (self-contained, no external dependencies)
+
+set -e
+
+COMMIT_MSG_FILE="$1"
+COMMIT_SOURCE="$2"
+
+# Only modify commit messages for non-merge, non-squash, non-rebase commits
+if [ -n "$COMMIT_SOURCE" ]; then
+    exit 0
+fi
+
+# Get current branch name
+BRANCH_NAME=$(git symbolic-ref --short HEAD 2>/dev/null || echo "")
+
+# Skip if not on a branch or on main/master
+if [ -z "$BRANCH_NAME" ] || [ "$BRANCH_NAME" = "main" ] || [ "$BRANCH_NAME" = "master" ]; then
+    exit 0
+fi
+
+# Extract issue number from branch name (e.g., feature/PROJ-123-description)
+ISSUE_NUMBER=$(echo "$BRANCH_NAME" | grep -oE '[A-Z]+-[0-9]+' | head -1)
+
+if [ -n "$ISSUE_NUMBER" ]; then
+    # Check if commit message already contains the issue number
+    if ! grep -q "$ISSUE_NUMBER" "$COMMIT_MSG_FILE"; then
+        # Add issue reference to the end of the commit message
+        echo "" >> "$COMMIT_MSG_FILE"
+        echo "Refs: $ISSUE_NUMBER" >> "$COMMIT_MSG_FILE"
+    fi
+fi
+
+exit 0

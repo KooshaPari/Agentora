@@ -1,0 +1,75 @@
+# ADR (Architecture Decision Record) validation
+# Template: phenotype-governance
+
+name: ADR Validation
+
+on:
+  push:
+    paths:
+      - 'docs/adr/**'
+      - 'adr/**'
+  pull_request:
+    paths:
+      - 'docs/adr/**'
+      - 'adr/**'
+
+jobs:
+  validate-adr:
+    name: Validate ADR Files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Find ADR files
+        id: find-adrs
+        run: |
+          ADR_FILES=$(find . -path './docs/adr/*.md' -o -path './adr/*.md' 2>/dev/null | tr '\n' ' ')
+          echo "files=$ADR_FILES" >> $GITHUB_OUTPUT
+          echo "Found ADR files: $ADR_FILES"
+
+      - name: Validate ADR format
+        if: steps.find-adrs.outputs.files != ''
+        run: |
+          EXIT_CODE=0
+          for file in ${{ steps.find-adrs.outputs.files }}; do
+            echo "Checking $file..."
+            
+            # Check for required sections
+            if ! grep -q '^# ADR-[0-9]\{4\}:' "$file"; then
+              echo "ERROR: $file missing ADR title format (ADR-XXXX: Title)"
+              EXIT_CODE=1
+            fi
+            
+            if ! grep -q '^## Status' "$file"; then
+              echo "ERROR: $file missing Status section"
+              EXIT_CODE=1
+            fi
+            
+            if ! grep -q '^## Context' "$file"; then
+              echo "ERROR: $file missing Context section"
+              EXIT_CODE=1
+            fi
+            
+            if ! grep -q '^## Decision' "$file"; then
+              echo "ERROR: $file missing Decision section"
+              EXIT_CODE=1
+            fi
+            
+            if ! grep -q '^## Consequences' "$file"; then
+              echo "ERROR: $file missing Consequences section"
+              EXIT_CODE=1
+            fi
+          done
+          
+          exit $EXIT_CODE
+
+      - name: Check date format
+        if: steps.find-adrs.outputs.files != ''
+        run: |
+          for file in ${{ steps.find-adrs.outputs.files }}; do
+            if grep -q 'Date: [0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}' "$file"; then
+              echo "✓ $file has valid date format"
+            else
+              echo "WARNING: $file may be missing Date (YYYY-MM-DD format)"
+            fi
+          done

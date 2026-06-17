@@ -1,0 +1,15 @@
+[package]
+name = "phenotype-port-traits"
+version = "0.2.0"
+edition = "2021"
+license = "MIT"
+description = "Port traits for Phenotype hexagonal architecture"
+repository = "https://github.com/KooshaPari/phenotype-infrakit"
+
+[dependencies]
+serde = { workspace = true, features = ["derive"] }
+thiserror = { workspace = true }
+async-trait = { workspace = true }
+
+[dev-dependencies]
+tokio-test = { workspace = true }

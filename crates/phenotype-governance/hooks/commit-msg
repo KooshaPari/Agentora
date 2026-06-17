@@ -1,0 +1,35 @@
+#!/bin/sh
+# commit-msg hook: Validate conventional commit format
+# Template: phenotype-governance (self-contained, no external dependencies)
+
+set -e
+
+COMMIT_MSG_FILE="$1"
+COMMIT_MSG=$(head -n1 "$COMMIT_MSG_FILE")
+
+# Conventional commit pattern
+PATTERN='^(feat|fix|docs|style|refactor|test|chore|ci|build|perf|revert)(\([a-z-]+\))?!?: .{1,100}$'
+
+if ! echo "$COMMIT_MSG" | grep -qE "$PATTERN"; then
+    echo "ERROR: Commit message does not follow conventional commit format."
+    echo ""
+    echo "Format: <type>[optional scope]: <description>"
+    echo ""
+    echo "Types: feat, fix, docs, style, refactor, test, chore, ci, build, perf, revert"
+    echo ""
+    echo "Examples:"
+    echo "  feat: add user authentication"
+    echo "  fix(api): resolve null pointer exception"
+    echo "  docs: update README with new examples"
+    echo ""
+    echo "Your commit message:"
+    echo "  $COMMIT_MSG"
+    exit 1
+fi
+
+# Check for issue reference (optional but recommended)
+if ! grep -qE '#[0-9]+|fixes|closes|resolves' "$COMMIT_MSG_FILE"; then
+    echo "WARNING: Consider adding an issue reference (e.g., #123, fixes #456)"
+fi
+
+exit 0

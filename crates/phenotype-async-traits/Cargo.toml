@@ -1,0 +1,15 @@
+[package]
+name = "phenotype-async-traits"
+version = "0.2.0"
+edition = "2021"
+license = "MIT"
+description = "Async traits for phenotype ecosystem"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+async-trait = "0.1"
+
+[dev-dependencies]
+tokio = { version = "1", features = ["full"] }

@@ -1,0 +1,36 @@
+# FOSSA Configuration
+# FOSSA free tier: 5 projects max
+# https://app.fossa.com
+
+version: 2
+cli:
+  version: 3.16.6
+
+# Analyze all projects in this workspace
+analyze:
+  # Wait for build completion before analyzing
+  wait: true
+  # Upload results automatically
+  upload: true
+
+# Projects to analyze (priority order for free tier)
+projects:
+  - name: phenotype-infrakit
+    path: ./
+    type: cargo
+
+  - name: phenotype-contracts
+    path: ./crates/phenotype-contracts
+    type: cargo
+
+  - name: phenotype-cache-adapter
+    path: ./crates/phenotype-cache-adapter
+    type: cargo
+
+  - name: phenotype-policy-engine
+    path: ./crates/phenotype-policy-engine
+    type: cargo
+
+  - name: phenotype-state-machine
+    path: ./crates/phenotype-state-machine
+    type: cargo

@@ -1,0 +1,20 @@
+[package]
+name = "phenotype-event-sourcing"
+version = "0.2.0"
+edition = "2021"
+license = "MIT"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "2.0"
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1", features = ["v4", "serde"] }
+async-trait = "0.1"
+tokio = { version = "1", features = ["full"] }
+blake3 = "1.5"
+hex = "0.4"
+phenotype-observability = { path = "../../phenotype-infrakit/crates/phenotype-observability" }

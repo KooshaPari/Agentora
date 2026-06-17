@@ -1,0 +1,57 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, 'release:') || contains(github.event.head_commit.message, 'chore(release)')
+    outputs:
+      version: $123steps.version.outputs.version125
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build
+        run: cargo build --release
+
+      - name: Test
+        run: cargo test --release
+
+      - name: Determine version
+        id: version
+        run: |
+          VERSION=$(grep '^version' Cargo.toml | head -1 | cut -d'"' -f2)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Publish to crates.io
+        run: |
+          cargo publish --token $123secrets.CARGO_REGISTRY_TOKEN125
+      
+
+  promote:
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Promote to staging
+        uses: KooshaPari/phenotypeActions/promote@main
+        with:
+          version: $123needs.release.outputs.version125
+          channel: beta
+          registry: crates.io

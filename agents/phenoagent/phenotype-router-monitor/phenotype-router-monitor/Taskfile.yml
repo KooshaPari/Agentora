@@ -1,0 +1,220 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# TASKFILE - Standardized developer tasks for phenotype Rust projects
+# Based on Tokn best practices
+# ═══════════════════════════════════════════════════════════════════════════
+
+version: '3'
+
+env:
+  RUST_BACKTRACE: "1"
+  CARGO_TERM_COLOR: always
+
+tasks:
+  # ─────────────────────────────────────────────────────────────────────────
+  # Quality Gates
+  # ─────────────────────────────────────────────────────────────────────────
+
+  default:
+    desc: "Show available tasks"
+    cmds:
+      - task --list
+
+  check:
+    desc: "Run all checks (alias for quality)"
+    cmds:
+      - task: quality
+
+  quality:
+    desc: "Run full quality pipeline (fmt + lint + test + audit)"
+    cmds:
+      - task: fmt:check
+      - task: lint
+      - task: test
+      - task: audit || true
+
+  quality:strict:
+    desc: "Run strict quality with extra checks (CI mode)"
+    cmds:
+      - task: fmt:check
+      - task: clippy
+      - task: test:all
+      - task: audit || true
+      - task: deny:check || true
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Formatting & Linting
+  # ─────────────────────────────────────────────────────────────────────────
+
+  fmt:
+    desc: "Format all code"
+    cmds:
+      - cargo fmt --all
+
+  fmt:check:
+    desc: "Check formatting without modifying"
+    cmds:
+      - cargo fmt --all -- --check
+
+  lint:
+    desc: "Run clippy with standard allows"
+    cmds:
+      - cargo clippy --all-targets --all-features -- -D warnings \
+        -A clippy::unwrap_or_default \
+        -A clippy::too_many_arguments \
+        -A clippy::derive_partial_eq_without_eq \
+        -A clippy::large_enum_variant \
+        -A unused_imports \
+        -A unused \
+        -A clippy::match_same_matches \
+        -A clippy::filter_map_next \
+        -A clippy::needless_collect \
+        -A clippy::needless_pass_by_ref_mut \
+        -A clippy::cast_lossless
+
+  clippy:
+    desc: "Run clippy without allows (strict)"
+    cmds:
+      - cargo clippy --all-targets --all-features -- -D warnings
+
+  clippy:watch:
+    desc: "Run clippy in watch mode"
+    cmds:
+      - cargo watch -x clippy
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Testing
+  # ─────────────────────────────────────────────────────────────────────────
+
+  test:
+    desc: "Run unit tests"
+    cmds:
+      - cargo test
+
+  test:all:
+    desc: "Run all tests including doc and integration"
+    cmds:
+      - cargo test --all-targets
+
+  test:watch:
+    desc: "Run tests in watch mode"
+    cmds:
+      - cargo watch -x test
+
+  test:coverage:
+    desc: "Run tests with coverage reporting"
+    cmds:
+      - cargo tarpaulin --out Html --out Lcov --ignore-tests
+
+  test:bench:
+    desc: "Run benchmarks"
+    cmds:
+      - cargo bench
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Build & Run
+  # ─────────────────────────────────────────────────────────────────────────
+
+  build:
+    desc: "Build the project"
+    cmds:
+      - cargo build
+
+  build:release:
+    desc: "Build in release mode"
+    cmds:
+      - cargo build --release
+
+  build:docs:
+    desc: "Build documentation"
+    cmds:
+      - cargo doc --no-deps
+
+  run:
+    desc: "Run the binary"
+    cmds:
+      - cargo run
+
+  run:release:
+    desc: "Run in release mode"
+    cmds:
+      - cargo run --release
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Security & Supply Chain
+  # ─────────────────────────────────────────────────────────────────────────
+
+  audit:
+    desc: "Run cargo-audit for security vulnerabilities"
+    cmds:
+      - cargo audit || true
+
+  deny:
+    desc: "Check dependency licenses and security advisories"
+    cmds:
+      - cargo deny check advisories licenses
+
+  deny:check:
+    desc: "Check deny.toml configuration"
+    cmds:
+      - cargo deny check
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # CI Pipeline
+  # ─────────────────────────────────────────────────────────────────────────
+
+  ci:
+    desc: "Full CI pipeline (for GitHub Actions)"
+    cmds:
+      - task: quality:strict
+      - task: build:docs || true
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Development Helpers
+  # ─────────────────────────────────────────────────────────────────────────
+
+  deps:update:
+    desc: "Update dependencies"
+    cmds:
+      - cargo update
+
+  deps:outdated:
+    desc: "Check for outdated dependencies"
+    cmds:
+      - cargo outdated --root-deps-only || true
+
+  clean:
+    desc: "Clean build artifacts"
+    cmds:
+      - cargo clean
+
+  tree:
+    desc: "Show dependency tree"
+    cmds:
+      - cargo tree
+
+  tree:inverted:
+    desc: "Show why a dependency is included"
+    cmds:
+      - cargo tree --invert {{.CLI_ARGS}}
+
+  bench:record:
+    desc: "Record benchmark results"
+    cmds:
+      - cargo criterion --record
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Release
+  # ─────────────────────────────────────────────────────────────────────────
+
+  release:check:
+    desc: "Check release readiness"
+    cmds:
+      - task: quality
+      - task: build:release
+      - cargo publish --dry-run || true
+
+  release:patch:
+    desc: "Bump patch version and create commit"
+    cmds:
+      - cargo release patch --no-push --no-tag --no-dev-version
+      - git commit -am "chore(release): bump version to $(cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].version')"

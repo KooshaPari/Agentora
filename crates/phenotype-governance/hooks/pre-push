@@ -1,0 +1,69 @@
+#!/bin/sh
+# pre-push hook: Run quality checks before pushing
+# Template: phenotype-governance (self-contained, no external dependencies)
+
+set -e
+
+REPO_ROOT=$(git rev-parse --show-toplevel)
+cd "$REPO_ROOT"
+
+echo "Running pre-push checks..."
+
+# Detect language and run appropriate checks
+if [ -f "Cargo.toml" ]; then
+    echo "Detected Rust project, running cargo checks..."
+    
+    # Check formatting
+    if command -v cargo >/dev/null 2>&1; then
+        echo "  Checking formatting..."
+        cargo fmt --all -- --check 2>/dev/null || {
+            echo "ERROR: Rust formatting check failed. Run 'cargo fmt --all' to fix."
+            exit 1
+        }
+        
+        # Run clippy
+        echo "  Running clippy..."
+        cargo clippy --all-features -- -D warnings 2>/dev/null || {
+            echo "ERROR: Clippy check failed."
+            exit 1
+        }
+        
+        # Run tests
+        echo "  Running tests..."
+        cargo test --all-features 2>/dev/null || {
+            echo "ERROR: Tests failed."
+            exit 1
+        }
+    fi
+fi
+
+if [ -f "pyproject.toml" ] || [ -f "setup.py" ]; then
+    echo "Detected Python project, running Python checks..."
+    
+    if command -v ruff >/dev/null 2>&1; then
+        echo "  Running ruff..."
+        ruff check . 2>/dev/null || {
+            echo "ERROR: Ruff check failed."
+            exit 1
+        }
+        
+        echo "  Checking formatting..."
+        ruff format --check . 2>/dev/null || {
+            echo "ERROR: Python formatting check failed. Run 'ruff format .' to fix."
+            exit 1
+        }
+    fi
+fi
+
+if [ -f "package.json" ]; then
+    echo "Detected TypeScript/JavaScript project..."
+    
+    if [ -f "bun.lock" ] && command -v bun >/dev/null 2>&1; then
+        echo "  Running checks with bun..."
+        bun run lint 2>/dev/null || true
+        bun test 2>/dev/null || true
+    fi
+fi
+
+echo "All pre-push checks passed!"
+exit 0

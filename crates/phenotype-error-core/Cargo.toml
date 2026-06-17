@@ -1,0 +1,15 @@
+[package]
+name = "phenotype-error-core"
+version = "0.2.0"
+edition = "2021"
+license = "MIT"
+description = "Core error types for Phenotype"
+repository = "https://github.com/KooshaPari/phenotype-infrakit"
+
+[dependencies]
+thiserror = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+
+[dev-dependencies]

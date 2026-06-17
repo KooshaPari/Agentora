@@ -1,0 +1,28 @@
+name: FR Traceability
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  traceability:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install ptrace CLI
+        run: |
+          mkdir -p ~/bin
+          curl -sL https://raw.githubusercontent.com/phenotype/AgilePlus/main/bin/ptrace -o ~/bin/ptrace
+          chmod +x ~/bin/ptrace
+          echo "$HOME/bin" >> $GITHUB_PATH
+      - name: Validate AI Attribution
+        run: ptrace validate-ai --project .
+      - name: Check FR Coverage
+        run: ptrace analyze --path . --lang all || true
+      - name: Generate FR Report
+        run: ptrace fr-report --project . --with-ai || true

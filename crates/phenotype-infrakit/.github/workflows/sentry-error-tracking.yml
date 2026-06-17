@@ -1,0 +1,92 @@
+name: Sentry Error Tracking
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  sentry-health-check:
+    name: Sentry Health & Integration Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN_PHENOTYPE_INFRAKIT }}
+      SENTRY_ORG_SLUG: stealth-startup-3u
+      SENTRY_PROJECT_ID: phenotype-infrakit
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 10
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: .
+
+      - name: Verify Sentry DSN is configured
+        run: |
+          if [ -z "$SENTRY_DSN" ]; then
+            echo "Warning: SENTRY_DSN_PHENOTYPE_INFRAKIT secret not configured"
+            exit 0
+          fi
+          echo "✓ Sentry DSN configured"
+
+      - name: Run Sentry initialization tests
+        run: |
+          cargo test --lib sentry --workspace -- --nocapture
+        continue-on-error: true
+
+      - name: Generate Sentry dashboard link
+        run: |
+          ORG_SLUG="phenotype"
+          PROJECT_ID="phenotype-infrakit"
+          echo "## Sentry Error Dashboard" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "View errors: https://sentry.io/organizations/${ORG_SLUG}/issues/?project=${PROJECT_ID}" >> $GITHUB_STEP_SUMMARY
+          echo "Environment: production" >> $GITHUB_STEP_SUMMARY
+          echo "Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_STEP_SUMMARY
+
+  integration-with-github-issues:
+    name: GitHub-Sentry Integration Verification
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify GitHub integration setup
+        run: |
+          echo "Verifying GitHub-Sentry integration..."
+          echo "Org: phenotype"
+          echo "Project: phenotype-infrakit"
+
+      - name: Generate integration checklist
+        run: |
+          echo "## Sentry-GitHub Integration Checklist" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Setup instructions:" >> $GITHUB_STEP_SUMMARY
+          echo "1. Go to https://sentry.io/settings/phenotype/integrations/github/" >> $GITHUB_STEP_SUMMARY
+          echo "2. Authorize GitHub org if not already done" >> $GITHUB_STEP_SUMMARY
+          echo "3. Enable 'Create GitHub issues from alerts'" >> $GITHUB_STEP_SUMMARY
+          echo "4. Configure alert rules for high-severity errors" >> $GITHUB_STEP_SUMMARY

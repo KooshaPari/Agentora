@@ -1,0 +1,43 @@
+# GolangCI-Lint configuration for Go projects
+# Template: phenotype-governance
+
+run:
+  timeout: 5m
+  skip-dirs:
+    - vendor
+    - third_party
+
+linters:
+  enable:
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    - gocritic
+    - gofmt
+    - goimports
+    - misspell
+    - revive
+    - unconvert
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+  gofmt:
+    simplify: true
+  goimports:
+    local-prefixes: github.com/phenotype
+  revive:
+    rules:
+      - name: exported
+        severity: warning
+
+issues:
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - errcheck
+        - gosec

@@ -1,0 +1,17 @@
+[package]
+name = "phenotype-macros"
+version = "0.2.0"
+edition = "2021"
+license = "MIT"
+description = "Procedural macros for Phenotype"
+repository = "https://github.com/KooshaPari/phenotype-infrakit"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+syn = { workspace = true }
+quote = { workspace = true }
+proc-macro2 = { workspace = true }
+
+[dev-dependencies]
