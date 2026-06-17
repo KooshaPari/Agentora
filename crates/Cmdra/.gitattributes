@@ -1,0 +1,47 @@
+# Auto detect text files and perform LF normalization
+* text=auto eol=lf
+
+# Source code
+*.rs text diff=rust
+*.sh text eol=lf
+*.yml text
+*.yaml text
+*.toml text
+*.json text
+*.md text
+
+# Documentation
+*.txt text
+
+# Config files
+.env* text
+.gitattributes text
+.gitignore text
+.editorconfig text
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg text
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.tar binary
+*.tar.gz binary
+*.rar binary
+*.7z binary
+
+# Rust
+*.lock text
+Cargo.lock linguist-generated=true
+
+# Misc
+*.db binary
+*.sqlite binary

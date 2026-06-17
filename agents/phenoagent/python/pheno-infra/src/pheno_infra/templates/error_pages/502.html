@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="{{refresh_interval}}">
+    <title>{{service_name}} - Bad Gateway</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 60px 40px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .error-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-size: 1.5em;
+            margin-bottom: 30px;
+            font-weight: 400;
+            opacity: 0.9;
+        }
+
+        p {
+            font-size: 1.1em;
+            opacity: 0.85;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            font-size: 1em;
+        }
+
+        .retry-info {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .meta {
+            font-size: 0.9em;
+            opacity: 0.7;
+            margin-top: 30px;
+        }
+
+        .countdown {
+            font-weight: 600;
+            color: #FFE66D;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="error-icon">🔌</div>
+        <h1>502</h1>
+        <h2>Bad Gateway</h2>
+        <p><strong>{{service_name}}</strong> encountered an error while processing your request.</p>
+        <p>The upstream service returned an invalid response.</p>
+        {{#if message}}
+        <div class="message">{{message}}</div>
+        {{/if}}
+        <div class="retry-info">
+            <p>🔄 Auto-retry in <span class="countdown" id="countdown">{{refresh_interval}}</span> seconds</p>
+        </div>
+
+        <div id="connectionDetails" style="margin-top: 20px; padding: 15px; background: rgba(0, 0, 0, 0.2); border-radius: 10px; text-align: left; font-family: monospace; font-size: 0.85em;">
+            <div style="margin-bottom: 10px; font-weight: 600; color: #FFE66D;">Connection Details:</div>
+            <div id="portInfo" style="color: #D1D3D9; margin-bottom: 6px;">Port: <span id="servicePort">-</span></div>
+            <div id="healthInfo" style="color: #D1D3D9; margin-bottom: 6px;">Health Check: <span id="healthStatus">-</span></div>
+            <div id="errorInfo" style="color: #EF4444; margin-top: 10px; padding: 10px; background: rgba(239, 68, 68, 0.1); border-radius: 6px; word-wrap: break-word;"></div>
+        </div>
+
+        <div id="logsSection" style="margin-top: 20px; text-align: left;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="font-size: 0.9em; font-weight: 600; color: #FFE66D;">Connection Error Logs</span>
+                <button onclick="copyLogs()" style="background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 6px; padding: 4px 12px; color: white; cursor: pointer; font-size: 0.8em;">Copy Logs</button>
+            </div>
+            <div id="logsContainer" style="background: rgba(0, 0, 0, 0.2); border-radius: 10px; padding: 12px; max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.8em; line-height: 1.5;">
+                <div id="logsContent" style="color: #9EA0A6;">
+                    Fetching connection logs...
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="btn" onclick="window.location.reload()">🔄 Retry Now</button>
+            <a href="/kinfra" class="btn">📊 Dashboard</a>
+        </div>
+        <div class="meta">Powered by KInfra • <span id="lastUpdate">{{timestamp}}</span></div>
+    </div>
+
+    <script>
+        let countdown = {{refresh_interval}};
+        let allLogs = [];
+
+        // Get log level color
+        function getLogColor(level) {
+            const colors = {
+                'error': '#EF4444',
+                'warn': '#F59E0B',
+                'info': '#5A8DEE',
+                'debug': '#9EA0A6'
+            };
+            return colors[level?.toLowerCase()] || '#D1D3D9';
+        }
+
+        // Format timestamp
+        function formatTimestamp(ts) {
+            if (!ts) return '';
+            const date = new Date(ts);
+            return date.toLocaleTimeString('en-US', { hour12: false });
+        }
+
+        // Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Update status and logs
+        async function updateStatus() {
+            try {
+                const response = await fetch('/__status__');
+                const data = await response.json();
+
+                // Update timestamp
+                document.getElementById('lastUpdate').textContent = new Date(data.timestamp).toLocaleTimeString();
+
+                // Update connection details
+                if (data.port) {
+                    document.getElementById('servicePort').textContent = data.port;
+                }
+
+                if (data.health_status) {
+                    document.getElementById('healthStatus').textContent = data.health_status;
+                    document.getElementById('healthStatus').style.color =
+                        data.health_status === 'Healthy' ? '#22C55E' : '#EF4444';
+                }
+
+                if (data.error_message) {
+                    document.getElementById('errorInfo').innerHTML = escapeHtml(data.error_message);
+                } else {
+                    document.getElementById('errorInfo').innerHTML = 'Gateway cannot connect to upstream service';
+                }
+
+                // Update logs (filter for connection-related errors)
+                const services = data.services || {};
+                const currentService = Object.values(services)[0];
+
+                if (currentService && currentService.logs && currentService.logs.length > 0) {
+                    // Filter for error and warn logs
+                    allLogs = currentService.logs.filter(log =>
+                        ['error', 'warn'].includes(log.level?.toLowerCase())
+                    ).slice(-20);
+                    renderLogs(allLogs);
+                } else if (data.logs && data.logs.length > 0) {
+                    allLogs = data.logs.filter(log =>
+                        ['error', 'warn'].includes(log.level?.toLowerCase())
+                    ).slice(-20);
+                    renderLogs(allLogs);
+                }
+
+                // Redirect if service recovered
+                if (data.state === 'running' && data.health_status === 'Healthy') {
+                    window.location.reload();
+                }
+            } catch (error) {
+                console.error('Status update failed:', error);
+            }
+        }
+
+        // Render logs
+        function renderLogs(logs) {
+            const container = document.getElementById('logsContent');
+
+            if (!logs || logs.length === 0) {
+                container.innerHTML = '<div style="color: #9EA0A6;">No connection error logs available.</div>';
+                return;
+            }
+
+            container.innerHTML = logs.map(log => {
+                const level = log.level?.toLowerCase() || 'info';
+                const color = getLogColor(level);
+                const timestamp = formatTimestamp(log.timestamp);
+                const message = escapeHtml(log.message || log.text || '');
+
+                return `<div style="margin-bottom: 3px; word-wrap: break-word;">
+                    <span style="color: rgba(255, 255, 255, 0.5);">${timestamp}</span>
+                    <span style="color: ${color}; font-weight: 600;">[${level.toUpperCase()}]</span>
+                    <span>${message}</span>
+                </div>`;
+            }).join('');
+
+            // Auto-scroll to bottom
+            const logsContainer = document.getElementById('logsContainer');
+            logsContainer.scrollTop = logsContainer.scrollHeight;
+        }
+
+        // Copy logs to clipboard
+        async function copyLogs() {
+            const logsText = allLogs.map(log =>
+                `${formatTimestamp(log.timestamp)} [${(log.level || 'INFO').toUpperCase()}] ${log.message || log.text || ''}`
+            ).join('\n');
+
+            try {
+                await navigator.clipboard.writeText(logsText);
+                const btn = event.target;
+                btn.textContent = 'Copied!';
+                setTimeout(() => { btn.textContent = 'Copy Logs'; }, 2000);
+            } catch (err) {
+                console.error('Failed to copy logs:', err);
+            }
+        }
+
+        // Countdown timer
+        setInterval(() => {
+            countdown--;
+            if (countdown <= 0) countdown = {{refresh_interval}};
+            document.getElementById('countdown').textContent = countdown;
+        }, 1000);
+
+        // Update status every 2 seconds
+        setInterval(updateStatus, 2000);
+        updateStatus();
+    </script>
+</body>
+</html>

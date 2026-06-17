@@ -1,0 +1,115 @@
+"""
+Unified TUI Library for MCP Test Framework
+
+This library provides a comprehensive set of Terminal UI components for building
+interactive test dashboards, combining the best features from both Atoms MCP
+and Zen MCP implementations.
+
+Components:
+- dashboard: Main TUI application with grid layout and reactive updates
+- widgets: Reusable display widgets (status panels, metrics, progress bars)
+- tdd_runner: TDD test runner with TUI integration
+
+Features:
+- Textual-based reactive UI
+- OAuth status monitoring
+- Real-time test progress
+- WebSocket support for team visibility
+- File watcher integration
+- Multi-endpoint comparison
+- Export capabilities
+"""
+
+from .dashboard import (
+    TestDashboardApp,
+    run_tui_dashboard,
+)
+
+from .widgets import (
+    # Core display widgets
+    TestTreeWidget,
+    TestDetailWidget,
+    SummaryStatsWidget,
+    ProgressBarWidget,
+    LogStreamWidget,
+
+    # OAuth & status widgets
+    OAuthStatusWidget,
+    ServerStatusWidget,
+    TunnelStatusWidget,
+    ResourceStatusWidget,
+
+    # Progress & monitoring
+    TestProgressWidget,
+    MetricsWidget,
+    LiveMonitorWidget,
+
+    # Interactive widgets
+    FilterDialogWidget,
+    TestSelectorWidget,
+    CommandPaletteWidget,
+
+    # Advanced widgets
+    MetricsDashboardWidget,
+    TimelineWidget,
+    CacheStatsWidget,
+    ExportDialogWidget,
+
+    # Collaboration widgets
+    MultiEndpointWidget,
+    TeamViewWidget,
+    BroadcastWidget,
+    TeamVisibilityWidget,
+)
+
+from .tdd_runner import (
+    TDDTestRunner,
+    main as run_tdd_main,
+)
+
+__version__ = "1.0.0"
+
+__all__ = [
+    # Main app
+    "TestDashboardApp",
+    "run_tui_dashboard",
+
+    # TDD runner
+    "TDDTestRunner",
+    "run_tdd_main",
+
+    # Core widgets
+    "TestTreeWidget",
+    "TestDetailWidget",
+    "SummaryStatsWidget",
+    "ProgressBarWidget",
+    "LogStreamWidget",
+
+    # OAuth & status
+    "OAuthStatusWidget",
+    "ServerStatusWidget",
+    "TunnelStatusWidget",
+    "ResourceStatusWidget",
+
+    # Progress & monitoring
+    "TestProgressWidget",
+    "MetricsWidget",
+    "LiveMonitorWidget",
+
+    # Interactive
+    "FilterDialogWidget",
+    "TestSelectorWidget",
+    "CommandPaletteWidget",
+
+    # Advanced
+    "MetricsDashboardWidget",
+    "TimelineWidget",
+    "CacheStatsWidget",
+    "ExportDialogWidget",
+
+    # Collaboration
+    "MultiEndpointWidget",
+    "TeamViewWidget",
+    "BroadcastWidget",
+    "TeamVisibilityWidget",
+]

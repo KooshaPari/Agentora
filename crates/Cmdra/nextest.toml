@@ -1,0 +1,18 @@
+# Cargo-nextest configuration for Cmdra
+# Parallel test execution
+
+[profile.default]
+timeout = { per_test = 120, per_item = 60 }
+formatter = "pretty"
+failure-output = "immediate"
+show_skipped = true
+fail-fast = false
+retries = 1
+
+[[profile.default.overrides]]
+filter = "test(~lib::)"
+threads = 1
+
+[[profile.default.overrides]]
+filter = "test(integration::)"
+retries = 2

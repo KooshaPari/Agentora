@@ -1,0 +1,87 @@
+# Semgrep configuration for Rust projects
+# See: https://semgrep.dev/docs/running-rules/
+
+rules:
+  # Security rules
+  - id: unsafe-block-usage
+    pattern: |
+      unsafe {
+        ...
+      }
+    message: "Unsafe block detected. Ensure proper justification and documentation."
+    languages: [rust]
+    severity: WARNING
+    metadata:
+      category: security
+      confidence: MEDIUM
+
+  - id: panic-in-production
+    patterns:
+      - pattern-either:
+          - pattern: panic!(...)
+          - pattern: unimplemented!(...)
+          - pattern: todo!(...)
+    message: "Avoid panic! in production code. Use Result/Option types instead."
+    languages: [rust]
+    severity: WARNING
+    metadata:
+      category: best-practice
+      confidence: HIGH
+
+  - id: unwrap-usage
+    patterns:
+      - pattern: $X.unwrap()
+      - pattern: $X.expect(...)
+    message: "Consider handling errors explicitly instead of unwrap/expect."
+    languages: [rust]
+    severity: INFO
+    metadata:
+      category: best-practice
+      confidence: MEDIUM
+
+  - id: hardcoded-credentials
+    pattern-regex: (password|secret|token|key)\s*=\s*"[^"]+"
+    message: "Possible hardcoded credentials detected."
+    languages: [rust]
+    severity: ERROR
+    metadata:
+      category: security
+      confidence: LOW
+      technology:
+        - rust
+
+  - id: dangerous-external-command
+    pattern: std::process::Command::new(...)
+    message: "External command execution detected. Validate inputs carefully."
+    languages: [rust]
+    severity: WARNING
+    metadata:
+      category: security
+      confidence: MEDIUM
+
+  # Performance rules
+  - id: string-allocation-in-loop
+    patterns:
+      - pattern: |
+          for ... in ... {
+            ...
+            format!(...)
+            ...
+          }
+    message: "Avoid repeated string allocation in hot loops."
+    languages: [rust]
+    severity: INFO
+    metadata:
+      category: performance
+      confidence: MEDIUM
+
+  - id: inefficient-clone
+    pattern: |
+      let $X = $Y.clone();
+      $X.iter().cloned()
+    message: "Inefficient clone pattern. Consider using references."
+    languages: [rust]
+    severity: INFO
+    metadata:
+      category: performance
+      confidence: MEDIUM

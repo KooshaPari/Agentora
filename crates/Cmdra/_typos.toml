@@ -1,0 +1,10 @@
+# Typos configuration for Cmdra
+
+[default.extend-words]
+# Add project-specific words that typos should not flag
+
+[files]
+extend-exclude = [
+    "*.lock",
+    "target/",
+]

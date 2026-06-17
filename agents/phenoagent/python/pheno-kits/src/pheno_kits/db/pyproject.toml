@@ -1,0 +1,42 @@
+[project]
+name = "db-kit"
+version = "0.1.0"
+description = "Universal database abstraction with RLS and multi-tenancy"
+requires-python = ">=3.10"
+dependencies = [
+    "asyncpg>=0.29.0",
+    "psycopg[binary]>=3.1.0",
+    "sqlalchemy>=2.0.0",
+    "alembic>=1.13.0"
+]
+
+[project.optional-dependencies]
+supabase = [
+    "supabase>=2.0"
+]
+neon = [
+    "asyncpg>=0.29.0",
+    "httpx>=0.24.0"
+]
+turso = [
+    "libsql-client>=0.1"
+]
+all = [
+    "db-kit[supabase]",
+    "db-kit[neon]",
+    "db-kit[turso]"
+]
+
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.0.0"
+]
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["db_kit*"]

@@ -1,0 +1,5 @@
+# Clippy configuration for Cmdra
+# Most strict lints for high-quality CLI framework
+
+avoid-breaking-exported-api = false
+warn_on_all_wildcard_imports = true
