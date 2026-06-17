@@ -18,10 +18,22 @@ phenotype-error-core = { git = "https://github.com/KooshaPari/phenoShared", bran
 
 | Wave | Crates | Target | Status |
 |------|--------|--------|--------|
-| 1 | Leaf crates (no Agentora path consumers) | phenoShared git | ⏳ |
+| 1 | Leaf crates (no Agentora path consumers) | phenoShared git | ✅ `phenotype-errors`, `phenotype-error-macros`, `phenotype-config-loader` (2026-06-17) |
 | 2 | `bifrost-routing`, `forgecode-core` workspace members | verify no phenotype-* path deps | ✅ workspace registered |
 | 3 | Remaining `crates/phenotype-*` (~30) | HexaKit git per crate name | ⏳ |
 | NB | `Cmdra` inner `[workspace]` | flatten or exclude | ⏳ deferred |
+
+## Wave 1 (2026-06-17)
+
+Leaf staging crates repointed to `phenoShared` git (no Agentora path consumers):
+
+| Crate | Repointed dep |
+|-------|----------------|
+| `phenotype-errors` | `phenotype-error-core` |
+| `phenotype-error-macros` | `phenotype-error-core` |
+| `phenotype-config-loader` | `phenotype-config-core` |
+
+Remaining `path = "../phenotype-*"` in `crates/` (e.g. `phenotype-validation` → `phenotype-test-fixtures` dev-dep) deferred to wave 3 / HexaKit.
 
 ## Verification
 
