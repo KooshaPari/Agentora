@@ -21,7 +21,8 @@ All under `agents/phenoagent/python/` — waves 1–4.
 
 | Unit | Destination | Notes |
 |------|-------------|-------|
-| `Cmdra`, `agileplus-*`, `bifrost-routing`, `forgecode-core` | `crates/*` | wave 5 |
+| `Cmdra`, `bifrost-routing`, `forgecode-core` | `crates/*` | wave 5 |
+| `agileplus-*` (4 crates) | **Repatriated** → `KooshaPari/AgilePlus` (canonical); staging copies removed from Agentora | wave 5 audit only |
 | All other `PhenoProc/crates/*` (66 dirs) | `crates/*` | wave 6 bulk |
 | `phenotype-gauge`, `phenotype-governance`, `phenotype-router-monitor`, `phenotype-agent-core` | `agents/phenoagent/*` | wave 6 root modules |
 | `libs/phenotype-observability` | `agents/phenoagent/libs/phenotype-observability` | wave 6 |
@@ -64,6 +65,7 @@ packages — consumers should migrate to SDK extras over time.
 | Agentora file tree coverage | ✅ ~98% |
 | HexaKit dep repoint for phenotype-* | ⏳ |
 | Tooling/commons split PRs | ✅ phenotype-tooling #155, phenokits-commons #3 |
-| PhenoProc DELETE | **HOLD** until sibling PRs merge + consumer manifest scan |
+| PhenoProc DELETE | ✅ source archived; Agentora absorption complete |
+| `agileplus-*` repatriation | ✅ canonical owner `AgilePlus`; staging removed from Agentora |
 
 **Boundary estimate: ~98% file absorption** — DELETE gate needs consumer repoint, not more copies.

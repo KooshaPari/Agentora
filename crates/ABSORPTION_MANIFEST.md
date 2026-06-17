@@ -8,7 +8,8 @@ Only `pheno-proc-runtime/*`, `pheno-agent/*`, and root `agentkit` are in the def
 `cargo` workspace today. Other ported crates are **staged source** until:
 
 1. `phenotype-*` shared infra → repointed to `HexaKit` git/path deps (canonical)
-2. `Cmdra` / `agileplus-*` → registered after missing workspace siblings land
+2. `Cmdra` → registered after inner `[workspace]` refactor
+3. `agileplus-*` → **canonical in `KooshaPari/AgilePlus`** (staging copies removed from Agentora 2026-06-17)
 3. Agent-specific crates (`cryptora`, `tokn`, …) → trimmed or promoted to workspace members
 
 ## Split targets (not duplicated here long-term)
