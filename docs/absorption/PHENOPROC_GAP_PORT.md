@@ -41,6 +41,9 @@ See `crates/ABSORPTION_MANIFEST.md` for workspace staging policy.
 
 - [x] Register `bifrost-routing`, `forgecode-core` in root `Cargo.toml`
 - [x] `cargo check -p bifrost-routing -p forgecode-core` (stub deps fixed)
+- [ ] Register `Cmdra` (remove inner `[workspace]` or use separate manifest)
+- [ ] Repoint `phenotype-*` path deps → `HexaKit` git dependencies
+- [ ] `cargo check` full PhenoProc subgraph
 
 ## HexaKit canonical redirect
 
@@ -60,7 +63,7 @@ packages — consumers should migrate to SDK extras over time.
 | All PhenoProc paths have a named owner | ✅ |
 | Agentora file tree coverage | ✅ ~98% |
 | HexaKit dep repoint for phenotype-* | ⏳ |
-| Tooling/commons split PRs | ⏳ (sidecar PRs opening) |
+| Tooling/commons split PRs | ✅ phenotype-tooling #155, phenokits-commons #3 |
 | PhenoProc DELETE | **HOLD** until sibling PRs merge + consumer manifest scan |
 
 **Boundary estimate: ~98% file absorption** — DELETE gate needs consumer repoint, not more copies.
