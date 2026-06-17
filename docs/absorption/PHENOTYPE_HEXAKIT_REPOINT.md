@@ -20,7 +20,7 @@ phenotype-error-core = { git = "https://github.com/KooshaPari/phenoShared", bran
 |------|--------|--------|--------|
 | 1 | Leaf crates (no Agentora path consumers) | phenoShared git | ✅ `phenotype-errors`, `phenotype-error-macros`, `phenotype-config-loader` (2026-06-17) |
 | 2 | `bifrost-routing`, `forgecode-core` workspace members | verify no phenotype-* path deps | ✅ workspace registered |
-| 3 | Remaining `crates/phenotype-*` (~30) | HexaKit git per crate name | ⏳ |
+| 3 | Remaining `crates/phenotype-*` (~28) | HexaKit / phenoShared / tooling git per `MIGRATED.md` | ✅ stubs 2026-06-17 |
 | NB | `Cmdra` inner `[workspace]` | flatten or exclude | ⏳ deferred |
 
 ## Wave 1 (2026-06-17)
