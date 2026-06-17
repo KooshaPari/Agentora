@@ -18,6 +18,8 @@
 | `python/pheno-process` | `agents/phenoagent/python/pheno-process` | **Gap port wave 1** (18 files) |
 | `python/pheno-llm` | `agents/phenoagent/python/pheno-llm` | **Gap port wave 2** (21 files) |
 | `python/pheno-clink` | `agents/phenoagent/python/pheno-clink` | **Gap port wave 2** (25 files) |
+| `python/pheno-workflow` | `agents/phenoagent/python/pheno-workflow` | **Gap port wave 3** (53 files) |
+| `python/pheno-mcp` | `agents/phenoagent/python/pheno-mcp` | **Gap port wave 3** (111 files) |
 
 ## Outstanding — Agentora
 
