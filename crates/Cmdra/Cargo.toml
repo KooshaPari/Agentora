@@ -1,0 +1,62 @@
+[workspace]
+
+[package]
+name = "clikit"
+version = "0.1.0"
+edition = "2021"
+authors = ["Phenotype Engineering"]
+description = "Universal CLI framework with hexagonal architecture"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/KooshaPari/clikit"
+documentation = "https://docs.rs/clikit"
+keywords = ["cli", "framework", "command-line", "hexagonal", "architecture"]
+categories = ["command-line-utilities", "development-tools"]
+
+[dependencies]
+# Core domain (no external deps)
+thiserror = "2"
+async-trait = "0.1"
+futures = "0.3"
+
+# Application layer
+serde = { version = "1.0", features = ["derive"] }
+toml = "0.8"
+yaml-rust2 = "0.8"
+
+# Adapters
+clap = { version = "4.0", features = ["derive", "env"] }
+indicatif = "0.17"
+colored = "2.0"
+dialoguer = "0.11"
+anyhow = "1.0"
+
+# Infrastructure
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tracing-appender = "0.2"
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1.0", features = ["v4", "serde"] }
+
+# Plugin system
+semver = "1.0"
+glob = "0.3"
+libloading = "0.8"
+serde_json = "1.0.149"
+
+[dev-dependencies]
+proptest = "1.0"
+criterion = "0.5"
+tokio-test = "0.4"
+
+[[bin]]
+name = "clikit"
+path = "src/bin/main.rs"
+
+[lib]
+name = "clikit"
+path = "src/lib.rs"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1

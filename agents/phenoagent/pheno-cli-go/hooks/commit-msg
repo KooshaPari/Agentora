@@ -1,0 +1,32 @@
+#!/bin/sh
+# commit-msg: Validate conventional commit format
+set -e
+
+MSG_FILE="$1"
+MSG=$(cat "$MSG_FILE")
+
+# Allow merge commits
+case "$MSG" in
+  Merge*) exit 0 ;;
+esac
+
+# Conventional commit pattern
+PATTERN='^(feat|fix|chore|docs|style|refactor|perf|test|ci|build|revert)(\(.+\))?!?: .+'
+
+if ! echo "$MSG" | grep -qE "$PATTERN"; then
+  echo "ERROR: Commit message does not follow Conventional Commits format."
+  echo ""
+  echo "Expected format: <type>(<scope>)?: <description>"
+  echo ""
+  echo "Types: feat, fix, chore, docs, style, refactor, perf, test, ci, build, revert"
+  echo ""
+  echo "Examples:"
+  echo "  feat: add new hook installer"
+  echo "  fix(hooks): correct permission bits"
+  echo "  chore(ci)!: breaking change in pipeline"
+  echo ""
+  echo "Your message: $MSG"
+  exit 1
+fi
+
+exit 0

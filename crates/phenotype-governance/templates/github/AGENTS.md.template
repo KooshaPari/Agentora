@@ -1,0 +1,91 @@
+# {{ProjectName}}
+
+> {{ProjectDescription}}
+
+## Agent Rules
+
+This project follows the Phenotype governance standards.
+
+### Style Constraints
+
+- **Line length**: 100 characters (Rust) / 88 characters (Python)
+- **Formatter**: `cargo fmt` / `ruff format` / `gofmt` / `prettier`
+- **Type checker**: Strict mode enabled
+- **Linter**: Zero warnings policy
+- **File size target**: ≤350 lines per source file, hard limit ≤500 lines
+
+### Test-First Mandate
+
+- **For NEW modules**: test file MUST exist before implementation file
+- **For BUG FIXES**: failing test MUST be written before the fix
+- **For REFACTORS**: existing tests must pass before AND after
+
+### FR Traceability
+
+All tests MUST reference a Functional Requirement (FR):
+
+```rust
+// Traces to: FR-XXX-NNN
+#[test]
+fn test_feature_name() {
+    // Test body
+}
+```
+
+## Quick Reference Commands
+
+### Build & Test
+
+```bash
+# Build
+cargo build --release
+
+# Test
+cargo test --workspace
+
+# Lint
+cargo clippy --workspace -- -D warnings
+
+# Format
+cargo fmt
+```
+
+## Architecture
+
+{{ArchitectureDescription}}
+
+## Session Documentation
+
+All agents MUST maintain session documentation for research, decisions, and findings:
+
+### Location
+
+- Default: `docs/sessions/<session-id>/`
+
+### Standard Session Structure
+
+```
+docs/sessions/<session-id>/
+├── README.md           # Overview and context
+├── 01_RESEARCH.md      # Findings and analysis
+├── 02_PLAN.md          # Design and approach
+├── 03_IMPLEMENTATION.md # Code changes and rationale
+├── 04_VALIDATION.md    # Tests and verification
+└── 05_KNOWN_ISSUES.md  # Blockers and follow-ups
+```
+
+## Multi-Agent Coordination
+
+### Primary Agent Selection
+
+| Task type | Primary agent |
+|-----------|---------------|
+| Feature implementation | Forge |
+| Code review | Muse |
+| Bug investigation | Sage |
+| Testing/runtime | Helios |
+| Cross-project architecture | Forge + Sage |
+
+## License
+
+{{License}}

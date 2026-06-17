@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "deploy-kit"
+version = "0.1.0"
+description = "Universal deployment toolkit with NVMS format for modern platforms, cloud, and WASM"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "Koosha Pari", email = "kooshapari@gmail.com"}]
+dependencies = [
+    "httpx>=0.27.0",
+    "pydantic>=2.0.0",
+    "pyyaml>=6.0.0",
+    "rich>=13.7.0",
+    "click>=8.1.7",
+]
+
+[project.optional-dependencies]
+# Cloud providers
+aws = ["boto3>=1.34.0"]
+gcp = ["google-cloud-compute>=1.15.0"]
+azure = ["azure-mgmt-compute>=30.4.0"]
+
+# Container & orchestration
+docker = ["docker>=7.0.0"]
+k8s = ["kubernetes>=28.0"]
+
+# Modern platforms
+vercel = ["vercel>=0.10.0"]
+
+# SSH deployment
+ssh = ["paramiko>=3.4.0"]
+
+# WebAssembly
+wasm = ["wasmtime>=18.0.0"]
+
+# Complete installation
+full = [
+    "boto3>=1.34.0",
+    "google-cloud-compute>=1.15.0",
+    "azure-mgmt-compute>=30.4.0",
+    "docker>=7.0.0",
+    "kubernetes>=28.0",
+    "paramiko>=3.4.0",
+    "wasmtime>=18.0.0",
+    "vercel>=0.10.0",
+]
+
+# Development
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.0.0",
+]
+
+[project.scripts]
+deploy-kit = "deploy_kit.cli:main"
+pheno-vendor = "deploy_kit.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["deploy_kit*"]

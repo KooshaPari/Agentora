@@ -1,0 +1,20 @@
+version: v2
+plugins:
+  # Rust: prost message types
+  - remote: buf.build/community/neoeinstein-prost
+    out: rust/src/gen
+    opt:
+      - compile_well_known_types=true
+  # Rust: tonic service stubs
+  - remote: buf.build/community/neoeinstein-tonic
+    out: rust/src/gen
+    opt:
+      - compile_well_known_types=true
+      - no_server=false
+      - no_client=false
+  # Python: protobuf messages
+  - remote: buf.build/protocolbuffers/python
+    out: python/src/agileplus_proto/gen
+  # Python: grpc service stubs
+  - remote: buf.build/grpc/python
+    out: python/src/agileplus_proto/gen

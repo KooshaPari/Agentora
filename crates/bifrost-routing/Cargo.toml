@@ -1,0 +1,15 @@
+[package]
+name = "bifrost-routing"
+version = "0.1.0"
+edition = "2021"
+description = "Bifrost routing models (PhenoProc absorption stub)"
+license = "MIT OR Apache-2.0"
+publish = false
+
+[dependencies]
+async-trait = "0.1"
+serde = { version = "1.0", features = ["derive"] }
+thiserror = "2"
+
+[dev-dependencies]
+tokio = { version = "1.0", features = ["macros", "rt-multi-thread"] }

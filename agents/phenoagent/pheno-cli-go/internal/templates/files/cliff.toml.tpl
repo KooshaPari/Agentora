@@ -1,0 +1,49 @@
+# Configuration for git-cliff: https://git-cliff.org/
+# Generates CHANGELOG from conventional commits
+
+[changelog]
+header = """
+# Changelog
+
+All notable changes to {{.RepoName}} will be documented in this file.
+"""
+
+body = """
+{%- for group, commits in commits | group_by(attribute="group") %}
+## {{"{{ group }}"}}
+
+{%- for commit in commits %}
+- {%- if commit.breaking %} **BREAKING** {%- endif %} {{"{{ commit.message | upper_first }}"}} ([`{{"{{ commit.id | truncate(length=7, end=\"\") }}"}}`]({{"{{ commit.link }}"}}))
+{%- endfor %}
+{%- endfor %}
+"""
+
+footer = """
+---
+
+**Release Date:** {{"{{ now() | date(format=\"%Y-%m-%d\") }}"}}
+"""
+
+trim = true
+
+[git]
+conventional_commits = true
+
+commit_parsers = [
+  {message = "^feat", group = "Features"},
+  {message = "^fix", group = "Bug Fixes"},
+  {message = "^doc", group = "Documentation"},
+  {message = "^perf", group = "Performance"},
+  {message = "^refactor", group = "Refactoring"},
+  {message = "^test", group = "Testing"},
+  {message = "^chore", skip = true},
+  {message = "^ci", skip = true},
+]
+
+commit_filters = [
+  {remove_if_matches = ".*skip.*changelog.*"},
+]
+
+tag_pattern = "v[0-9].*"
+skip_tags = ""
+sort_commits = "newest"

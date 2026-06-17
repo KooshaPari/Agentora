@@ -18,6 +18,9 @@ members = [
     "crates/pheno-proc-runtime/pheno-proc-queue",
     "crates/pheno-proc-runtime/pheno-proc-uds",
     "crates/pheno-proc-runtime/pheno-proc-dedup",
+    # PhenoProc wave 5–6 stubs (full phenotype-* staging: see crates/ABSORPTION_MANIFEST.md)
+    "crates/bifrost-routing",
+    "crates/forgecode-core",
 ]
 [workspace.package]
 

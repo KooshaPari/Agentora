@@ -1,0 +1,15 @@
+[package]
+name = "phenotype-string"
+version = "0.2.0"
+edition = "2021"
+license = "MIT"
+description = "String utilities for the Phenotype ecosystem"
+repository = "https://github.com/KooshaPari/phenotype-infrakit"
+
+[dependencies]
+thiserror = { workspace = true }
+zstd = { workspace = true }
+unicode-normalization = { workspace = true }
+regex = { workspace = true }
+
+[dev-dependencies]

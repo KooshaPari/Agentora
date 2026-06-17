@@ -1,0 +1,19 @@
+[package]
+name = "phenotype-test-infra"
+version = "0.2.0"
+edition = "2021"
+license = "MIT"
+description = "Test infrastructure for Phenotype"
+repository = "https://github.com/KooshaPari/phenotype-infrakit"
+
+[dependencies]
+serde = { workspace = true, features = ["derive"] }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+chrono = { workspace = true }
+tempfile = { workspace = true }
+wiremock = { workspace = true }
+uuid = { version = "1.12", features = ["v4"] }
+
+[dev-dependencies]
+tokio-test = { workspace = true }

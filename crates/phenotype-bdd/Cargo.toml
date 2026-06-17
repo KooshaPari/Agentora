@@ -1,0 +1,10 @@
+[package]
+name = "phenotype-bdd"
+version = "0.2.0"
+edition = "2021"
+license = "MIT"
+description = "BDD testing utilities for Phenotype"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }

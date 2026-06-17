@@ -1,0 +1,44 @@
+#!/bin/sh
+# pre-push: Channel-aware checks based on branch name
+set -e
+
+REMOTE="$1"
+URL="$2"
+
+# Read pushed refs from stdin: <local ref> <local sha1> <remote ref> <remote sha1>
+while read LOCAL_REF LOCAL_SHA REMOTE_REF REMOTE_SHA; do
+  # Extract branch name from remote ref (refs/heads/<branch>)
+  BRANCH=$(echo "$REMOTE_REF" | sed 's|refs/heads/||')
+
+  case "$BRANCH" in
+    main)
+      echo "ERROR: Direct push to main is not allowed."
+      echo "Please open a Pull Request to merge changes into main."
+      exit 1
+      ;;
+    feature/*)
+      echo "Running lint checks for feature branch: $BRANCH"
+      mise run lint
+      ;;
+    canary/*)
+      echo "Running lint and tests for canary branch: $BRANCH"
+      mise run lint && mise run test
+      ;;
+    beta/* | rc/*)
+      echo "Running lint and tests for release branch: $BRANCH"
+      mise run lint && mise run test
+
+      # Check ROLLBACK.md exists
+      if [ ! -f "ROLLBACK.md" ]; then
+        echo "ERROR: ROLLBACK.md is required for beta/rc branches but was not found."
+        echo "Please create ROLLBACK.md with rollback instructions before pushing."
+        exit 1
+      fi
+      ;;
+    *)
+      # No checks for other branches
+      ;;
+  esac
+done
+
+exit 0

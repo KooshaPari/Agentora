@@ -1,0 +1,67 @@
+version: '3'
+
+tasks:
+  build:
+    desc: "Build the Rust project"
+    cmds:
+      - cargo build
+
+  test:
+    desc: "Run all tests"
+    cmds:
+      - cargo test
+
+  test-coverage:
+    desc: "Run tests with coverage"
+    cmds:
+      - cargo test -- --nocapture
+      - cargo tarpaulin --out Html
+
+  lint:
+    desc: "Run clippy linter"
+    cmds:
+      - cargo clippy -- -D warnings
+
+  format:
+    desc: "Format code"
+    cmds:
+      - cargo fmt
+
+  format-check:
+    desc: "Check code formatting"
+    cmds:
+      - cargo fmt -- --check
+
+  security:
+    desc: "Run security audits"
+    cmds:
+      - cargo audit
+
+  ci:
+    desc: "Run full CI pipeline"
+    cmds:
+      - task: format-check
+      - task: lint
+      - task: test
+      - task: security
+
+  clean:
+    desc: "Clean build artifacts"
+    cmds:
+      - cargo clean
+
+  doc:
+    desc: "Generate documentation"
+    cmds:
+      - cargo doc --open
+
+  bench:
+    desc: "Run benchmarks"
+    cmds:
+      - cargo bench
+
+  check:
+    desc: "Run basic checks (format + clippy)"
+    cmds:
+      - cargo fmt -- --check
+      - cargo clippy -- -D warnings

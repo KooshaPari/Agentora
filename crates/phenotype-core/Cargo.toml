@@ -1,0 +1,72 @@
+[package]
+name = "phenotype-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "Umbrella crate re-exporting all common phenotype crates"
+
+[dependencies]
+# Error handling
+phenotype-error-core = { workspace = true }
+
+# Configuration
+phenotype-config-core = { workspace = true }
+
+# Telemetry
+phenotype-telemetry = { workspace = true }
+
+# Validation
+phenotype-validation = { workspace = true }
+
+# Async utilities
+phenotype-async-traits = { workspace = true }
+
+# Event bus
+phenotype-event-bus = { workspace = true }
+
+# Health
+phenotype-health = { workspace = true }
+
+# Port traits
+phenotype-port-traits = { workspace = true }
+
+# Contracts and adapters
+phenotype-contracts = { workspace = true }
+
+# Retry
+phenotype-retry = { workspace = true }
+
+# Time
+phenotype-time = { workspace = true }
+
+# HTTP client
+phenotype-http-client-core = { workspace = true }
+
+# State machine
+phenotype-state-machine = { workspace = true }
+
+# Policy engine
+phenotype-policy-engine = { workspace = true }
+
+# Cache
+phenotype-cache-adapter = { workspace = true }
+
+# String utilities
+phenotype-string = { workspace = true }
+
+# External crates
+serde = { workspace = true }
+thiserror = { workspace = true }
+async-trait = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+ulid = { workspace = true }
+dashmap = { workspace = true }
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports"] }
+
+[[bench]]
+name = "core_benchmark"
+harness = false

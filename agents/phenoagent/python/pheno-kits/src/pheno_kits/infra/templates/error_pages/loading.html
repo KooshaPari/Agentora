@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="{{refresh_interval}}">
+    <title>{{service_name}} - Starting</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #0F1115;
+            color: #F5F6F8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .card {
+            background: rgba(35, 40, 49, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 48px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .spinner {
+            border: 3px solid rgba(90, 141, 238, 0.2);
+            border-top: 3px solid #5A8DEE;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            animation: spin 0.8s linear infinite;
+            flex-shrink: 0;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .title-section {
+            flex: 1;
+        }
+
+        h1 {
+            font-size: 2em;
+            font-weight: 600;
+            color: #F5F6F8;
+            margin-bottom: 8px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            background: rgba(90, 141, 238, 0.15);
+            border: 1px solid rgba(90, 141, 238, 0.3);
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 500;
+            color: #5A8DEE;
+            letter-spacing: 0.02em;
+        }
+
+        .status-text {
+            font-size: 1.3em;
+            color: #B8BAC1;
+            margin-bottom: 24px;
+            font-weight: 400;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 32px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #5A8DEE, #7B68EE);
+            border-radius: 2px;
+            animation: progress 2s ease-in-out infinite;
+        }
+
+        @keyframes progress {
+            0% { width: 20%; }
+            50% { width: 60%; }
+            100% { width: 20%; }
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .info-item {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 16px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .info-label {
+            font-size: 0.75em;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #7D8086;
+            margin-bottom: 6px;
+        }
+
+        .info-value {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #F5F6F8;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
+        }
+
+        .message-box {
+            background: rgba(90, 141, 238, 0.08);
+            border: 1px solid rgba(90, 141, 238, 0.2);
+            border-left: 4px solid #5A8DEE;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .message-box p {
+            font-size: 0.95em;
+            line-height: 1.6;
+            color: #D1D3D9;
+        }
+
+        .steps {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .step:last-child {
+            border-bottom: none;
+        }
+
+        .step-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75em;
+            flex-shrink: 0;
+        }
+
+        .step-icon.active {
+            background: #5A8DEE;
+            color: white;
+            animation: pulse-icon 1.5s ease-in-out infinite;
+        }
+
+        .step-icon.pending {
+            background: rgba(255, 255, 255, 0.1);
+            color: #7D8086;
+        }
+
+        @keyframes pulse-icon {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .step-text {
+            flex: 1;
+            font-size: 0.95em;
+            color: #D1D3D9;
+        }
+
+        .step-text.active {
+            color: #F5F6F8;
+            font-weight: 500;
+        }
+
+        .refresh-notice {
+            text-align: center;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            font-size: 0.9em;
+            color: #9EA0A6;
+        }
+
+        .meta {
+            text-align: center;
+            font-size: 0.85em;
+            color: #5D5F66;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .pulse-text {
+            animation: pulse-opacity 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-opacity {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <div class="spinner"></div>
+                <div class="title-section">
+                    <h1>{{service_name}}</h1>
+                    <span class="status-badge">STARTING</span>
+                </div>
+            </div>
+
+            <p class="status-text pulse-text">{{status_message}}</p>
+
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Port</div>
+                    <div class="info-value">{{port}}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">PID</div>
+                    <div class="info-value">{{pid}}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Uptime</div>
+                    <div class="info-value">{{uptime}}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Health</div>
+                    <div class="info-value">{{health_status}}</div>
+                </div>
+            </div>
+
+            {{#if steps}}
+            <div class="steps">
+                {{#each steps}}
+                <div class="step">
+                    <div class="step-icon {{status}}">
+                        {{#if (eq status 'active')}}⏳{{else}}○{{/if}}
+                    </div>
+                    <div class="step-text {{status}}">{{text}}</div>
+                </div>
+                {{/each}}
+            </div>
+            {{/if}}
+
+            {{#if message}}
+            <div class="message-box">
+                <p>{{message}}</p>
+            </div>
+            {{/if}}
+
+            <div id="logsSection" style="display: none;">
+                <div style="margin-top: 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <span style="font-size: 0.9em; font-weight: 600; color: #9EA0A6; text-transform: uppercase; letter-spacing: 0.05em;">Recent Logs</span>
+                        <button onclick="toggleLogs()" style="background: none; border: none; color: #7D8086; cursor: pointer; font-size: 0.8em;">Hide</button>
+                    </div>
+                    <div style="background: #1A1D24; border-radius: 8px; padding: 16px; max-height: 200px; overflow-y: auto; font-family: 'SF Mono', Monaco, monospace; font-size: 0.85em; line-height: 1.6;">
+                        <div id="logsContent">
+                            <!-- Logs will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 8px; margin-top: 24px; padding-top: 16px; border-top: 1px solid rgba(255, 255, 255, 0.05);">
+                <button onclick="refreshService()" style="flex: 1; padding: 12px; background: rgba(90, 141, 238, 0.1); color: #5A8DEE; border: 1px solid rgba(90, 141, 238, 0.3); border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.2s;">
+                    🔄 Refresh Now
+                </button>
+                <button onclick="viewDashboard()" style="flex: 1; padding: 12px; background: rgba(90, 141, 238, 0.1); color: #5A8DEE; border: 1px solid rgba(90, 141, 238, 0.3); border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.2s;">
+                    📊 View Dashboard
+                </button>
+            </div>
+
+            <div class="refresh-notice">
+                🔄 Auto-refreshing in <span id="countdown">{{refresh_interval}}</span> seconds...
+            </div>
+
+            <div class="meta">
+                Powered by KInfra • Last updated: <span id="lastUpdate">{{timestamp}}</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let countdown = {{refresh_interval}};
+
+        // Update status without full page reload
+        async function updateStatus() {
+            try {
+                const response = await fetch('/__status__');
+                const data = await response.json();
+
+                // Update text elements
+                if (data.status_message) {
+                    document.querySelector('.status-text').textContent = data.status_message;
+                }
+
+                // Update info grid
+                document.getElementById('lastUpdate').textContent = new Date(data.timestamp).toLocaleTimeString();
+
+                // Update logs if available
+                const services = data.services || {};
+                const currentService = Object.values(services)[0];
+                if (currentService && currentService.logs && currentService.logs.length > 0) {
+                    document.getElementById('logsSection').style.display = 'block';
+                    document.getElementById('logsContent').innerHTML = currentService.logs.map(log =>
+                        `<div style="margin-bottom: 4px;"><span style="color: #5D5F66;">${log.timestamp || ''}</span> <span style="color: ${log.level === 'error' ? '#EF4444' : log.level === 'warn' ? '#F59E0B' : '#5A8DEE'};">[${(log.level || 'INFO').toUpperCase()}]</span> ${escapeHtml(log.message || log.text || '')}</div>`
+                    ).join('');
+                }
+
+                // If service is healthy, redirect
+                if (data.state === 'running' && data.health_status === 'Healthy') {
+                    window.location.reload();
+                }
+            } catch (error) {
+                console.error('Status update failed:', error);
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function toggleLogs() {
+            const section = document.getElementById('logsSection');
+            section.style.display = section.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function refreshService() {
+            window.location.reload();
+        }
+
+        function viewDashboard() {
+            window.location.href = '/kinfra';
+        }
+
+        // Countdown timer
+        setInterval(() => {
+            countdown--;
+            if (countdown <= 0) countdown = {{refresh_interval}};
+            document.getElementById('countdown').textContent = countdown;
+        }, 1000);
+
+        // Status updates every 2 seconds
+        setInterval(updateStatus, 2000);
+        updateStatus();
+    </script>
+</body>
+</html>

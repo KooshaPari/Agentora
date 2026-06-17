@@ -1,0 +1,35 @@
+[project]
+name = "pheno-workflow"
+version = "0.1.0"
+description = "PhenoProc AI infrastructure module - extracted from phenoSDK"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [
+    {name = "Phenotype Team", email = "team@phenotype.dev"}
+]
+keywords = ["phenotype", "ai", "infrastructure", "phenoproc"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+[project.urls]
+Homepage = "https://github.com/phenotype/phenoproc"
+Repository = "https://github.com/phenotype/phenoproc"
+Documentation = "https://docs.phenotype.dev"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pheno-workflow"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

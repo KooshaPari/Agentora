@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="{{refresh_interval}}">
+    <title>{{service_name}} - Starting</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #0F1115;
+            color: #F5F6F8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .card {
+            background: rgba(35, 40, 49, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 48px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .spinner {
+            border: 3px solid rgba(90, 141, 238, 0.2);
+            border-top: 3px solid #5A8DEE;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            animation: spin 0.8s linear infinite;
+            flex-shrink: 0;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .title-section {
+            flex: 1;
+        }
+
+        h1 {
+            font-size: 2em;
+            font-weight: 600;
+            color: #F5F6F8;
+            margin-bottom: 8px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            background: rgba(90, 141, 238, 0.15);
+            border: 1px solid rgba(90, 141, 238, 0.3);
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 500;
+            color: #5A8DEE;
+            letter-spacing: 0.02em;
+        }
+
+        .status-text {
+            font-size: 1.3em;
+            color: #B8BAC1;
+            margin-bottom: 24px;
+            font-weight: 400;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 32px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #5A8DEE, #7B68EE);
+            border-radius: 2px;
+            animation: progress 2s ease-in-out infinite;
+        }
+
+        @keyframes progress {
+            0% { width: 20%; }
+            50% { width: 60%; }
+            100% { width: 20%; }
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .info-item {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 16px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .info-label {
+            font-size: 0.75em;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #7D8086;
+            margin-bottom: 6px;
+        }
+
+        .info-value {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #F5F6F8;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
+        }
+
+        .message-box {
+            background: rgba(90, 141, 238, 0.08);
+            border: 1px solid rgba(90, 141, 238, 0.2);
+            border-left: 4px solid #5A8DEE;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .message-box p {
+            font-size: 0.95em;
+            line-height: 1.6;
+            color: #D1D3D9;
+        }
+
+        .steps {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .step:last-child {
+            border-bottom: none;
+        }
+
+        .step-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75em;
+            flex-shrink: 0;
+        }
+
+        .step-icon.active {
+            background: #5A8DEE;
+            color: white;
+            animation: pulse-icon 1.5s ease-in-out infinite;
+        }
+
+        .step-icon.pending {
+            background: rgba(255, 255, 255, 0.1);
+            color: #7D8086;
+        }
+
+        @keyframes pulse-icon {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .step-text {
+            flex: 1;
+            font-size: 0.95em;
+            color: #D1D3D9;
+        }
+
+        .step-text.active {
+            color: #F5F6F8;
+            font-weight: 500;
+        }
+
+        .refresh-notice {
+            text-align: center;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            font-size: 0.9em;
+            color: #9EA0A6;
+        }
+
+        .meta {
+            text-align: center;
+            font-size: 0.85em;
+            color: #5D5F66;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .pulse-text {
+            animation: pulse-opacity 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-opacity {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <div class="spinner"></div>
+                <div class="title-section">
+                    <h1>{{service_name}}</h1>
+                    <span class="status-badge">STARTING</span>
+                </div>
+            </div>
+
+            <p class="status-text pulse-text">{{status_message}}</p>
+
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Port</div>
+                    <div class="info-value">{{port}}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">PID</div>
+                    <div class="info-value">{{pid}}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Uptime</div>
+                    <div class="info-value">{{uptime}}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Health</div>
+                    <div class="info-value">{{health_status}}</div>
+                </div>
+            </div>
+
+            {{steps_html}}
+
+            {{#if message}}
+            <div class="message-box">
+                <p>{{message}}</p>
+            </div>
+            {{/if}}
+
+            <div id="logsSection" style="margin-top: 24px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 0.9em; font-weight: 600; color: #9EA0A6; text-transform: uppercase; letter-spacing: 0.05em;">Service Logs</span>
+                        <span id="logCount" style="font-size: 0.8em; color: #5D5F66; padding: 2px 8px; background: rgba(255, 255, 255, 0.05); border-radius: 12px;">0 lines</span>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <select id="logLevelFilter" onchange="filterLogs()" style="background: rgba(255, 255, 255, 0.05); color: #D1D3D9; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; padding: 4px 8px; font-size: 0.8em; cursor: pointer;">
+                            <option value="all">All Levels</option>
+                            <option value="error">Errors Only</option>
+                            <option value="warn">Warnings+</option>
+                            <option value="info">Info+</option>
+                        </select>
+                        <button onclick="copyLogs()" style="background: rgba(90, 141, 238, 0.1); color: #5A8DEE; border: 1px solid rgba(90, 141, 238, 0.3); border-radius: 6px; padding: 4px 12px; cursor: pointer; font-size: 0.8em; font-weight: 500;">Copy</button>
+                        <button onclick="clearLogs()" style="background: rgba(255, 255, 255, 0.05); color: #7D8086; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; padding: 4px 12px; cursor: pointer; font-size: 0.8em;">Clear</button>
+                    </div>
+                </div>
+                <div id="logsContainer" style="background: #1A1D24; border-radius: 8px; padding: 16px; max-height: 400px; overflow-y: auto; font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace; font-size: 0.85em; line-height: 1.6; border: 1px solid rgba(255, 255, 255, 0.1);">
+                    <div id="logsContent">
+                        <div style="color: #5D5F66; text-align: center; padding: 20px;">
+                            Waiting for logs...
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font-size: 0.75em; color: #5D5F66;">
+                    <span id="autoScrollStatus">Auto-scroll: ON</span>
+                    <label style="cursor: pointer; user-select: none;">
+                        <input type="checkbox" id="autoScroll" checked onchange="toggleAutoScroll()" style="margin-right: 6px; cursor: pointer;">
+                        Auto-scroll to bottom
+                    </label>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 8px; margin-top: 24px; padding-top: 16px; border-top: 1px solid rgba(255, 255, 255, 0.05);">
+                <button onclick="refreshService()" style="flex: 1; padding: 12px; background: rgba(90, 141, 238, 0.1); color: #5A8DEE; border: 1px solid rgba(90, 141, 238, 0.3); border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.2s;">
+                    🔄 Refresh Now
+                </button>
+                <button onclick="viewDashboard()" style="flex: 1; padding: 12px; background: rgba(90, 141, 238, 0.1); color: #5A8DEE; border: 1px solid rgba(90, 141, 238, 0.3); border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.2s;">
+                    📊 View Dashboard
+                </button>
+            </div>
+
+            <div class="refresh-notice">
+                🔄 Auto-refreshing in <span id="countdown">{{refresh_interval}}</span> seconds...
+            </div>
+
+            <div class="meta">
+                Powered by KInfra • Last updated: <span id="lastUpdate">{{timestamp}}</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let countdown = {{refresh_interval}};
+        let allLogs = [];
+        let displayedLogs = [];
+        let autoScrollEnabled = true;
+
+        // Get log level color
+        function getLogColor(level) {
+            const colors = {
+                'error': '#EF4444',
+                'warn': '#F59E0B',
+                'info': '#5A8DEE',
+                'debug': '#9EA0A6'
+            };
+            return colors[level?.toLowerCase()] || '#D1D3D9';
+        }
+
+        // Format timestamp
+        function formatTimestamp(ts) {
+            if (!ts) return '';
+            const date = new Date(ts);
+            return date.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
+
+        // Render logs
+        function renderLogs(logs) {
+            const container = document.getElementById('logsContent');
+            const logCount = document.getElementById('logCount');
+
+            if (!logs || logs.length === 0) {
+                container.innerHTML = '<div style="color: #5D5F66; text-align: center; padding: 20px;">No logs available yet...</div>';
+                logCount.textContent = '0 lines';
+                return;
+            }
+
+            container.innerHTML = logs.map(log => {
+                const level = log.level?.toLowerCase() || 'info';
+                const color = getLogColor(level);
+                const timestamp = formatTimestamp(log.timestamp);
+                const message = escapeHtml(log.message || log.text || '');
+
+                return `<div class="log-line" data-level="${level}" style="margin-bottom: 4px; word-wrap: break-word;">
+                    <span style="color: #5D5F66;">${timestamp}</span>
+                    <span style="color: ${color}; font-weight: 600;">[${level.toUpperCase()}]</span>
+                    <span style="color: #D1D3D9;">${message}</span>
+                </div>`;
+            }).join('');
+
+            logCount.textContent = `${logs.length} lines`;
+
+            // Auto-scroll to bottom if enabled
+            if (autoScrollEnabled) {
+                const logsContainer = document.getElementById('logsContainer');
+                logsContainer.scrollTop = logsContainer.scrollHeight;
+            }
+        }
+
+        // Filter logs by level
+        function filterLogs() {
+            const filter = document.getElementById('logLevelFilter').value;
+
+            if (filter === 'all') {
+                displayedLogs = allLogs;
+            } else {
+                const levelPriority = { error: 3, warn: 2, info: 1, debug: 0 };
+                const minLevel = levelPriority[filter] || 0;
+
+                displayedLogs = allLogs.filter(log => {
+                    const logLevel = levelPriority[log.level?.toLowerCase()] || 0;
+                    return logLevel >= minLevel;
+                });
+            }
+
+            renderLogs(displayedLogs);
+        }
+
+        // Copy logs to clipboard
+        async function copyLogs() {
+            const logsText = allLogs.map(log =>
+                `${formatTimestamp(log.timestamp)} [${(log.level || 'INFO').toUpperCase()}] ${log.message || log.text || ''}`
+            ).join('\n');
+
+            try {
+                await navigator.clipboard.writeText(logsText);
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                btn.style.background = 'rgba(34, 197, 94, 0.1)';
+                btn.style.color = '#22C55E';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = 'rgba(90, 141, 238, 0.1)';
+                    btn.style.color = '#5A8DEE';
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy logs:', err);
+            }
+        }
+
+        // Clear logs display
+        function clearLogs() {
+            allLogs = [];
+            displayedLogs = [];
+            renderLogs([]);
+        }
+
+        // Toggle auto-scroll
+        function toggleAutoScroll() {
+            autoScrollEnabled = document.getElementById('autoScroll').checked;
+            document.getElementById('autoScrollStatus').textContent =
+                `Auto-scroll: ${autoScrollEnabled ? 'ON' : 'OFF'}`;
+        }
+
+        // Update status without full page reload
+        async function updateStatus() {
+            try {
+                const response = await fetch('/__status__');
+                const data = await response.json();
+
+                // Update text elements
+                if (data.status_message) {
+                    document.querySelector('.status-text').textContent = data.status_message;
+                }
+
+                // Update info grid
+                document.getElementById('lastUpdate').textContent = new Date(data.timestamp).toLocaleTimeString();
+
+                // Update logs if available
+                const services = data.services || {};
+                const currentService = Object.values(services)[0];
+
+                if (currentService && currentService.logs && currentService.logs.length > 0) {
+                    allLogs = currentService.logs;
+                    filterLogs(); // Apply current filter
+                } else if (data.logs && data.logs.length > 0) {
+                    allLogs = data.logs;
+                    filterLogs();
+                }
+
+                // If service is healthy, redirect
+                if (data.state === 'running' && data.health_status === 'Healthy') {
+                    window.location.reload();
+                }
+            } catch (error) {
+                console.error('Status update failed:', error);
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function refreshService() {
+            window.location.reload();
+        }
+
+        function viewDashboard() {
+            window.location.href = '/kinfra';
+        }
+
+        // Countdown timer
+        setInterval(() => {
+            countdown--;
+            if (countdown <= 0) countdown = {{refresh_interval}};
+            document.getElementById('countdown').textContent = countdown;
+        }, 1000);
+
+        // Status updates every 2 seconds
+        setInterval(updateStatus, 2000);
+        updateStatus();
+    </script>
+</body>
+</html>

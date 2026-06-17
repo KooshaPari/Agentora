@@ -1,0 +1,34 @@
+version: "0.5"
+
+# Cmdra - Rust CLI tool
+# Native-first local development orchestration
+
+environment:
+  - RUST_BACKTRACE=1
+  - RUST_LOG=info,cmdra=debug
+
+processes:
+  build:
+    command: cargo build --release
+    depends_on: {}
+    log_location: .logs/build.log
+
+  test:
+    command: cargo test --workspace
+    depends_on: {}
+    log_location: .logs/test.log
+
+  clippy:
+    command: cargo clippy --workspace -- -D warnings
+    depends_on: {}
+    log_location: .logs/clippy.log
+
+  dev:
+    command: cargo run --bin cmdra --watch
+    depends_on: {}
+    log_location: .logs/dev.log
+
+  bench:
+    command: cargo bench --workspace
+    depends_on: {}
+    log_location: .logs/bench.log

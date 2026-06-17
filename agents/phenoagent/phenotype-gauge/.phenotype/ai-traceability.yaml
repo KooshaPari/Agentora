@@ -1,0 +1,17 @@
+---
+project: phenotype-gauge
+language: auto-detect
+generated: "2026-04-04"
+attribution:
+  system: Phenotype Traceability
+  purpose: Feature Requirement (FR) tracking
+traceability:
+  cli: AgilePlus/bin/ptrace
+  ci_cd: .github/workflows/traceability.yml
+coverage:
+  status: initial
+  test_files_annotated: 0
+  unique_fr_ids: 0
+notes: |
+  AI-native traceability for phenotype-gauge.
+last_updated: "2026-04-04"

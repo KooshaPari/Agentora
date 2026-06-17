@@ -1,0 +1,81 @@
+# Sample Pheno Control Center Configuration
+# Copy to ~/.kinfra/control_center/config.yaml and customize
+
+# Global control center settings
+base_fallback_port: 9000
+base_proxy_port: 9100
+monitor_refresh_interval: 2.0
+log_retention_days: 7
+enable_desktop_gui: true
+enable_tui_monitor: true
+
+# Project configurations
+projects:
+  atoms:
+    name: "atoms"
+    cli_entry: ["atoms"]
+    base_port: 50001
+    fallback_port_offset: 0  # Uses port 9000 + 0 = 9000
+    proxy_port_offset: 0     # Uses port 9100 + 0 = 9100
+    health_endpoint: "/health"
+    tunnel_domain: "kooshapari.com"
+    working_directory: "~/temp-PRODVERCEL/485/clean/atomsbot"
+    auto_start: false
+    dependencies: []
+    env_vars:
+      NODE_ENV: "development"
+      DEBUG: "atoms:*"
+    plugins: []
+    metadata:
+      description: "Atoms FastMCP Server - AI-powered MCP server"
+      category: "mcp-server"
+
+  zen:
+    name: "zen"
+    cli_entry: ["zen"]
+    base_port: 50002
+    fallback_port_offset: 1  # Uses port 9000 + 1 = 9001
+    proxy_port_offset: 1     # Uses port 9100 + 1 = 9101
+    health_endpoint: "/health"
+    tunnel_domain: "kooshapari.com"
+    working_directory: "~/temp-PRODVERCEL/485/kush/zen-mcp-server"
+    auto_start: false
+    dependencies: []
+    env_vars:
+      PYTHON_ENV: "development"
+      LOG_LEVEL: "INFO"
+    plugins: []
+    metadata:
+      description: "Zen MCP Server - Meditation and mindfulness MCP"
+      category: "mcp-server"
+
+# Optional: Plugin directories and telemetry settings
+plugins_dir: "~/.kinfra/control_center/plugins"
+telemetry_endpoint: null
+
+# Additional metadata
+metadata:
+  version: "1.0.0"
+  created_by: "Pheno Control Center"
+  last_updated: "2024-12-20"
+
+# Example project template for quick setup
+# Uncomment and customize to add new projects
+#
+# example_project:
+#   name: "example_project"
+#   cli_entry: ["python", "-m", "example_project"]
+#   base_port: 50003
+#   fallback_port_offset: 2
+#   proxy_port_offset: 2
+#   health_endpoint: "/status"
+#   tunnel_domain: "kooshapari.com"
+#   working_directory: "/path/to/example_project"
+#   auto_start: false
+#   dependencies: ["atoms"]  # Starts after atoms
+#   env_vars:
+#     APP_ENV: "development"
+#   plugins: ["logging", "metrics"]
+#   metadata:
+#     description: "Example project template"
+#     category: "example"

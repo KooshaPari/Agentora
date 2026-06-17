@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="{{refresh_interval}}">
+    <title>{{service_name}} - Internal Server Error</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 60px 40px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .error-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: shake 0.5s ease-in-out infinite;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-5deg); }
+            75% { transform: rotate(5deg); }
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-size: 1.5em;
+            margin-bottom: 30px;
+            font-weight: 400;
+            opacity: 0.9;
+        }
+
+        p {
+            font-size: 1.1em;
+            opacity: 0.85;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            font-size: 1em;
+            text-align: left;
+        }
+
+        .error-details {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 0.9em;
+            text-align: left;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .meta {
+            font-size: 0.9em;
+            opacity: 0.7;
+            margin-top: 30px;
+        }
+
+        .countdown {
+            font-weight: 600;
+            color: #FFE66D;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="error-icon">💥</div>
+        <h1>500</h1>
+        <h2>Internal Server Error</h2>
+        <p><strong>{{service_name}}</strong> encountered an unexpected error.</p>
+        <p>Our team has been notified and is working on a fix.</p>
+        {{#if message}}
+        <div class="message">
+            <strong>Error Details:</strong><br>
+            {{message}}
+        </div>
+        {{/if}}
+
+        <div id="exceptionDetails" style="margin-top: 20px; text-align: left;">
+            <div style="padding: 15px; background: rgba(0, 0, 0, 0.3); border-radius: 10px; border-left: 4px solid #EF4444;">
+                <div style="margin-bottom: 10px; font-weight: 600; color: #FFE66D;">Exception Information:</div>
+                <div id="exceptionType" style="color: #EF4444; font-weight: 600; margin-bottom: 8px; font-family: monospace;"></div>
+                <div id="exceptionMessage" style="color: #D1D3D9; margin-bottom: 12px; word-wrap: break-word;"></div>
+                <div id="stackTrace" style="background: rgba(0, 0, 0, 0.3); padding: 12px; border-radius: 6px; max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.8em; line-height: 1.5; color: #9EA0A6; display: none;">
+                    <div style="margin-bottom: 8px; font-weight: 600; color: #FFE66D;">Stack Trace:</div>
+                    <div id="stackTraceContent"></div>
+                </div>
+                <button onclick="toggleStackTrace()" id="stackTraceBtn" style="margin-top: 10px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 6px; padding: 6px 12px; color: white; cursor: pointer; font-size: 0.8em; display: none;">Show Stack Trace</button>
+            </div>
+        </div>
+
+        <div id="logsSection" style="margin-top: 20px; text-align: left;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="font-size: 0.9em; font-weight: 600; color: #FFE66D;">Error Context Logs</span>
+                <button onclick="copyLogs()" style="background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 6px; padding: 4px 12px; color: white; cursor: pointer; font-size: 0.8em;">Copy Logs</button>
+            </div>
+            <div id="logsContainer" style="background: rgba(0, 0, 0, 0.3); border-radius: 10px; padding: 12px; max-height: 250px; overflow-y: auto; font-family: monospace; font-size: 0.8em; line-height: 1.5;">
+                <div id="logsContent" style="color: #9EA0A6;">
+                    Fetching error logs...
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="btn" onclick="window.location.reload()">🔄 Retry</button>
+            <a href="/kinfra" class="btn">📊 Dashboard</a>
+            <a href="javascript:history.back()" class="btn">← Go Back</a>
+        </div>
+        <div style="margin-top: 20px; font-size: 0.9em; opacity: 0.8;">
+            <p>Auto-retry in <span class="countdown" id="countdown">{{refresh_interval}}</span> seconds</p>
+        </div>
+        <div class="meta">Powered by KInfra • Error ID: <span id="errorId">{{timestamp}}</span></div>
+    </div>
+
+    <script>
+        let countdown = {{refresh_interval}};
+        let allLogs = [];
+        let stackTraceVisible = false;
+
+        // Get log level color
+        function getLogColor(level) {
+            const colors = {
+                'error': '#EF4444',
+                'warn': '#F59E0B',
+                'info': '#5A8DEE',
+                'debug': '#9EA0A6'
+            };
+            return colors[level?.toLowerCase()] || '#D1D3D9';
+        }
+
+        // Format timestamp
+        function formatTimestamp(ts) {
+            if (!ts) return '';
+            const date = new Date(ts);
+            return date.toLocaleTimeString('en-US', { hour12: false });
+        }
+
+        // Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Toggle stack trace visibility
+        function toggleStackTrace() {
+            stackTraceVisible = !stackTraceVisible;
+            const stackTrace = document.getElementById('stackTrace');
+            const btn = document.getElementById('stackTraceBtn');
+
+            if (stackTraceVisible) {
+                stackTrace.style.display = 'block';
+                btn.textContent = 'Hide Stack Trace';
+            } else {
+                stackTrace.style.display = 'none';
+                btn.textContent = 'Show Stack Trace';
+            }
+        }
+
+        // Update status and logs
+        async function updateStatus() {
+            try {
+                const response = await fetch('/__status__');
+                const data = await response.json();
+
+                // Update error ID
+                document.getElementById('errorId').textContent = new Date(data.timestamp).toISOString();
+
+                // Update exception details if available
+                if (data.exception) {
+                    document.getElementById('exceptionType').textContent = data.exception.type || 'UnknownError';
+                    document.getElementById('exceptionMessage').innerHTML = escapeHtml(data.exception.message || data.error_message || '');
+
+                    if (data.exception.stack_trace) {
+                        document.getElementById('stackTraceContent').innerHTML =
+                            escapeHtml(data.exception.stack_trace).replace(/\n/g, '<br>');
+                        document.getElementById('stackTraceBtn').style.display = 'inline-block';
+                    }
+                } else if (data.error_message) {
+                    document.getElementById('exceptionType').textContent = 'Error';
+                    document.getElementById('exceptionMessage').innerHTML = escapeHtml(data.error_message);
+                }
+
+                // Update logs (show errors and context)
+                const services = data.services || {};
+                const currentService = Object.values(services)[0];
+
+                if (currentService && currentService.logs && currentService.logs.length > 0) {
+                    // Get last 30 lines
+                    allLogs = currentService.logs.slice(-30);
+                    renderLogs(allLogs);
+                } else if (data.logs && data.logs.length > 0) {
+                    allLogs = data.logs.slice(-30);
+                    renderLogs(allLogs);
+                }
+
+                // Redirect if service recovered
+                if (data.state === 'running' && data.health_status === 'Healthy') {
+                    window.location.reload();
+                }
+            } catch (error) {
+                console.error('Status update failed:', error);
+            }
+        }
+
+        // Render logs
+        function renderLogs(logs) {
+            const container = document.getElementById('logsContent');
+
+            if (!logs || logs.length === 0) {
+                container.innerHTML = '<div style="color: #9EA0A6;">No error logs available.</div>';
+                return;
+            }
+
+            container.innerHTML = logs.map(log => {
+                const level = log.level?.toLowerCase() || 'info';
+                const color = getLogColor(level);
+                const timestamp = formatTimestamp(log.timestamp);
+                const message = escapeHtml(log.message || log.text || '');
+
+                return `<div style="margin-bottom: 3px; word-wrap: break-word;">
+                    <span style="color: rgba(255, 255, 255, 0.5);">${timestamp}</span>
+                    <span style="color: ${color}; font-weight: 600;">[${level.toUpperCase()}]</span>
+                    <span>${message}</span>
+                </div>`;
+            }).join('');
+
+            // Auto-scroll to bottom
+            const logsContainer = document.getElementById('logsContainer');
+            logsContainer.scrollTop = logsContainer.scrollHeight;
+        }
+
+        // Copy logs to clipboard
+        async function copyLogs() {
+            const logsText = allLogs.map(log =>
+                `${formatTimestamp(log.timestamp)} [${(log.level || 'INFO').toUpperCase()}] ${log.message || log.text || ''}`
+            ).join('\n');
+
+            try {
+                await navigator.clipboard.writeText(logsText);
+                const btn = event.target;
+                btn.textContent = 'Copied!';
+                setTimeout(() => { btn.textContent = 'Copy Logs'; }, 2000);
+            } catch (err) {
+                console.error('Failed to copy logs:', err);
+            }
+        }
+
+        // Countdown timer
+        setInterval(() => {
+            countdown--;
+            if (countdown <= 0) countdown = {{refresh_interval}};
+            document.getElementById('countdown').textContent = countdown;
+        }, 1000);
+
+        // Update status every 2 seconds
+        setInterval(updateStatus, 2000);
+        updateStatus();
+    </script>
+</body>
+</html>

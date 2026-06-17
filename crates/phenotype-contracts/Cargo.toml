@@ -1,0 +1,15 @@
+[package]
+name = "phenotype-contracts"
+version = "0.2.0"
+edition = "2021"
+license = "MIT"
+description = "Contract definitions for Phenotype"
+repository = "https://github.com/KooshaPari/phenotype-infrakit"
+
+[dependencies]
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+tokio-test = { workspace = true }

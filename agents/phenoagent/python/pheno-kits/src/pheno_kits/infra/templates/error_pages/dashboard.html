@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KInfra - Infrastructure Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #0F1115;
+            color: #F5F6F8;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .header {
+            max-width: 1400px;
+            margin: 0 auto 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 2em;
+            font-weight: 600;
+            color: #F5F6F8;
+        }
+
+        .refresh-btn {
+            padding: 10px 20px;
+            background: #5A8DEE;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .refresh-btn:hover {
+            background: #4A7DD8;
+            transform: translateY(-1px);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .service-card {
+            background: rgba(35, 40, 49, 0.95);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.2s ease;
+        }
+
+        .service-card:hover {
+            border-color: rgba(90, 141, 238, 0.4);
+            box-shadow: 0 4px 20px rgba(90, 141, 238, 0.1);
+        }
+
+        .service-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .service-name {
+            font-size: 1.3em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        .status-starting { background: #F59E0B; }
+        .status-running { background: #10B981; }
+        .status-error { background: #EF4444; }
+        .status-stopped { background: #6B7280; }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            font-size: 0.9em;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #9EA0A6;
+            font-weight: 500;
+        }
+
+        .info-value {
+            color: #F5F6F8;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 0.95em;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 8px 16px;
+            background: rgba(90, 141, 238, 0.1);
+            color: #5A8DEE;
+            border: 1px solid rgba(90, 141, 238, 0.3);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: rgba(90, 141, 238, 0.2);
+            border-color: rgba(90, 141, 238, 0.5);
+        }
+
+        .action-btn.danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: #EF4444;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .action-btn.danger:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.5);
+        }
+
+        .logs-container {
+            background: #1A1D24;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            font-size: 0.8em;
+            line-height: 1.6;
+        }
+
+        .logs-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .logs-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 4px;
+        }
+
+        .logs-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .log-line {
+            margin-bottom: 4px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .log-timestamp {
+            color: #5D5F66;
+            flex-shrink: 0;
+        }
+
+        .log-level {
+            flex-shrink: 0;
+            width: 50px;
+            font-weight: 600;
+        }
+
+        .log-level-info { color: #5A8DEE; }
+        .log-level-warn { color: #F59E0B; }
+        .log-level-error { color: #EF4444; }
+        .log-level-debug { color: #9EA0A6; }
+
+        .log-message {
+            color: #D1D3D9;
+            flex: 1;
+        }
+
+        .logs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .logs-title {
+            font-size: 0.9em;
+            font-weight: 600;
+            color: #9EA0A6;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .clear-logs {
+            font-size: 0.8em;
+            color: #7D8086;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+
+        .clear-logs:hover {
+            color: #5A8DEE;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding: 20px;
+            background: rgba(35, 40, 49, 0.95);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .stat-item {
+            flex: 1;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: 700;
+            color: #5A8DEE;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            color: #9EA0A6;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 20px;
+            font-size: 0.85em;
+            color: #10B981;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #10B981;
+            border-radius: 50%;
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h1>🚀 KInfra Dashboard</h1>
+            <div class="live-indicator" style="margin-top: 8px;">
+                <div class="live-dot"></div>
+                <span>Live • Updates every 2s</span>
+            </div>
+        </div>
+        <button class="refresh-btn" onclick="refreshAll()">🔄 Refresh All</button>
+    </div>
+
+    <div class="container">
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-value" id="totalServices">0</div>
+                <div class="stat-label">Total Services</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="runningServices" style="color: #10B981;">0</div>
+                <div class="stat-label">Running</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="startingServices" style="color: #F59E0B;">0</div>
+                <div class="stat-label">Starting</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="errorServices" style="color: #EF4444;">0</div>
+                <div class="stat-label">Errors</div>
+            </div>
+        </div>
+
+        <div class="services-grid" id="servicesGrid">
+            <!-- Services will be dynamically loaded -->
+        </div>
+    </div>
+
+    <script>
+        async function fetchStatus() {
+            try {
+                const response = await fetch('/__status__');
+                const data = await response.json();
+                updateDashboard(data);
+            } catch (error) {
+                console.error('Failed to fetch status:', error);
+            }
+        }
+
+        function updateDashboard(data) {
+            const services = data.services || {};
+            const servicesArray = Object.entries(services);
+
+            // Update stats
+            document.getElementById('totalServices').textContent = servicesArray.length;
+            document.getElementById('runningServices').textContent =
+                servicesArray.filter(([_, s]) => s.state === 'running').length;
+            document.getElementById('startingServices').textContent =
+                servicesArray.filter(([_, s]) => s.state === 'starting').length;
+            document.getElementById('errorServices').textContent =
+                servicesArray.filter(([_, s]) => s.state === 'error').length;
+
+            // Update services grid
+            const grid = document.getElementById('servicesGrid');
+            grid.innerHTML = servicesArray.map(([name, service]) => createServiceCard(name, service)).join('');
+        }
+
+        function createServiceCard(name, service) {
+            const logs = (service.logs || []).slice(-10);  // Last 10 logs
+
+            return `
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-name">
+                            <div class="status-dot status-${service.state || 'stopped'}"></div>
+                            ${name}
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label">Status</span>
+                        <span class="info-value">${service.status_message || 'Unknown'}</span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label">Port</span>
+                        <span class="info-value">${service.port || '-'}</span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label">PID</span>
+                        <span class="info-value">${service.pid || '-'}</span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label">Health</span>
+                        <span class="info-value">${service.health_status || 'Unknown'}</span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label">Uptime</span>
+                        <span class="info-value">${service.uptime || '-'}</span>
+                    </div>
+
+                    ${logs.length > 0 ? `
+                        <div style="margin-top: 16px;">
+                            <div class="logs-header">
+                                <span class="logs-title">Recent Logs</span>
+                            </div>
+                            <div class="logs-container">
+                                ${logs.map(log => `
+                                    <div class="log-line">
+                                        <span class="log-timestamp">${log.timestamp || ''}</span>
+                                        <span class="log-level log-level-${log.level || 'info'}">${(log.level || 'INFO').toUpperCase()}</span>
+                                        <span class="log-message">${escapeHtml(log.message || log.text || '')}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <div class="actions">
+                        <button class="action-btn" onclick="restartService('${name}')">
+                            🔄 Restart
+                        </button>
+                        <button class="action-btn" onclick="viewLogs('${name}')">
+                            📄 View Logs
+                        </button>
+                        <button class="action-btn danger" onclick="stopService('${name}')">
+                            ⏹ Stop
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        async function restartService(name) {
+            if (!confirm(`Restart ${name}?`)) return;
+
+            try {
+                const response = await fetch(`/__action__/restart/${name}`, { method: 'POST' });
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(`${name} restart initiated`);
+                    fetchStatus();
+                } else {
+                    alert(`Failed to restart ${name}: ${result.error}`);
+                }
+            } catch (error) {
+                alert(`Error: ${error.message}`);
+            }
+        }
+
+        async function stopService(name) {
+            if (!confirm(`Stop ${name}?`)) return;
+
+            try {
+                const response = await fetch(`/__action__/stop/${name}`, { method: 'POST' });
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(`${name} stopped`);
+                    fetchStatus();
+                } else {
+                    alert(`Failed to stop ${name}: ${result.error}`);
+                }
+            } catch (error) {
+                alert(`Error: ${error.message}`);
+            }
+        }
+
+        async function viewLogs(name) {
+            window.open(`/__logs__/${name}`, '_blank');
+        }
+
+        function refreshAll() {
+            fetchStatus();
+        }
+
+        // Poll every 2 seconds
+        setInterval(fetchStatus, 2000);
+        fetchStatus(); // Initial load
+    </script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+# Centralized Semgrep Configuration
+# This file references language-specific rules from .semgrep/
+
+# Import language-specific rules
+include:
+  - .semgrep/rust.yml
+  - .semgrep/python.yml
+  - .semgrep/typescript.yml
+
+# Global settings
+severity: WARNING
+
+# Ignore paths
+ignore:
+  - "**/vendor/**"
+  - "**/node_modules/**"
+  - "**/target/**"
+  - "**/.git/**"
+  - "**/__pycache__/**"
+  - "**/tests/**"

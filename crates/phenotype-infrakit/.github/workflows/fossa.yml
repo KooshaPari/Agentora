@@ -1,0 +1,39 @@
+name: FOSSA License Compliance
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    # Run weekly on Sunday at 2am
+    - cron: '0 2 * * 0'
+
+jobs:
+  fossa:
+    name: FOSSA
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install FOSSA
+        run: |
+          curl -sL https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | bash
+          echo "$HOME/.fossa/bin" >> $GITHUB_PATH
+
+      - name: Run FOSSA analyze
+        env:
+          FOSSA_API_KEY: ${{ secrets.FOSSA_API_KEY }}
+        run: |
+          fossa analyze --project phenotype-infrakit --revision ${{ github.sha }}
+
+      - name: Upload FOSSA results
+        env:
+          FOSSA_API_KEY: ${{ secrets.FOSSA_API_KEY }}
+        run: |
+          fossa test --project phenotype-infrakit --revision ${{ github.sha }}
