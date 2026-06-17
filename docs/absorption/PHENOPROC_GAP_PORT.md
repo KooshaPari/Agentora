@@ -43,7 +43,7 @@ See `crates/ABSORPTION_MANIFEST.md` for workspace staging policy.
 - [x] Register `bifrost-routing`, `forgecode-core` in root `Cargo.toml`
 - [x] `cargo check -p bifrost-routing -p forgecode-core` (stub deps fixed)
 - [ ] Register `Cmdra` (remove inner `[workspace]` or use separate manifest)
-- [ ] Repoint `phenotype-*` path deps → `HexaKit` git dependencies
+- [ ] Repoint `phenotype-*` path deps → `HexaKit` / `phenoShared` git dependencies (see `PHENOTYPE_HEXAKIT_REPOINT.md`)
 - [ ] `cargo check` full PhenoProc subgraph
 
 ## HexaKit canonical redirect
