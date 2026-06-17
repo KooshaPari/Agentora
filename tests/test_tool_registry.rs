@@ -4,7 +4,8 @@
 //! Each `#[test]` in this module is annotated with the FR it exercises.
 //! FR-003: tool registry
 
-use agentkit::domain::tools::{CalculatorTool, Tool, ToolCall, ToolRegistry};
+use agentkit::domain::tools::{CalculatorTool, Tool, ToolCall};
+use agentkit::ToolRegistry;
 use serde_json::{json, Value};
 
 /// FR-003: tool registry — registering a tool makes it discoverable via

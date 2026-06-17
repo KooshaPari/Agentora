@@ -29,7 +29,7 @@ async fn nfr_004_builtins_are_send_sync_across_await() {
     use agentkit::domain::context::{Context, OutputContent};
     use agentkit::domain::memory::MemoryEntry;
     use agentkit::domain::skills::WebSearchSkill;
-    use agentkit::domain::tools::{CalculatorTool, Tool as _, ToolCall};
+    use agentkit::domain::tools::{CalculatorTool, ToolCall};
     use serde_json::json;
 
     let agent = SimpleAgent;
@@ -63,7 +63,8 @@ async fn nfr_004_builtins_are_send_sync_across_await() {
 async fn nfr_004_executor_is_send_sync() {
     use agentkit::application::AgentExecutor;
     use agentkit::domain::agents::AgentConfig;
-    use agentkit::domain::tools::{CalculatorTool, ToolRegistry};
+    use agentkit::domain::tools::CalculatorTool;
+    use agentkit::ToolRegistry;
 
     let mut tools = ToolRegistry::new();
     tools

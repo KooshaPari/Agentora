@@ -4,7 +4,8 @@
 //! Each `#[test]` in this module is annotated with the FR it exercises.
 //! FR-002: skill registry
 
-use agentkit::domain::skills::{Skill, SkillRegistry, WebSearchSkill};
+use agentkit::domain::skills::{Skill, WebSearchSkill};
+use agentkit::SkillRegistry;
 use serde_json::{json, Value};
 
 /// FR-002: skill registry — registering a skill makes it discoverable via
@@ -43,11 +44,10 @@ fn fr_002_duplicate_skill_registration_fails() {
 #[tokio::test]
 async fn fr_002_skill_execute_accepts_json_params() {
     let skill = WebSearchSkill;
-    let out: agentkit::infrastructure::error::Result<_> = skill
+    let result = skill
         .execute(json!({ "query": "rust agents" }))
         .await
-        .into();
-    let result = out.expect("skill execute should succeed");
+        .expect("skill execute should succeed");
     assert!(result.success);
     assert_eq!(result.data.get("query"), Some(&Value::String("rust agents".into())));
 }

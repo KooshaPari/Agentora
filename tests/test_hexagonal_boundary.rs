@@ -43,10 +43,12 @@ fn nfr_001_domain_traits_compile_without_adapter_features() {
 #[test]
 fn nfr_001_prelude_contains_core_types() {
     use agentkit::prelude::*;
+    use agentkit::ToolRegistry;
     // These names must be in scope when `use agentkit::prelude::*;` is in
     // effect. The mere fact that this file compiles is the assertion.
     let _ctx = Context::new("ping");
     let _out = Output::text("pong");
     let _entry = MemoryEntry::user("u");
     let _call = ToolCall::new("calculator", serde_json::json!({"expression":"1+1"}), "id");
+    let _ = ToolRegistry::new();
 }

@@ -12,7 +12,7 @@ use agentkit::domain::context::OutputContent;
 use agentkit::domain::memory::{MemoryEntry, MemoryRole};
 use agentkit::domain::ports::{LLM, MemoryPort};
 use agentkit::domain::tools::CalculatorTool;
-use agentkit::domain::tools::ToolRegistry;
+use agentkit::ToolRegistry;
 
 /// FR-005: executor and ports — `AgentExecutor::run` builds a `Context`,
 /// pre-seeds a system memory entry, and delegates to the agent.
@@ -20,7 +20,7 @@ use agentkit::domain::tools::ToolRegistry;
 async fn fr_005_executor_runs_simple_agent_with_system_seed() {
     let executor = AgentExecutor::new(AgentConfig::new("executor-005"));
     let output = executor
-        .run(&SimpleAgent, "hi".to_string())
+        .run(SimpleAgent, "hi".to_string())
         .await
         .expect("executor should run");
     match output.content {
