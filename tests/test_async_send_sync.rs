@@ -49,7 +49,11 @@ async fn nfr_004_builtins_are_send_sync_across_await() {
 
     let tool = CalculatorTool;
     let r = tool
-        .call(ToolCall::new("calculator", json!({"expression": "2+2"}), "c1"))
+        .call(ToolCall::new(
+            "calculator",
+            json!({"expression": "2+2"}),
+            "c1",
+        ))
         .await
         .expect("tool call");
     assert!(r.get("expression").is_some());

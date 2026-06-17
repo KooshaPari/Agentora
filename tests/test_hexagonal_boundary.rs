@@ -4,9 +4,9 @@
 //! NFR-001: hexagonal boundary
 
 use agentkit::domain::agents::Agent;
+use agentkit::domain::ports::LLM;
 use agentkit::domain::skills::Skill;
 use agentkit::domain::tools::Tool;
-use agentkit::domain::ports::LLM;
 
 /// NFR-001: hexagonal boundary — every public port / domain type is
 /// reachable from the top-level crate root via re-exports.

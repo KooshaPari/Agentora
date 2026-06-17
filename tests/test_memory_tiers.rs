@@ -18,7 +18,11 @@ fn fr_004_short_term_evicts_oldest_at_limit() {
     memory.add(MemoryEntry::user("third"));
 
     assert_eq!(memory.len(), 2);
-    let entries: Vec<&str> = memory.entries().iter().map(|e| e.content.as_str()).collect();
+    let entries: Vec<&str> = memory
+        .entries()
+        .iter()
+        .map(|e| e.content.as_str())
+        .collect();
     assert_eq!(entries, vec!["second", "third"]);
 }
 
@@ -46,15 +50,16 @@ fn fr_004_in_memory_store_save_and_search() {
         .save(&MemoryEntry::user("lazy dog"))
         .expect("save should succeed");
 
-    let hits = store
-        .search("fox", 10)
-        .expect("search should succeed");
+    let hits = store.search("fox", 10).expect("search should succeed");
     assert_eq!(hits.len(), 1);
     assert!(hits[0].content.contains("fox"));
 
     store.clear().expect("clear should succeed");
     assert!(
-        store.search("fox", 10).expect("search after clear").is_empty(),
+        store
+            .search("fox", 10)
+            .expect("search after clear")
+            .is_empty(),
         "store should be empty after clear"
     );
 }
@@ -67,9 +72,7 @@ fn fr_004_long_term_memory_delegates_to_store() {
     ltm.add(MemoryEntry::user("remember: rust ownership"))
         .expect("add should succeed");
 
-    let results = ltm
-        .search("ownership", 5)
-        .expect("search should succeed");
+    let results = ltm.search("ownership", 5).expect("search should succeed");
     assert_eq!(results.len(), 1);
     assert!(results[0].content.contains("ownership"));
 }

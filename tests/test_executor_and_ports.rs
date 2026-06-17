@@ -10,7 +10,7 @@ use agentkit::application::{AgentExecutor, SimpleAgent};
 use agentkit::domain::agents::AgentConfig;
 use agentkit::domain::context::OutputContent;
 use agentkit::domain::memory::{MemoryEntry, MemoryRole};
-use agentkit::domain::ports::{LLM, MemoryPort};
+use agentkit::domain::ports::{MemoryPort, LLM};
 use agentkit::domain::tools::CalculatorTool;
 use agentkit::ToolRegistry;
 
@@ -38,8 +38,7 @@ fn fr_005_executor_builder_exposes_skills_and_tools() {
     tools
         .register(Box::new(CalculatorTool))
         .expect("register calculator");
-    let executor = AgentExecutor::new(AgentConfig::new("executor-builder"))
-        .with_tools(tools);
+    let executor = AgentExecutor::new(AgentConfig::new("executor-builder")).with_tools(tools);
     let names = executor.get_tools();
     assert!(names.contains(&"calculator"));
 }
@@ -60,9 +59,7 @@ async fn fr_005_echo_llm_is_deterministic() {
 #[test]
 fn fr_005_in_memory_adapter_implements_memory_port() {
     let adapter = InMemoryAdapter::new();
-    adapter
-        .add(MemoryEntry::user("alpha"))
-        .expect("add alpha");
+    adapter.add(MemoryEntry::user("alpha")).expect("add alpha");
     adapter
         .add(MemoryEntry::assistant("beta"))
         .expect("add beta");

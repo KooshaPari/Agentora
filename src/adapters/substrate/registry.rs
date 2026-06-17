@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use substrate::skill_port::{
     validate_json_schema, SkillDescriptor, SkillHandler, SkillPort, ToolRegistry,
 };
-use substrate::{SubstrateError, Result as SubstrateResult};
+use substrate::{Result as SubstrateResult, SubstrateError};
 
 /// In-memory registry implementing substrate skill/tool ports.
 #[derive(Default)]

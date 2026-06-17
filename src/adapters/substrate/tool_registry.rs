@@ -56,7 +56,7 @@ impl ToolRegistry {
             descriptor,
             Box::new(ToolHandler { tool: tool.clone() }),
         )
-            .map_err(|e| Error::Tool(e.to_string()))?;
+        .map_err(|e| Error::Tool(e.to_string()))?;
         self.tools.insert(name, tool);
         Ok(())
     }

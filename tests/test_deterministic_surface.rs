@@ -6,7 +6,7 @@
 use agentkit::adapters::llm::EchoLLM;
 use agentkit::adapters::memory::InMemoryAdapter;
 use agentkit::domain::memory::{InMemoryStore, MemoryEntry, MemoryStore};
-use agentkit::domain::ports::{LLM, MemoryPort};
+use agentkit::domain::ports::{MemoryPort, LLM};
 
 /// NFR-003: deterministic surface — `EchoLLM` is fully deterministic and
 /// carries per-instance state via `with_prefix`.
@@ -15,7 +15,10 @@ async fn nfr_003_echo_llm_deterministic() {
     let a = EchoLLM::new();
     let b = EchoLLM::with_prefix("x:");
     assert_eq!(a.complete("p").await.unwrap(), "p");
-    assert_eq!(a.complete("p").await.unwrap(), a.complete("p").await.unwrap());
+    assert_eq!(
+        a.complete("p").await.unwrap(),
+        a.complete("p").await.unwrap()
+    );
     assert_eq!(b.complete("p").await.unwrap(), "x:p");
 }
 
@@ -24,9 +27,7 @@ async fn nfr_003_echo_llm_deterministic() {
 #[test]
 fn nfr_003_in_memory_store_is_pure() {
     let mut store = InMemoryStore::new();
-    store
-        .save(&MemoryEntry::user("alpha"))
-        .expect("save");
+    store.save(&MemoryEntry::user("alpha")).expect("save");
     let hits = store.search("alpha", 10).expect("search");
     assert_eq!(hits.len(), 1);
     store.clear().expect("clear");

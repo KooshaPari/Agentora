@@ -31,7 +31,9 @@ fn fr_003_tool_exposes_json_schema() {
         .get("required")
         .and_then(|v| v.as_array())
         .expect("schema must have a required array");
-    assert!(required.iter().any(|v| v == &Value::String("expression".into())));
+    assert!(required
+        .iter()
+        .any(|v| v == &Value::String("expression".into())));
 }
 
 /// FR-003: tool registry — `ToolRegistry::call` resolves a `ToolCall` to a

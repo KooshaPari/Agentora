@@ -2,16 +2,18 @@
 
 use std::sync::Arc;
 
+use bytes::BytesMut;
 use dashmap::DashMap;
 use phenotype_skills::Skill;
 use serde::{Deserialize, Serialize};
-use bytes::BytesMut;
 
 /// Buffer pool for zero-allocation message handling
+#[allow(dead_code)]
 pub struct BufferPool {
     pool: Arc<dashmap::DashMap<u64, Vec<BytesMut>>>,
 }
 
+#[allow(dead_code)]
 impl BufferPool {
     /// Create a new buffer pool with pre-allocated buffers
     pub fn new(buffer_count: usize, buffer_size: usize) -> Self {
@@ -40,7 +42,8 @@ impl BufferPool {
     pub fn release(&self, thread_id: u64, mut buffer: BytesMut) {
         buffer.clear();
         if let Some(mut entry) = self.pool.get_mut(&thread_id) {
-            if entry.len() < 64 { // Max 64 buffers per thread
+            if entry.len() < 64 {
+                // Max 64 buffers per thread
                 entry.push(buffer);
             }
         }
@@ -48,6 +51,7 @@ impl BufferPool {
 }
 
 /// Connection stats for monitoring
+#[allow(dead_code)]
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ConnectionStats {
     /// Total requests processed
@@ -63,6 +67,7 @@ pub struct ConnectionStats {
 }
 
 /// Request types for RPC protocol
+#[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "method", content = "params")]
 pub enum Request {
@@ -78,7 +83,10 @@ pub enum Request {
 
     /// List all registered skills with pagination
     #[serde(rename = "skill.list")]
-    SkillList { limit: Option<usize>, offset: Option<usize> },
+    SkillList {
+        limit: Option<usize>,
+        offset: Option<usize>,
+    },
     /// Get a skill by ID
     #[serde(rename = "skill.get")]
     SkillGet { id: String },
@@ -104,16 +112,14 @@ pub enum Request {
 }
 
 /// Response types for RPC protocol
+#[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum Response {
     /// Success response
     Success,
     /// Error response
-    Error {
-        code: i32,
-        message: String,
-    },
+    Error { code: i32, message: String },
     /// Pong response for ping
     Pong,
     /// Version information
@@ -130,30 +136,17 @@ pub enum Response {
         uptime_seconds: u64,
     },
     /// Skill list response
-    SkillList {
-        skills: Vec<Skill>,
-        total: usize,
-    },
+    SkillList { skills: Vec<Skill>, total: usize },
     /// Single skill response
-    Skill {
-        skill: Skill,
-    },
+    Skill { skill: Skill },
     /// Skill exists check
-    SkillExists {
-        exists: bool,
-    },
+    SkillExists { exists: bool },
     /// Dependency resolution result
-    Resolved {
-        skill_ids: Vec<String>,
-    },
+    Resolved { skill_ids: Vec<String> },
     /// Conflict check result
-    ConflictCheck {
-        conflicts: Vec<String>,
-    },
+    ConflictCheck { conflicts: Vec<String> },
     /// Circular dependency check result
-    CircularCheck {
-        has_cycle: bool,
-    },
+    CircularCheck { has_cycle: bool },
 }
 
 /// Version information
@@ -185,7 +178,9 @@ impl VersionInfo {
 }
 
 /// Default socket path for Unix domain sockets
+#[allow(dead_code)]
 pub const DEFAULT_SOCKET_PATH: &str = "/tmp/phenotype-daemon.sock";
 
 /// Default TCP port
+#[allow(dead_code)]
 pub const DEFAULT_TCP_PORT: u16 = 8953;

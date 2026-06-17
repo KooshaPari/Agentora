@@ -62,9 +62,11 @@ impl SkillRegistry {
         SubstrateToolRegistry::register(
             &mut *self.inner.lock().unwrap(),
             descriptor,
-            Box::new(SkillHandlerBridge { skill: skill.clone() }),
+            Box::new(SkillHandlerBridge {
+                skill: skill.clone(),
+            }),
         )
-            .map_err(|e| Error::Skill(e.to_string()))?;
+        .map_err(|e| Error::Skill(e.to_string()))?;
         self.skills.insert(name, skill);
         Ok(())
     }

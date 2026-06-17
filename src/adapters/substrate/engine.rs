@@ -54,9 +54,7 @@ impl AgentEngine {
         match output.content {
             OutputContent::Text(text) => Ok(text),
             OutputContent::Json(value) => Ok(value.to_string()),
-            OutputContent::Error(message) => {
-                Err(substrate::SubstrateError::Engine(message))
-            }
+            OutputContent::Error(message) => Err(substrate::SubstrateError::Engine(message)),
         }
     }
 }
@@ -76,7 +74,10 @@ impl EnginePort for AgentEngine {
 
     async fn resume(&self, conv_id: &str, prompt: &str) -> substrate::Result<Session> {
         let text = self.run_prompt(prompt).await?;
-        self.outputs.lock().unwrap().insert(conv_id.to_string(), text);
+        self.outputs
+            .lock()
+            .unwrap()
+            .insert(conv_id.to_string(), text);
         Ok(Session {
             conv_id: conv_id.into(),
             pid: None,

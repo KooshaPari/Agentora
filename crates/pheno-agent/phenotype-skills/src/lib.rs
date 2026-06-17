@@ -316,12 +316,12 @@ impl DependencyResolver {
         false
     }
 
-    fn detect_cycle_dep<'a>(
+    fn detect_cycle_dep(
         &self,
         dep_name: &str,
         visited: &mut std::collections::HashSet<String>,
-        stack: &mut Vec<String>,
-        _registry_ids: &HashMap<String, &'a Skill>,
+        stack: &mut [String],
+        _registry_ids: &HashMap<String, &Skill>,
     ) -> bool {
         if stack.contains(&dep_name.to_string()) {
             return true;
@@ -352,10 +352,7 @@ mod tests {
     #[test]
     fn test_skill_registry() {
         let registry = SkillRegistry::new();
-        let skill = Skill::new(
-            "test-1",
-            SkillManifest::new("Test Skill", "1.0.0"),
-        );
+        let skill = Skill::new("test-1", SkillManifest::new("Test Skill", "1.0.0"));
 
         assert!(registry.register(skill.clone()).is_ok());
         assert!(registry.get(&SkillId::new("test-1")).is_some());
@@ -368,17 +365,14 @@ mod tests {
         let resolver = DependencyResolver::new();
         let registry = SkillRegistry::new();
 
-        let mut skill = Skill::new(
-            "parent",
-            SkillManifest::new("Parent Skill", "1.0.0"),
-        );
-        skill.manifest.dependencies.push(SkillDependency::new("child"));
+        let mut skill = Skill::new("parent", SkillManifest::new("Parent Skill", "1.0.0"));
+        skill
+            .manifest
+            .dependencies
+            .push(SkillDependency::new("child"));
         registry.register(skill).unwrap();
 
-        let child_skill = Skill::new(
-            "child",
-            SkillManifest::new("Child Skill", "1.0.0"),
-        );
+        let child_skill = Skill::new("child", SkillManifest::new("Child Skill", "1.0.0"));
         registry.register(child_skill).unwrap();
 
         let resolved = resolver.resolve(&[SkillId::new("parent")], &registry);

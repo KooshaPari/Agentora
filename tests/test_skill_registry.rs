@@ -49,7 +49,10 @@ async fn fr_002_skill_execute_accepts_json_params() {
         .await
         .expect("skill execute should succeed");
     assert!(result.success);
-    assert_eq!(result.data.get("query"), Some(&Value::String("rust agents".into())));
+    assert_eq!(
+        result.data.get("query"),
+        Some(&Value::String("rust agents".into()))
+    );
 }
 
 /// FR-002: skill registry — `Skill::description` provides a human-readable

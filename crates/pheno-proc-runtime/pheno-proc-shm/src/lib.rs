@@ -126,15 +126,15 @@ mod tests {
     fn test_shm_registry() {
         let registry = ShmRegistry::new();
         let shm = registry.create("test_seg", 1024).unwrap();
-        
+
         // Write through the registry
         shm.lock().unwrap().write(0, b"test").unwrap();
-        
+
         // Open and read
         let shm2 = registry.open("test_seg").unwrap();
         let data = shm2.lock().unwrap().read(0, 4).unwrap();
         assert_eq!(data, b"test".to_vec());
-        
+
         // List segments
         let list = registry.list();
         assert_eq!(list.len(), 1);
