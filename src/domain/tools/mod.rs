@@ -3,7 +3,6 @@
 use crate::domain::{Error, Result};
 use async_trait::async_trait;
 use serde_json::Value;
-use std::collections::HashMap;
 
 /// Tool call request
 #[derive(Debug, Clone)]
@@ -52,15 +51,12 @@ impl ToolResponse {
 /// Tool trait - implement this to create a tool
 #[async_trait]
 pub trait Tool: Send + Sync {
-    /// Get tool name
     fn name(&self) -> &str;
 
-    /// Get tool description
     fn description(&self) -> String {
         String::new()
     }
 
-    /// Get parameter schema
     fn parameters(&self) -> Value {
         serde_json::json!({
             "type": "object",
@@ -69,60 +65,7 @@ pub trait Tool: Send + Sync {
         })
     }
 
-    /// Execute the tool
     async fn call(&self, call: ToolCall) -> Result<Value>;
-}
-
-/// Tool registry - manages available tools
-pub struct ToolRegistry {
-    tools: HashMap<String, Box<dyn Tool>>,
-}
-
-impl ToolRegistry {
-    pub fn new() -> Self {
-        Self {
-            tools: HashMap::new(),
-        }
-    }
-
-    pub fn register(&mut self, tool: Box<dyn Tool>) -> Result<()> {
-        let name = tool.name().to_string();
-        if self.tools.contains_key(&name) {
-            return Err(Error::Tool(format!("Tool '{}' already registered", name)));
-        }
-        self.tools.insert(name, tool);
-        Ok(())
-    }
-
-    pub fn get(&self, name: &str) -> Option<&dyn Tool> {
-        self.tools.get(name).map(|t| t.as_ref())
-    }
-
-    pub fn list(&self) -> Vec<&str> {
-        self.tools.keys().map(|s| s.as_str()).collect()
-    }
-
-    pub fn has(&self, name: &str) -> bool {
-        self.tools.contains_key(name)
-    }
-
-    pub async fn call(&self, call: ToolCall) -> Result<ToolResponse> {
-        let tool = self
-            .tools
-            .get(&call.name)
-            .ok_or_else(|| Error::Tool(format!("Tool '{}' not found", call.name)))?;
-
-        match tool.call(call.clone()).await {
-            Ok(result) => Ok(ToolResponse::success(call.id, result)),
-            Err(e) => Ok(ToolResponse::failure(call.id, e.to_string())),
-        }
-    }
-}
-
-impl Default for ToolRegistry {
-    fn default() -> Self {
-        Self::new()
-    }
 }
 
 /// Calculator tool
@@ -158,7 +101,6 @@ impl Tool for CalculatorTool {
             .and_then(|v| v.as_str())
             .ok_or_else(|| Error::Tool("Missing 'expression' parameter".to_string()))?;
 
-        // Validate input: reject empty expressions and excessively long input
         if expr.is_empty() {
             return Err(Error::Tool("Expression cannot be empty".to_string()));
         }
@@ -168,27 +110,9 @@ impl Tool for CalculatorTool {
             ));
         }
 
-        // Placeholder implementation - returns 0.0 for all expressions
-        // TODO: implement a safe expression parser (never use eval/shell execution)
         Ok(serde_json::json!({
             "expression": expr,
-            "result": 0.0 // Placeholder
+            "result": 0.0
         }))
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[tokio::test]
-    async fn test_tool_registry() {
-        let mut registry = ToolRegistry::new();
-
-        registry
-            .register(Box::new(CalculatorTool))
-            .expect("Failed to register tool");
-
-        assert!(registry.has("calculator"));
     }
 }

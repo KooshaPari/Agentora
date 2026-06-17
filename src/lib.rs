@@ -9,6 +9,7 @@ pub mod domain;
 pub mod infrastructure;
 
 pub mod prelude {
+    pub use crate::adapters::substrate::{SkillRegistry, ToolRegistry};
     pub use crate::application::*;
     pub use crate::domain::agents::*;
     pub use crate::domain::context::*;
@@ -17,9 +18,10 @@ pub mod prelude {
     pub use crate::domain::tools::*;
 }
 
+pub use adapters::substrate::{SkillRegistry, ToolRegistry};
 pub use domain::agents::Agent;
 pub use domain::context::{Context, Output};
 pub use domain::memory::{MemoryEntry, MemoryStore};
-pub use domain::skills::{Skill, SkillRegistry};
-pub use domain::tools::{Tool, ToolCall, ToolRegistry};
+pub use domain::skills::{Skill, SkillResult};
+pub use domain::tools::{Tool, ToolCall, ToolResponse};
 pub use infrastructure::error::{Error, Result};

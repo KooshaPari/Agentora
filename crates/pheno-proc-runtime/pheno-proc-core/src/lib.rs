@@ -1,12 +1,19 @@
 //! Process management primitives for PhenoProc registry
 //!
 //! Core process management types and traits used by sharecli.
+//! Process lifecycle (spawn, wait, kill-group) delegates to substrate
+//! [`CommandGroupProcess`] via [`ProcessPort`].
 
+use anyhow::Result;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
-use anyhow::{Result, bail};
+
+pub use runtime_process::CommandGroupProcess;
+pub use substrate_core::process_port::{
+    ProcessHandle, ProcessPort, ProcessSpawnSpec, ProcessState,
+};
 
 /// Information about a managed process
 #[derive(Debug, Clone)]
@@ -55,11 +62,22 @@ impl std::fmt::Display for ProcessStatus {
     }
 }
 
-/// A managed process with lifecycle control
+impl From<&ProcessState> for ProcessStatus {
+    fn from(state: &ProcessState) -> Self {
+        match state {
+            ProcessState::Running { .. } => ProcessStatus::Running,
+            ProcessState::Exited { .. } => ProcessStatus::Exited,
+        }
+    }
+}
+
+/// A managed process with lifecycle control backed by substrate [`ProcessHandle`].
 #[derive(Debug, Clone)]
 pub struct ManagedProcess {
     /// Process information
     pub info: ProcessInfo,
+    /// Substrate process handle for lifecycle operations
+    pub handle: ProcessHandle,
     /// Command that was executed
     pub command: String,
     /// Working directory
@@ -104,7 +122,7 @@ impl ProjectResources {
 
     pub async fn get_limits(&self, project: &str) -> ProjectLimits {
         let limits = self.limits.lock().unwrap();
-        limits.get(project).cloned().unwrap_or_else(|| ProjectLimits {
+        limits.get(project).cloned().unwrap_or(ProjectLimits {
             memory_limit_mb: 4096,
             max_processes: 10,
             cpu_affinity: None,
@@ -188,7 +206,12 @@ impl SharedRuntime {
         }
     }
 
-    pub async fn run_with_pool(&self, harness_type: &str, project: &str, _cmd: &str) -> Result<(u32, String)> {
+    pub async fn run_with_pool(
+        &self,
+        harness_type: &str,
+        project: &str,
+        _cmd: &str,
+    ) -> Result<(u32, String)> {
         let pid = std::process::id();
         Ok((pid, format!("{} process for {}", harness_type, project)))
     }
@@ -222,15 +245,26 @@ pub struct HealthStatus {
     pub bun_in_use: usize,
 }
 
-/// Process pool for managing multiple processes
-#[derive(Debug, Clone)]
+/// Process pool for managing multiple processes via substrate [`CommandGroupProcess`].
 pub struct ProcessPool {
     /// All managed processes
     processes: Arc<Mutex<HashMap<u32, ManagedProcess>>>,
+    /// Substrate-backed process lifecycle manager
+    runtime: CommandGroupProcess,
     /// Maximum memory limit in MB
     pub max_memory_mb: u64,
     /// Maximum number of processes
     pub max_processes: u32,
+}
+
+impl std::fmt::Debug for ProcessPool {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("ProcessPool")
+            .field("process_count", &self.count())
+            .field("max_memory_mb", &self.max_memory_mb)
+            .field("max_processes", &self.max_processes)
+            .finish_non_exhaustive()
+    }
 }
 
 impl ProcessPool {
@@ -243,9 +277,15 @@ impl ProcessPool {
     pub fn with_limits(max_memory_mb: u64, max_processes: u32) -> Self {
         Self {
             processes: Arc::new(Mutex::new(HashMap::new())),
+            runtime: CommandGroupProcess::new(),
             max_memory_mb,
             max_processes,
         }
+    }
+
+    /// Access the underlying substrate process manager.
+    pub fn runtime(&self) -> &CommandGroupProcess {
+        &self.runtime
     }
 
     /// Add a process to the pool
@@ -290,7 +330,7 @@ impl ProcessPool {
         }
     }
 
-    /// Spawn a new process
+    /// Spawn a new process via substrate [`CommandGroupProcess`]
     pub async fn spawn(
         &self,
         harness: &str,
@@ -299,13 +339,25 @@ impl ProcessPool {
         project: Option<String>,
         name: Option<String>,
     ) -> Result<ProcessInfo> {
-        let pid = std::process::id();
-        let cwd_str = cwd.map(|p| p.to_string_lossy().to_string()).unwrap_or_else(|| ".".to_string());
+        let spec = ProcessSpawnSpec {
+            program: harness.to_string(),
+            args: args.to_vec(),
+            cwd: cwd.clone(),
+        };
+        let handle = self
+            .runtime
+            .spawn(&spec)
+            .await
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
+
+        let cwd_str = cwd
+            .map(|p| p.to_string_lossy().to_string())
+            .unwrap_or_else(|| ".".to_string());
         let proc_name = name.unwrap_or_else(|| harness.to_string());
         let proj = project.unwrap_or_else(|| "default".to_string());
 
         let info = ProcessInfo {
-            pid,
+            pid: handle.pid,
             name: proc_name.clone(),
             project: proj,
             harness: harness.to_string(),
@@ -318,6 +370,7 @@ impl ProcessPool {
 
         let process = ManagedProcess {
             info: info.clone(),
+            handle,
             command: format!("{} {}", harness, args.join(" ")),
             cwd: cwd_str,
         };
@@ -326,24 +379,70 @@ impl ProcessPool {
         Ok(info)
     }
 
-    /// Kill a process by PID
+    /// Kill a process by PID via substrate process-group kill
     pub async fn kill(&self, pid: u32) -> Result<()> {
+        let handle = {
+            let processes = self.processes.lock().unwrap();
+            processes
+                .get(&pid)
+                .map(|p| p.handle)
+                .ok_or_else(|| anyhow::anyhow!("Process {pid} not found"))?
+        };
+
+        self.runtime
+            .kill_group(&handle)
+            .await
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
+
         let mut processes = self.processes.lock().unwrap();
         if let Some(proc) = processes.get_mut(&pid) {
             proc.info.status = ProcessStatus::Exited;
-            Ok(())
-        } else {
-            bail!("Process {} not found", pid)
         }
+        Ok(())
     }
 
     /// Kill all processes
     pub async fn kill_all(&self) -> Result<()> {
-        let mut processes = self.processes.lock().unwrap();
-        for proc in processes.values_mut() {
-            proc.info.status = ProcessStatus::Exited;
+        let handles: Vec<(u32, ProcessHandle)> = {
+            let processes = self.processes.lock().unwrap();
+            processes
+                .iter()
+                .map(|(pid, proc)| (*pid, proc.handle))
+                .collect()
+        };
+
+        for (pid, handle) in handles {
+            let _ = self.runtime.kill_group(&handle).await;
+            let mut processes = self.processes.lock().unwrap();
+            if let Some(proc) = processes.get_mut(&pid) {
+                proc.info.status = ProcessStatus::Exited;
+            }
         }
         Ok(())
+    }
+
+    /// Refresh status for a managed process from the substrate runtime
+    pub async fn refresh_status(&self, pid: u32) -> Result<ProcessStatus> {
+        let handle = {
+            let processes = self.processes.lock().unwrap();
+            processes
+                .get(&pid)
+                .map(|p| p.handle)
+                .ok_or_else(|| anyhow::anyhow!("Process {pid} not found"))?
+        };
+
+        let state = self
+            .runtime
+            .status(&handle)
+            .await
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
+        let status = ProcessStatus::from(&state);
+
+        let mut processes = self.processes.lock().unwrap();
+        if let Some(proc) = processes.get_mut(&pid) {
+            proc.info.status = status;
+        }
+        Ok(status)
     }
 
     /// Get system memory usage
@@ -391,7 +490,7 @@ impl ProcessPool {
             .collect()
     }
 
-    /// Clear all processes
+    /// Clear all processes from the pool (does not kill running children)
     pub fn clear(&self) {
         let mut processes = self.processes.lock().unwrap();
         processes.clear();
@@ -407,6 +506,7 @@ impl Default for ProcessPool {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use uuid::Uuid;
 
     fn create_test_process(pid: u32, project: &str, harness: &str) -> ManagedProcess {
         ManagedProcess {
@@ -420,6 +520,10 @@ mod tests {
                 memory_mb: 100,
                 cpu_percent: Some(5.0),
                 cmd: vec!["test".to_string()],
+            },
+            handle: ProcessHandle {
+                id: Uuid::new_v4(),
+                pid,
             },
             command: "test".to_string(),
             cwd: "/tmp".to_string(),

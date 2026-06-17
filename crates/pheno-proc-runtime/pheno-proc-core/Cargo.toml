@@ -7,11 +7,13 @@ license = "MIT"
 
 [dependencies]
 anyhow = "1.0"
+runtime-process = { git = "https://github.com/KooshaPari/substrate", package = "runtime-process" }
+substrate-core = { git = "https://github.com/KooshaPari/substrate", package = "substrate-core" }
 tokio = { version = "1.0", features = ["full"] }
-sysinfo = "0.39"
 
 [dev-dependencies]
 tokio-test = "0.4"
+uuid = { version = "1.22", features = ["v4"] }
 
 [lib]
 name = "pheno_proc_core"

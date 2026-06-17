@@ -26,7 +26,7 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@29eef336d9b2848a0b548edc03f92a220660cdb8 # stable
       - name: Cache dependencies
-        uses: Swatinem/rust-cache@9b8cccef289f0b43e9bafd4af825251398900941 # v2
+        uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
       - name: Build
         run: cargo build --workspace --verbose
 
@@ -40,7 +40,7 @@ jobs:
         with:
           components: clippy
       - name: Cache dependencies
-        uses: Swatinem/rust-cache@9b8cccef289f0b43e9bafd4af825251398900941 # v2
+        uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
       - name: Clippy
         run: cargo clippy --workspace --all-targets -- -D warnings
 
@@ -52,7 +52,7 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@29eef336d9b2848a0b548edc03f92a220660cdb8 # stable
       - name: Cache dependencies
-        uses: Swatinem/rust-cache@9b8cccef289f0b43e9bafd4af825251398900941 # v2
+        uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
       - name: Run tests
         run: cargo test --workspace --verbose
 

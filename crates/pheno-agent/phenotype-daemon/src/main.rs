@@ -1,5 +1,5 @@
 //! Phenotype Daemon - High-performance sidecar for skill management
-//! 
+//!
 //! Architecture:
 //! - Unix domain sockets (fast local IPC)
 //! - TCP fallback for cross-platform compatibility
@@ -10,6 +10,7 @@ mod protocol;
 mod rpc;
 
 use rpc::{RpcHandler, SharedState};
+#[cfg(unix)]
 use std::path::PathBuf;
 use std::sync::Arc;
 use tokio::net::TcpListener;
@@ -35,6 +36,7 @@ struct ServerConfig {
     /// TCP port for fallback
     tcp_port: u16,
     /// Enable TCP mode (Windows requires this)
+    #[allow(dead_code)]
     tcp_only: bool,
 }
 
@@ -51,20 +53,14 @@ impl Default for ServerConfig {
 
 /// Initialize logging with appropriate level
 fn init_logging() {
-    let filter = std::env::var("RUST_LOG")
-        .unwrap_or_else(|_| "info".to_string());
-    
-    tracing_subscriber::fmt()
-        .with_env_filter(filter)
-        .init();
+    let filter = std::env::var("RUST_LOG").unwrap_or_else(|_| "info".to_string());
+
+    tracing_subscriber::fmt().with_env_filter(filter).init();
 }
 
 /// Run Unix socket server
 #[cfg(unix)]
-async fn run_unix_server(
-    config: &ServerConfig,
-    state: Arc<SharedState>,
-) -> anyhow::Result<()> {
+async fn run_unix_server(config: &ServerConfig, state: Arc<SharedState>) -> anyhow::Result<()> {
     // Remove existing socket if present
     if config.socket_path.exists() {
         tokio::fs::remove_file(&config.socket_path).await.ok();
@@ -87,10 +83,7 @@ async fn run_unix_server(
 }
 
 /// Run TCP server
-async fn run_tcp_server(
-    config: &ServerConfig,
-    state: Arc<SharedState>,
-) -> anyhow::Result<()> {
+async fn run_tcp_server(config: &ServerConfig, state: Arc<SharedState>) -> anyhow::Result<()> {
     let addr = format!("127.0.0.1:{}", config.tcp_port);
     let listener = TcpListener::bind(&addr).await?;
     info!("TCP server listening on {}", addr);
@@ -113,7 +106,10 @@ async fn run_tcp_server(
 async fn main() -> anyhow::Result<()> {
     init_logging();
 
-    info!("Starting Phenotype Daemon v{}", VersionInfo::current().version);
+    info!(
+        "Starting Phenotype Daemon v{}",
+        VersionInfo::current().version
+    );
 
     let config = ServerConfig::default();
     let state = Arc::new(SharedState::new());

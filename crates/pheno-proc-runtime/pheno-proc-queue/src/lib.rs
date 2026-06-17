@@ -351,8 +351,8 @@ mod tests {
     fn test_enqueue_dequeue() {
         let queue = InMemoryQueueAdapter::new();
 
-        let item1 = queue.enqueue("cmd1".to_string(), Priority::Normal, None);
-        let item2 = queue.enqueue("cmd2".to_string(), Priority::High, None);
+        let _item1 = queue.enqueue("cmd1".to_string(), Priority::Normal, None);
+        let _item2 = queue.enqueue("cmd2".to_string(), Priority::High, None);
 
         assert_eq!(queue.length(), 2);
 

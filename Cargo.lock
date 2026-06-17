@@ -16,6 +16,7 @@ dependencies = [
  "rusqlite",
  "serde",
  "serde_json",
+ "substrate",
  "thiserror",
  "tokio",
  "tokio-test",
@@ -380,6 +381,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "command-group"
+version = "5.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a68fa787550392a9d58f44c21a3022cfb3ea3e2458b7f85d3b399d0ceeccf409"
+dependencies = [
+ "async-trait",
+ "nix 0.27.1",
+ "tokio",
+ "winapi",
+]
+
+[[package]]
 name = "const-oid"
 version = "0.9.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -583,6 +596,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "75030f3c4f45dafd7586dd6780965a8c7e8e285a5ecb86713e63a79c5b2766f3"
 dependencies = [
  "cfg-if",
+]
+
+[[package]]
+name = "engine-spec"
+version = "0.1.0"
+source = "git+https://github.com/KooshaPari/substrate#f1a8306586a3a2a92d1599c205ff8a0539cce172"
+dependencies = [
+ "serde",
+ "substrate-core",
 ]
 
 [[package]]
@@ -1354,6 +1376,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "nix"
+version = "0.27.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2eb04e9c688eff1c89d72b407f168cf79bb9e867a9d3323ed6c01519eb9cc053"
+dependencies = [
+ "bitflags 2.11.1",
+ "cfg-if",
+ "libc",
+]
+
+[[package]]
 name = "nkeys"
 version = "0.4.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1547,9 +1580,11 @@ name = "pheno-proc-core"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "sysinfo",
+ "runtime-process",
+ "substrate-core",
  "tokio",
  "tokio-test",
+ "uuid",
 ]
 
 [[package]]
@@ -2066,6 +2101,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "runtime-process"
+version = "0.1.0"
+source = "git+https://github.com/KooshaPari/substrate#f1a8306586a3a2a92d1599c205ff8a0539cce172"
+dependencies = [
+ "async-trait",
+ "command-group",
+ "substrate-core",
+ "tokio",
+ "uuid",
+]
+
+[[package]]
 name = "rusqlite"
 version = "0.40.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2461,6 +2508,40 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 
 [[package]]
+name = "substrate"
+version = "0.1.0"
+source = "git+https://github.com/KooshaPari/substrate#f1a8306586a3a2a92d1599c205ff8a0539cce172"
+dependencies = [
+ "engine-spec",
+ "substrate-app",
+ "substrate-core",
+]
+
+[[package]]
+name = "substrate-app"
+version = "0.1.0"
+source = "git+https://github.com/KooshaPari/substrate#f1a8306586a3a2a92d1599c205ff8a0539cce172"
+dependencies = [
+ "async-trait",
+ "engine-spec",
+ "serde",
+ "substrate-core",
+ "uuid",
+]
+
+[[package]]
+name = "substrate-core"
+version = "0.1.0"
+source = "git+https://github.com/KooshaPari/substrate#f1a8306586a3a2a92d1599c205ff8a0539cce172"
+dependencies = [
+ "async-trait",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "uuid",
+]
+
+[[package]]
 name = "subtle"
 version = "2.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2540,7 +2621,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "32497e9a4c7b38532efcdebeef879707aa9f794296a4f0244f6f69e9bc8574bd"
 dependencies = [
  "fastrand",
- "getrandom 0.4.2",
+ "getrandom 0.3.4",
  "once_cell",
  "rustix",
  "windows-sys 0.61.2",
@@ -2704,7 +2785,7 @@ checksum = "3d95f53850cc37d2559dec15cdb146a98bc4acac64565f2b198a9fe91b9a1354"
 dependencies = [
  "bincode",
  "libc",
- "nix",
+ "nix 0.24.3",
  "rand 0.8.6",
  "serde",
  "tokio",
@@ -2928,6 +3009,7 @@ checksum = "d258b83ceec21034727ecee8c382cfa6c3e133699b0742c64571814fb420c9f7"
 dependencies = [
  "getrandom 0.4.2",
  "js-sys",
+ "serde_core",
  "wasm-bindgen",
 ]
 
