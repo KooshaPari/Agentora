@@ -16,6 +16,8 @@
 | `crates/pheno-proc-uds` | `crates/pheno-proc-runtime/pheno-proc-uds` | Ported |
 | `phenotype-agent-core` (docs) | `agents/phenoagent/phenotype-agent-core/docs` | ADR set present |
 | `python/pheno-process` | `agents/phenoagent/python/pheno-process` | **Gap port wave 1** (18 files) |
+| `python/pheno-llm` | `agents/phenoagent/python/pheno-llm` | **Gap port wave 2** (21 files) |
+| `python/pheno-clink` | `agents/phenoagent/python/pheno-clink` | **Gap port wave 2** (25 files) |
 
 ## Outstanding — Agentora
 
@@ -31,8 +33,8 @@
 | Package | Role |
 |---------|------|
 | `pheno-process` | Core process execution | **Done** → `agents/phenoagent/python/pheno-process` |
-| `pheno-llm` | LLM integration |
-| `pheno-clink` | LLM connectivity |
+| `pheno-llm` | LLM integration | **Done** → `agents/phenoagent/python/pheno-llm` |
+| `pheno-clink` | LLM connectivity | **Done** → `agents/phenoagent/python/pheno-clink` |
 | `pheno-workflow` | Agent workflow orchestration |
 | `pheno-mcp` | MCP tooling |
 | `pheno-testing` | Processor-side testing |
@@ -79,4 +81,4 @@ Processor Python packages that overlap TestingKit/McpKit surfaces should merge i
 ## Audit gate
 
 PhenoProc **DELETE** eligibility requires **100%** boundary coverage across
-Agentora + HexaKit + phenotype-python-sdk (+ tooling split). Current estimate: **~48%** (wave 1: `pheno-process`).
+Agentora + HexaKit + phenotype-python-sdk (+ tooling split). Current estimate: **~52%** (waves 1–2: `pheno-process`, `pheno-llm`, `pheno-clink`).
