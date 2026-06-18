@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `[lints.rust]` table in `Cargo.toml` with `unsafe_code = "forbid"` (centralised lint policy, SOTA Rust 1.74+ pattern).
+- MCP domain ports `ServerPort` and `ResourcePort` (plus `McpTool`, `McpResource`, `McpToolRequest`, `McpToolResponse` data types) in `crate::domain::ports`, formalising the AgentMCP → Agentora integration path (#86, ADR-017).
+- `docs/mcp/INTEGRATION.md` documenting the McpKit `python/agentmcp/` → Agentora migration: source-to-target port map, hexagonal placement, port contracts, and consumer migration checklist.
 
 ### Changed
 
