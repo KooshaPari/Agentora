@@ -27,17 +27,17 @@ device: macbook
 
 | Date | Source | File | Tag |
 | ---- | ------ | ---- | --- |
-| ? | claude-code | `docs/curated-prompts/claude-code/unknown/448ace8bf2346324.md` | narrative |
-| ? | claude-code | `docs/curated-prompts/claude-code/unknown/6ff3acf070989faf.md` | policy-setting |
-| ? | claude-code | `docs/curated-prompts/claude-code/unknown/d86bb9895691eabd.md` | policy-setting |
-| ? | claude-code | `docs/curated-prompts/claude-code/unknown/168185ba08461766.md` | bugfix |
-| ? | claude-code | `docs/curated-prompts/claude-code/unknown/40e89ff68e353ce9.md` | narrative |
-| ? | claude-code | `docs/curated-prompts/claude-code/unknown/f109012456bbc4a3.md` | repo-defining |
-| ? | claude-code | `docs/curated-prompts/claude-code/unknown/2f021e96fd12bc0b.md` | policy-setting |
-| ? | claude-code | `docs/curated-prompts/claude-code/unknown/14c8f4543269c5ba.md` | implementation |
-| ? | claude-code | `docs/curated-prompts/claude-code/unknown/6f5c2612882fc1a9.md` | repo-defining |
-| ? | claude-code | `docs/curated-prompts/claude-code/unknown/d03d7f2da9f21c77.md` | narrative |
 | ? | claude-code | `docs/curated-prompts/claude-code/unknown/026518921e127850.md` | narrative |
+| ? | claude-code | `docs/curated-prompts/claude-code/unknown/14c8f4543269c5ba.md` | implementation |
+| ? | claude-code | `docs/curated-prompts/claude-code/unknown/168185ba08461766.md` | bugfix |
+| ? | claude-code | `docs/curated-prompts/claude-code/unknown/2f021e96fd12bc0b.md` | policy-setting |
+| ? | claude-code | `docs/curated-prompts/claude-code/unknown/40e89ff68e353ce9.md` | narrative |
+| ? | claude-code | `docs/curated-prompts/claude-code/unknown/448ace8bf2346324.md` | narrative |
+| ? | claude-code | `docs/curated-prompts/claude-code/unknown/6f5c2612882fc1a9.md` | repo-defining |
+| ? | claude-code | `docs/curated-prompts/claude-code/unknown/6ff3acf070989faf.md` | policy-setting |
+| ? | claude-code | `docs/curated-prompts/claude-code/unknown/d03d7f2da9f21c77.md` | narrative |
+| ? | claude-code | `docs/curated-prompts/claude-code/unknown/d86bb9895691eabd.md` | policy-setting |
+| ? | claude-code | `docs/curated-prompts/claude-code/unknown/f109012456bbc4a3.md` | repo-defining |
 
 ## Bound Plans
 
