@@ -9,6 +9,10 @@ resolver = "2"
 exclude = [
     "agents/phenoagent/phenotype-daemon",
     "agents/phenoagent/phenotype-skills",
+    # W18b: staging stubs — git-pinned audit copies, not workspace members
+    "crates/phenotype-errors",
+    "crates/phenotype-error-macros",
+    "crates/phenotype-config-loader",
 ]
 members = [
     "crates/pheno-agent/phenotype-daemon",

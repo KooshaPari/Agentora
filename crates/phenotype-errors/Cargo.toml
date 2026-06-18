@@ -4,10 +4,10 @@ version = "0.2.0"
 edition = "2021"
 license = "MIT"
 description = "Error handling for Phenotype"
-repository = "https://github.com/KooshaPari/phenoShared"
+repository = "https://github.com/KooshaPari/phenotype-types"
 
 [dependencies]
-phenotype-error-core = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
+phenotype-error-core = { git = "https://github.com/KooshaPari/phenotype-types", branch = "main" }
 thiserror = "2.0"
 serde = { version = "1.0", features = ["derive"] }
 
