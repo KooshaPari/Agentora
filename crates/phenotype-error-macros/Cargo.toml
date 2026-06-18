@@ -5,7 +5,7 @@ edition = "2021"
 rust-version = "1.75"
 license = "MIT"
 description = "Procedural macros for Phenotype error types"
-repository = "https://github.com/KooshaPari/phenoShared"
+repository = "https://github.com/KooshaPari/phenotype-types"
 
 [lib]
 proc-macro = true
@@ -13,4 +13,4 @@ proc-macro = true
 [dependencies]
 proc-macro2 = "1.0"
 quote = "1.0"
-phenotype-error-core = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
+phenotype-error-core = { git = "https://github.com/KooshaPari/phenotype-types", branch = "main" }
