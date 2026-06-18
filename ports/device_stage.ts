@@ -72,5 +72,5 @@ export interface DeviceStage {
   viewport(sessionId: SessionId): Promise<Viewport>;
 
   /** Stage-port hook: route a domain-specific call through the implementation. */
-  call<T = unknown>(sessionId: SessionId, method: string, params?: unknown): Promise<T>;
+  call<T = unknown>(method: string, params?: unknown): Promise<T>;
 }
