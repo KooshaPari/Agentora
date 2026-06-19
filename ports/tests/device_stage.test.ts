@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { EidolonStage, NullTransport, McpResult } from "../adapters/eidolon";
+import { EidolonStage, NullTransport, McpResult, type EidolonTransport } from "../adapters/eidolon";
 import type { DeviceStage } from "../device_stage";
 
 describe("agent-platform DeviceStage (T66)", () => {
@@ -35,7 +35,7 @@ describe("agent-platform DeviceStage (T66)", () => {
 
   it("EidolonStage with custom transport returns expected data", async () => {
     const devices = ["device-1", "device-2"];
-    const mockTransport = new (class implements import("../adapters/eidolon").EidolonTransport {
+    const mockTransport = new (class implements EidolonTransport {
       readonly name = "mock";
       async call<T = unknown>(
         _method: string,

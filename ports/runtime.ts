@@ -1,8 +1,8 @@
 /**
  * T65: agent-platform hexagonal port — Runtime.
  *
- * 3 adapters: ForgeRuntime, CodexRuntime, CodexRuntime.
- * Domain code depends on this trait, not on forge/codex/codex directly.
+ * 2 adapters: ForgeRuntime, CodexRuntime.
+ * Domain code depends on this trait, not on forge/codex directly.
  */
 export type AgentId = string & { readonly __brand: "AgentId" };
 export type ModelId = string & { readonly __brand: "ModelId" };
