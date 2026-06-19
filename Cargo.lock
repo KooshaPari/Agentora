@@ -1644,6 +1644,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "phenotype-agent-contracts"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "http",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tokio",
+ "uuid",
+]
+
+[[package]]
 name = "phenotype-daemon"
 version = "0.3.0"
 dependencies = [
