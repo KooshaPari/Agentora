@@ -2,6 +2,13 @@
 
 Files under `crates/` from archived `KooshaPari/PhenoProc` (wave 6, 2026-06-17).
 
+## PhenoAgent absorption (P5, 2026-06-19)
+
+Rust agent daemon/skills from `KooshaPari/PhenoAgent` canonical in
+`crates/pheno-agent/` (`phenotype-daemon`, `phenotype-skills`). See
+[`docs/absorption/PHENOAGENT_ABSORPTION_2026_06_18.md`](../absorption/PHENOAGENT_ABSORPTION_2026_06_18.md).
+Source repo deprecated; archive gate P5-2 pending.
+
 ## Workspace policy
 
 Only `pheno-proc-runtime/*`, `pheno-agent/*`, and root `agentkit` are in the default
