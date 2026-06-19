@@ -47,6 +47,28 @@ function createMockTransport(
   };
 }
 
+/**
+ * Recording transport — captures every call so the test can assert on
+ * what methods were issued and with what params (no return value).
+ */
+function createRecordingTransport(): {
+  transport: EidolonTransport;
+  calls: Array<{ method: string; params?: Record<string, unknown> }>;
+} {
+  const calls: Array<{ method: string; params?: Record<string, unknown> }> = [];
+  const transport: EidolonTransport = {
+    name: "recording",
+    async call<T = unknown>(
+      method: string,
+      params?: Record<string, unknown>,
+    ): Promise<McpResult<T>> {
+      calls.push({ method, params });
+      return { ok: true, data: undefined as T };
+    },
+  };
+  return { transport, calls };
+}
+
 const SID = "session-1" as SessionId;
 const DID = "device-1" as DeviceId;
 
@@ -124,24 +146,13 @@ describe("DesktopStageAdapter (T66) — name + modality + structural contract", 
 });
 
 // ---------------------------------------------------------------------------
-// Suite 2 — desktop semantics delegate via EidolonStage / Eidolon transport
+// Suite 2 — desktop semantics delegate through EidolonStage / Eidolon transport
 // ---------------------------------------------------------------------------
 
 describe("DesktopStageAdapter — desktop semantics delegate to Eidolon transport", () => {
   it("click() issues a single pointer via the Eidolon transport (left button by default)", async () => {
-    const calls: Array<{ method: string; params?: Record<string, unknown> }> = [];
-    const t: EidolonTransport = {
-      name: "recording",
-      async call<T = unknown>(
-        method: string,
-        params?: Record<string, unknown>,
-      ): Promise<McpResult<T>> {
-        calls.push({ method, params });
-        return { ok: true, data: undefined as T };
-      },
-    };
-
-    const a = adapterWith(t);
+    const { transport, calls } = createRecordingTransport();
+    const a = adapterWith(transport);
     await a.click(SID, 100, 250);
 
     expect(calls).toHaveLength(1);
@@ -153,19 +164,8 @@ describe("DesktopStageAdapter — desktop semantics delegate to Eidolon transpor
   });
 
   it("rightClick() forwards the right button semantic", async () => {
-    const calls: Array<{ method: string; params?: Record<string, unknown> }> = [];
-    const t: EidolonTransport = {
-      name: "recording",
-      async call<T = unknown>(
-        method: string,
-        params?: Record<string, unknown>,
-      ): Promise<McpResult<T>> {
-        calls.push({ method, params });
-        return { ok: true, data: undefined as T };
-      },
-    };
-
-    const a = adapterWith(t);
+    const { transport, calls } = createRecordingTransport();
+    const a = adapterWith(transport);
     await a.rightClick(SID, 50, 75);
 
     expect(calls).toHaveLength(1);
@@ -175,19 +175,8 @@ describe("DesktopStageAdapter — desktop semantics delegate to Eidolon transpor
   });
 
   it("doubleClick() issues two clicks back-to-back", async () => {
-    const calls: Array<{ method: string; params?: Record<string, unknown> }> = [];
-    const t: EidolonTransport = {
-      name: "recording",
-      async call<T = unknown>(
-        method: string,
-        params?: Record<string, unknown>,
-      ): Promise<McpResult<T>> {
-        calls.push({ method, params });
-        return { ok: true, data: undefined as T };
-      },
-    };
-
-    const a = adapterWith(t);
+    const { transport, calls } = createRecordingTransport();
+    const a = adapterWith(transport);
     await a.doubleClick(SID, 10, 20);
 
     expect(calls).toHaveLength(2);
@@ -198,43 +187,21 @@ describe("DesktopStageAdapter — desktop semantics delegate to Eidolon transpor
   });
 
   it("keyTap() routes a single key press with no modifiers via the Eidolon key primitive", async () => {
-    const calls: Array<{ method: string; params?: Record<string, unknown> }> = [];
-    const t: EidolonTransport = {
-      name: "recording",
-      async call<T = unknown>(
-        method: string,
-        params?: Record<string, unknown>,
-      ): Promise<McpResult<T>> {
-        calls.push({ method, params });
-        return { ok: true, data: undefined as T };
-      },
-    };
-
-    const a = adapterWith(t);
+    const { transport, calls } = createRecordingTransport();
+    const a = adapterWith(transport);
     await a.keyTap(SID, "Enter");
 
     expect(calls).toHaveLength(1);
     expect(calls[0].method).toBe("key");
     expect(calls[0].params?.kind).toBe("press");
     expect(calls[0].params?.key).toBe("Enter");
-    // No modifiers — perceived as a single key tap
+    // No modifiers — single-tap semantics
     expect(calls[0].params?.modifiers).toBeUndefined();
   });
 
   it("keyCombo() carries the modifiers array plus the terminal key", async () => {
-    const calls: Array<{ method: string; params?: Record<string, unknown> }> = [];
-    const t: EidolonTransport = {
-      name: "recording",
-      async call<T = unknown>(
-        method: string,
-        params?: Record<string, unknown>,
-      ): Promise<McpResult<T>> {
-        calls.push({ method, params });
-        return { ok: true, data: undefined as T };
-      },
-    };
-
-    const a = adapterWith(t);
+    const { transport, calls } = createRecordingTransport();
+    const a = adapterWith(transport);
     await a.keyCombo(SID, ["cmd", "shift"], "p");
 
     expect(calls).toHaveLength(1);
@@ -251,13 +218,16 @@ describe("DesktopStageAdapter — desktop semantics delegate to Eidolon transpor
 
 describe("DesktopStageAdapter — desktop escape hatches", () => {
   it("startCaptures() returns the CaptureSession handle from the backend", async () => {
+    // The mock returns mockCapture unconditionally regardless of args —
+    // assert against the canonical mock shape (id / format / outputPath).
     const t = createMockTransport({ start_captures: mockCapture });
     const a = adapterWith(t);
 
-    const cap = await a.startCaptures(SID, "/tmp/foo.mp4");
+    const cap = await a.startCaptures(SID, "/tmp/capture.mp4");
     expect(cap).toEqual(mockCapture);
+    expect(cap.id).toBe("cap-1");
     expect(cap.format).toBe("mp4");
-    expect(cap.outputPath).toBe("/tmp/foo.mp4");
+    expect(cap.outputPath).toBe("/tmp/capture.mp4");
   });
 
   it("getActiveDisplay() returns primary DisplayInfo from the backend", async () => {
@@ -294,16 +264,15 @@ describe("DesktopStageAdapter — failure modes", () => {
     const t = createMockTransport({}); // no methods registered
     const a = adapterWith(t);
 
-    // The call goes pointer(sessionId, ...) -> EidolonStage.call("pointer", ...) ->
-    // transport.call("pointer", ...) which returns { ok: false }.
-    // The adapter throws inside EidolonStage.call, so we expect a throw
-    // that references the transport context.
+    // The call goes pointer(sessionId, ...) -> EidolonStage.call("pointer", ...)
+    // -> transport.call("pointer", ...) which returns { ok: false }. The
+    // adapter throws inside EidolonStage.call.
     await expect(a.click(SID, 1, 1)).rejects.toThrow();
   });
 });
 
 // ---------------------------------------------------------------------------
-// Suite 5 — default factory (nullDesktopStage) + MouseButton / DisplayId ergonomics
+// Suite 5 — default factory (nullDesktopStage) + brand ergonomics
 // ---------------------------------------------------------------------------
 
 describe("DesktopStageAdapter — null factory + brand ergonomics", () => {
@@ -311,7 +280,6 @@ describe("DesktopStageAdapter — null factory + brand ergonomics", () => {
     const a = nullDesktopStage();
     expect(a.name).toBe("desktop-eidolon:null");
     expect(a.modality).toBe("desktop");
-    // Behaviour: every call fails until a real transport is wired
     expect(a).toBeDefined();
   });
 
@@ -320,10 +288,7 @@ describe("DesktopStageAdapter — null factory + brand ergonomics", () => {
     expect(a.name).toBe("desktop-eidolon:offline-desktop");
   });
 
-  it("DesktopStage supports MouseButton literal types via the click() signature", () => {
-    // Static-only assertion — TypeScript narrows MouseButton to
-    // "left" | "right" | "middle". The runtime cast exists purely
-    // to exercise the type at the test boundary.
+  it("MouseButton literal types enumerate left/right/middle", () => {
     const buttons: MouseButton[] = ["left", "right", "middle"];
     expect(buttons).toHaveLength(3);
     expect(buttons).toContain("left");
@@ -332,19 +297,21 @@ describe("DesktopStageAdapter — null factory + brand ergonomics", () => {
   });
 
   it("PointerInput (desktop baseline) remains type-compatible with the adapter path", () => {
-    // Sanity: a PointerInput constructed in desktop domain is the same
-    // shape routing through EidolonStage.pointer().
     const input: PointerInput = { kind: "click", x: 0, y: 0 };
     expect(input.kind).toBe("click");
     expect(input.x).toBe(0);
   });
 
-  it("DesktopStageConfig type accepts all 3 transport modes", () => {
+  it("DesktopStageConfig accepts all 3 transport modes", () => {
     // Compile-time-only check; ensures the config surface is honest.
     const configs: DesktopStageConfig[] = [
       { name: "stdio-stage", transport: "stdio", endpoint: "/bin/eidolon-mcp" },
       { name: "http-stage", transport: "http", endpoint: "http://localhost:3100" },
-      { name: "custom-stage", transport: "custom", customTransport: new NullTransport() },
+      {
+        name: "custom-stage",
+        transport: "custom",
+        customTransport: new NullTransport(),
+      },
     ];
     expect(configs).toHaveLength(3);
   });

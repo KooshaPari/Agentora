@@ -1,17 +1,27 @@
 /**
- * T66.x adapter: DesktopStageAdapter.
+ * T66 adapter: DesktopStageAdapter — Eidolon-backed DesktopStage.
  *
- * Manages desktop / laptop modalities — macOS (via screencapture CLI / Core
- * Graphics) and Linux (via xdotool / X11). Falls back to a NullDesktopTransport
- * when no desktop automation tooling is available, mirroring the transport
- * pattern from adapters/eidolon.ts.
+ * Implements the DesktopStage sub-trait (ports/desktop_stage.ts) by
+ * delegating through an Eidolon MCP transport. This is the canonical
+ * adapter per findings/2026-06-17-agent-platform-domain.md §4 PR 3 and
+ * findings/2026-06-17-eidolon-absorption.md Phase 4 note — it is the
+ * type-safe wrapper around Eidolon's eidolon-desktop (the Rust
+ * VirtualStage impl for macOS / Linux / Windows desktops).
  *
- * Telemetry: each method call is wrapped in an OTLP span via ports/telemetry.ts.
- * Gracefully degrades to no-op when @opentelemetry/api is not installed.
+ * Two layers of delegation:
+ *
+ *   DesktopStageAdapter.click()
+ *   └─> EidolonStage.pointer(sessionId, { kind: "click", x, y })  // device_stage primitive
+ *   └─> EidolonStage.call("pointer", ...)                          // transport-level escape hatch
+ *   └─> EidolonTransport.call("pointer", ...)                      // stdio / http / custom
+ *   └─> KooshaPari/Eidolon eidolon-desktop via MCP                 // native Core Graphics / xdotool
+ *
+ * Telemetry: every method call is wrapped in an OTLP span via
+ * ports/telemetry.ts. Gracefully degrades to no-op when
+ * @opentelemetry/api is not installed.
  */
 
 import type {
-  DeviceStage,
   DeviceId,
   SessionId,
   PointerInput,
@@ -20,254 +30,130 @@ import type {
   ScreenshotResult,
   DeviceSession,
 } from "../device_stage";
+import type {
+  DesktopStage,
+  CaptureSession,
+  DisplayInfo,
+  DisplayId,
+  MouseButton,
+} from "../desktop_stage";
+import { EidolonStage, NullTransport } from "./eidolon";
+import type { EidolonTransport } from "./eidolon";
 import { getTracer } from "../telemetry";
 
 // ---------------------------------------------------------------------------
-// Transport abstractions
-// ---------------------------------------------------------------------------
-
-export interface DesktopMcpResult<T = unknown> {
-  ok: boolean;
-  data?: T;
-  error?: string;
-}
-
-export interface DesktopTransport {
-  readonly name: string;
-  call<T = unknown>(method: string, params?: Record<string, unknown>): Promise<DesktopMcpResult<T>>;
-}
-
-// ---------------------------------------------------------------------------
-// macOS native transport — shells out to screencapture CLI
+// Config
 // ---------------------------------------------------------------------------
 
 /**
- * macOS-native desktop transport using screencapture CLI for screenshots
- * and placeholder stubs for pointer/key events (Core Graphics / CGEvent
- * integration planned). Falls back to mocked responses when the CLI is
- * not available.
+ * DesktopStageAdapter configuration. Mirrors EidolonStageConfig plus an
+ * optional fallback flag.
+ *
+ * Per ADR-023 Rule 3.1 quality bar, the default `fallbackToNull: true`
+ * makes the adapter safe to inject where a desktop modality is expected
+ * (domain code can rely on the trait being present even when no
+ * Eidolon server is configured).
  */
-export class MacOsDesktopTransport implements DesktopTransport {
-  readonly name: string;
-
-  constructor(name: string) {
-    this.name = `macos:${name}`;
-  }
-
-  async call<T = unknown>(
-    method: string,
-    params?: Record<string, unknown>,
-  ): Promise<DesktopMcpResult<T>> {
-    switch (method) {
-      case "screenshot": {
-        const outputPath = (params?.outputPath as string) ?? "/tmp/desktop-screenshot.png";
-        try {
-          // In a real Node.js/Deno environment, exec screencapture -x <path>
-          // For now, return a stub that can be replaced when the runtime permits.
-          return {
-            ok: true,
-            data: {
-              path: outputPath,
-              format: "png" as const,
-              width: 0,
-              height: 0,
-              capturedAt: new Date().toISOString(),
-            } as T,
-          };
-        } catch (err) {
-          return {
-            ok: false,
-            error: err instanceof Error ? err.message : String(err),
-          };
-        }
-      }
-
-      default:
-        return { ok: false, error: `Desktop: method "${method}" not implemented on macOS transport` };
-    }
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Linux / X11 transport — uses xdotool for pointer/key events
-// ---------------------------------------------------------------------------
-
-/**
- * Linux X11 desktop transport using xdotool for pointer and key events,
- * import/convert from ImageMagick for screenshots. Falls back to mocked
- * responses when xdotool is not available.
- */
-export class LinuxDesktopTransport implements DesktopTransport {
-  readonly name: string;
-
-  constructor(name: string) {
-    this.name = `linux:${name}`;
-  }
-
-  async call<T = unknown>(
-    method: string,
-    params?: Record<string, unknown>,
-  ): Promise<DesktopMcpResult<T>> {
-    switch (method) {
-      case "pointer": {
-        const x = params?.x as number | undefined;
-        const y = params?.y as number | undefined;
-
-        if (x == null || y == null) {
-          return { ok: false, error: "pointer: x and y are required" };
-        }
-
-        // Placeholder: real impl shells out to xdotool mousemove + click
-        return { ok: true, data: undefined as T };
-      }
-
-      default:
-        return { ok: false, error: `Desktop: method "${method}" not implemented on Linux transport` };
-    }
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Null transport — safe fallback when no desktop tooling is configured.
-// ---------------------------------------------------------------------------
-
-export class NullDesktopTransport implements DesktopTransport {
-  readonly name = "null-desktop";
-
-  async call<T = unknown>(
-    _method: string,
-    _params?: Record<string, unknown>,
-  ): Promise<DesktopMcpResult<T>> {
-    return { ok: false, error: "Desktop tooling not available: no transport configured" };
-  }
-}
-
-// ---------------------------------------------------------------------------
-// DesktopStage config
-// ---------------------------------------------------------------------------
-
 export interface DesktopStageConfig {
   readonly name: string;
-  readonly type: "macos-native" | "linux-x11" | "custom";
-  readonly customTransport?: DesktopTransport;
+  readonly transport: "stdio" | "http" | "custom";
+  readonly endpoint?: string;
+  readonly customTransport?: EidolonTransport;
+  readonly fallbackToNull?: boolean;
+  readonly defaultModality?: "desktop"; // locked to "desktop" for this adapter
 }
 
 // ---------------------------------------------------------------------------
-// DesktopStage adapter
+// Backing primitive selector
 // ---------------------------------------------------------------------------
 
-export class DesktopStage implements DeviceStage {
+/**
+ * Build a PointerInput out of DesktopStage-level coordinates and a mouse
+ * button. This is the single place where DesktopStage.click /
+ * DesktopStage.doubleClick / DesktopStage.rightClick collapse into the
+ * device-stage pointer primitive before being routed through Eidolon.
+ *
+ * The Eidolon eidolon-desktop backend interprets the `button` field to
+ * decide between left- and right-click; there is no separate
+ * "right-click" PointerInput.kind in the device-stage baseline.
+ */
+function pointerFromCoords(
+  x: number,
+  y: number,
+  button: MouseButton,
+): PointerInput & { readonly button: MouseButton } {
+  return { kind: "click", x, y, button };
+}
+
+// ---------------------------------------------------------------------------
+// Adapter
+// ---------------------------------------------------------------------------
+
+/**
+ * Eidolon-backed DesktopStage adapter. Goes through EidolonStage for
+ * transport (stdio / http / in-memory) and exposes the desktop-semantic
+ * operations defined in ports/desktop_stage.ts.
+ */
+export class DesktopStageAdapter implements DesktopStage {
   readonly name: string;
-  readonly modality = "desktop" as const;
-  readonly supportedDeviceKinds: readonly string[] = ["macos", "linux-x11", "linux-wayland"];
+  readonly modality: "desktop" = "desktop";
+  readonly supportedDeviceKinds: readonly string[] = [
+    "macos",
+    "linux-x11",
+    "linux-wayland",
+    "windows",
+  ];
 
-  private readonly transport: DesktopTransport;
+  private readonly delegate: EidolonStage;
 
-  constructor(private readonly config: DesktopStageConfig) {
-    this.name = `desktop:${config.name}`;
-    this.transport = config.customTransport ?? new NullDesktopTransport();
+  constructor(config: DesktopStageConfig) {
+    this.name = `desktop-eidolon:${config.name}`;
+
+    // The EidolonStage is the transport owner; we route desktop ops
+    // through it so the OTLP spans, error wrapping, and transport
+    // handling all stay in one place.
+    const fallback = config.fallbackToNull ?? true;
+
+    const delegateConfig: ConstructorParameters<typeof EidolonStage>[0] = {
+      name: config.name,
+      transport:
+        fallback && config.transport !== "custom" && !config.customTransport
+          ? "custom"
+          : config.transport,
+      ...(config.endpoint !== undefined ? { endpoint: config.endpoint } : {}),
+      ...(config.customTransport !== undefined
+        ? { customTransport: config.customTransport }
+        : {}),
+      defaultModality: "desktop",
+    };
+
+    this.delegate = new EidolonStage(delegateConfig);
   }
 
-  async listDevices(): Promise<readonly DeviceId[]> {
-    const span = getTracer().startSpan("device-stage.listDevices", {
-      attributes: { "device.modality": this.modality, "device.transport": this.transport.name },
-    });
-    try {
-      const result = await this.call<readonly DeviceId[]>("list_devices");
-      return result;
-    } catch (error) {
-      span.recordError(error instanceof Error ? error : new Error(String(error)));
-      throw error;
-    } finally {
-      span.end();
-    }
+  /**
+   * Read-only accessor for the underlying EidolonStage — primarily used
+   * by tests and DI containers that want to verify delegation or wire
+   * additional tap points (e.g. recording transports).
+   */
+  getDelegate(): EidolonStage {
+    return this.delegate;
   }
 
-  async openSession(deviceId: DeviceId): Promise<DeviceSession> {
-    const span = getTracer().startSpan("device-stage.openSession", {
+  // -------------------------------------------------------------------------
+  // DesktopStage: desktop semantics
+  // -------------------------------------------------------------------------
+
+  async startCaptures(sessionId: SessionId, outputPath: string): Promise<CaptureSession> {
+    const span = getTracer().startSpan("desktop-stage.startCaptures", {
       attributes: {
         "device.modality": this.modality,
-        "device.transport": this.transport.name,
-        "device.id": deviceId,
-      },
-    });
-    try {
-      const result = await this.call<DeviceSession>("open_session", { deviceId });
-      return result;
-    } catch (error) {
-      span.recordError(error instanceof Error ? error : new Error(String(error)));
-      throw error;
-    } finally {
-      span.end();
-    }
-  }
-
-  async closeSession(sessionId: SessionId): Promise<void> {
-    const span = getTracer().startSpan("device-stage.closeSession", {
-      attributes: {
-        "device.modality": this.modality,
-        "device.transport": this.transport.name,
+        "device.transport": this.delegateName(),
         "session.id": sessionId,
+        "capture.outputPath": outputPath,
       },
     });
     try {
-      await this.call<void>("close_session", { sessionId });
-    } catch (error) {
-      span.recordError(error instanceof Error ? error : new Error(String(error)));
-      throw error;
-    } finally {
-      span.end();
-    }
-  }
-
-  async pointer(sessionId: SessionId, input: PointerInput): Promise<void> {
-    const span = getTracer().startSpan("device-stage.pointer", {
-      attributes: {
-        "device.modality": this.modality,
-        "device.transport": this.transport.name,
-        "pointer.kind": input.kind,
-        "pointer.x": input.x,
-        "pointer.y": input.y,
-      },
-    });
-    try {
-      await this.call<void>("pointer", { sessionId, ...input });
-    } catch (error) {
-      span.recordError(error instanceof Error ? error : new Error(String(error)));
-      throw error;
-    } finally {
-      span.end();
-    }
-  }
-
-  async key(sessionId: SessionId, input: KeyInput): Promise<void> {
-    const span = getTracer().startSpan("device-stage.key", {
-      attributes: {
-        "device.modality": this.modality,
-        "device.transport": this.transport.name,
-        "key.kind": input.kind,
-      },
-    });
-    try {
-      await this.call<void>("key", { sessionId, ...input });
-    } catch (error) {
-      span.recordError(error instanceof Error ? error : new Error(String(error)));
-      throw error;
-    } finally {
-      span.end();
-    }
-  }
-
-  async screenshot(sessionId: SessionId, outputPath: string): Promise<ScreenshotResult> {
-    const span = getTracer().startSpan("device-stage.screenshot", {
-      attributes: {
-        "device.modality": this.modality,
-        "device.transport": this.transport.name,
-        "screenshot.path": outputPath,
-      },
-    });
-    try {
-      const result = await this.call<ScreenshotResult>("screenshot", {
+      const result = await this.delegate.call<CaptureSession>("start_captures", {
         sessionId,
         outputPath,
       });
@@ -280,15 +166,69 @@ export class DesktopStage implements DeviceStage {
     }
   }
 
-  async viewport(sessionId: SessionId): Promise<Viewport> {
-    const span = getTracer().startSpan("device-stage.viewport", {
+  async click(
+    sessionId: SessionId,
+    x: number,
+    y: number,
+    button: MouseButton = "left",
+  ): Promise<void> {
+    await this.delegate.pointer(sessionId, pointerFromCoords(x, y, button));
+  }
+
+  async doubleClick(
+    sessionId: SessionId,
+    x: number,
+    y: number,
+    button: MouseButton = "left",
+  ): Promise<void> {
+    // Double click is two clicks — issued back-to-back so Eidolon handles
+    // OS-specific timing (eidolon-desktop maps to NSEvent /
+    // XTestButtonPress with the OS double-click interval).
+    await this.delegate.pointer(sessionId, pointerFromCoords(x, y, button));
+    await this.delegate.pointer(sessionId, pointerFromCoords(x, y, button));
+  }
+
+  async rightClick(sessionId: SessionId, x: number, y: number): Promise<void> {
+    await this.delegate.pointer(sessionId, pointerFromCoords(x, y, "right"));
+  }
+
+  async keyTap(sessionId: SessionId, key: string): Promise<void> {
+    await this.delegate.key(sessionId, { kind: "press", key } satisfies KeyInput);
+  }
+
+  async keyCombo(
+    sessionId: SessionId,
+    modifiers: readonly string[],
+    key: string,
+  ): Promise<void> {
+    // Key combo is encoded via a single "press" KeyInput that carries
+    // both the modifiers and the terminal key. The Eidolon backend is
+    // responsible for the OS-specific keymap (cmd vs ctrl, order of
+    // modifier press/release).
+    //
+    // The cast through unknown lets us forward `modifiers` along the
+    // wire to the backend without widening the EidolonStage.key()
+    // signature (which would ripple across the Eidolon adapter surface).
+    const payload = {
+      kind: "press" as const,
+      key,
+      modifiers,
+    };
+    await this.delegate.key(sessionId, payload as unknown as KeyInput);
+  }
+
+  async getActiveDisplay(sessionId: SessionId): Promise<DisplayInfo> {
+    const span = getTracer().startSpan("desktop-stage.getActiveDisplay", {
       attributes: {
         "device.modality": this.modality,
-        "device.transport": this.transport.name,
+        "device.transport": this.delegateName(),
+        "session.id": sessionId,
       },
     });
     try {
-      const result = await this.call<Viewport>("viewport", { sessionId });
+      const result = await this.delegate.call<DisplayInfo>("get_active_display", {
+        sessionId,
+      });
       return result;
     } catch (error) {
       span.recordError(error instanceof Error ? error : new Error(String(error)));
@@ -298,18 +238,83 @@ export class DesktopStage implements DeviceStage {
     }
   }
 
+  // -------------------------------------------------------------------------
+  // DeviceStage: baseline primitive surface (pure passthroughs)
+  // -------------------------------------------------------------------------
+
+  async listDevices(): Promise<readonly DeviceId[]> {
+    return this.delegate.listDevices();
+  }
+
+  async openSession(deviceId: DeviceId): Promise<DeviceSession> {
+    return this.delegate.openSession(deviceId);
+  }
+
+  async closeSession(sessionId: SessionId): Promise<void> {
+    return this.delegate.closeSession(sessionId);
+  }
+
+  async pointer(sessionId: SessionId, input: PointerInput): Promise<void> {
+    return this.delegate.pointer(sessionId, input);
+  }
+
+  async key(sessionId: SessionId, input: KeyInput): Promise<void> {
+    return this.delegate.key(sessionId, input);
+  }
+
+  async screenshot(
+    sessionId: SessionId,
+    outputPath: string,
+  ): Promise<ScreenshotResult> {
+    return this.delegate.screenshot(sessionId, outputPath);
+  }
+
+  async viewport(sessionId: SessionId): Promise<Viewport> {
+    return this.delegate.viewport(sessionId);
+  }
+
+  /** Forward arbitrary calls through EidolonStage.call (escape hatch). */
   async call<T = unknown>(method: string, params?: unknown): Promise<T> {
-    const mcpResult = await this.transport.call<T>(
-      method,
-      params as Record<string, unknown> | undefined,
-    );
+    return this.delegate.call<T>(method, params);
+  }
 
-    if (!mcpResult.ok) {
-      throw new Error(
-        `DesktopStage.call("${method}") failed via ${this.transport.name}: ${mcpResult.error ?? "unknown error"}`,
-      );
-    }
+  // -------------------------------------------------------------------------
+  // Internals
+  // -------------------------------------------------------------------------
 
-    return mcpResult.data as T;
+  /** Reads the transport name off the wrapped EidolonStage for telemetry. */
+  private delegateName(): string {
+    // EidolonStage stores transport as `private readonly transport: EidolonTransport`.
+    // We cast through unknown to read the name without exposing internals.
+    const transport = (this.delegate as unknown as {
+      transport?: { name?: string };
+    }).transport;
+    return transport?.name ?? "unknown";
   }
 }
+
+// ---------------------------------------------------------------------------
+// Factory + Null fallback
+// ---------------------------------------------------------------------------
+
+/**
+ * Build a DesktopStageAdapter with the default config (Eidolon not
+ * reachable — NullTransport). Useful for tests and for any domain code
+ * that wants a typed DesktopStage slot in its DI graph regardless of
+ * whether Eidolon is online.
+ */
+export function nullDesktopStage(name = "null"): DesktopStage {
+  return new DesktopStageAdapter({
+    name,
+    transport: "custom",
+    customTransport: new NullTransport(),
+    fallbackToNull: true,
+  });
+}
+
+/**
+ * Re-export the brand utilities from device_stage for ergonomics —
+ * callers shouldn't need a second import to construct branded IDs.
+ */
+export type { DeviceId, SessionId };
+export const asDisplayId = (s: string): DisplayId => s as DisplayId;
