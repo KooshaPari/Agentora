@@ -29,11 +29,7 @@ impl AgentConfig {
         }
     }
 
-    pub fn with_metadata(
-        mut self,
-        key: impl Into<String>,
-        value: serde_json::Value,
-    ) -> Self {
+    pub fn with_metadata(mut self, key: impl Into<String>, value: serde_json::Value) -> Self {
         self.metadata.insert(key.into(), value);
         self
     }
@@ -53,11 +49,7 @@ impl Agent {
         &self.config
     }
 
-    pub async fn execute(
-        &self,
-        _input: &str,
-        _registry: &ProviderRegistry,
-    ) -> Result<String> {
+    pub async fn execute(&self, _input: &str, _registry: &ProviderRegistry) -> Result<String> {
         Ok(format!(
             "executed agent {} v{}",
             self.config.name, self.config.version
@@ -103,7 +95,12 @@ impl AgentExecutor {
             .unwrap_or_default()
     }
 
-    pub async fn execute(&self, agent_id: &str, input: &str, registry: &ProviderRegistry) -> Result<String> {
+    pub async fn execute(
+        &self,
+        agent_id: &str,
+        input: &str,
+        registry: &ProviderRegistry,
+    ) -> Result<String> {
         let agent = self
             .get(agent_id)
             .ok_or_else(|| ForgecodeError::AgentNotFound(agent_id.into()))?;

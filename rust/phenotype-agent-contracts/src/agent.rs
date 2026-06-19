@@ -200,8 +200,5 @@ pub trait ResourcePort: Send + Sync {
     /// List available resource URIs.
     async fn list(&self) -> Result<Vec<McpResource>>;
     /// Subscribe to change notifications for a URI.
-    async fn subscribe(
-        &self,
-        uri: &str,
-    ) -> Result<tokio::sync::mpsc::Receiver<Value>>;
+    async fn subscribe(&self, uri: &str) -> Result<tokio::sync::mpsc::Receiver<Value>>;
 }
