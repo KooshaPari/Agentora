@@ -14,18 +14,16 @@ pub mod http;
 pub mod outbound;
 pub mod ports;
 
-pub use adapters::{
-    InMemoryCache, InMemoryEventBus, InMemoryRepository, InMemorySecretManager,
-};
+pub use adapters::{InMemoryCache, InMemoryEventBus, InMemoryRepository, InMemorySecretManager};
 pub use agent::{
-    AgentError, Context, GenerationResult, LLM, McpResource, McpTool, McpToolRequest,
-    McpToolResponse, MemoryEntry, MemoryPort, MemoryRole, ResourcePort, ServerPort,
-    ToolCall, ToolExecutor, ToolResponse,
+    AgentError, Context, GenerationResult, McpResource, McpTool, McpToolRequest, McpToolResponse,
+    MemoryEntry, MemoryPort, MemoryRole, ResourcePort, ServerPort, ToolCall, ToolExecutor,
+    ToolResponse, LLM,
 };
 pub use error::{DomainError, ErrorKind, Result};
 pub use http::{
-    Body, ConnectionPoolPort, ConnectionPort, Headers, HttpClientPort, HttpError,
-    InterceptorPort, PoolStats, Request, RequestBuilder, Response,
+    Body, ConnectionPoolPort, ConnectionPort, Headers, HttpClientPort, HttpError, InterceptorPort,
+    PoolStats, Request, RequestBuilder, Response,
 };
 pub use outbound::{CachePort, ConfigLoader, EventBus, Repository, SecretManager};
 pub use ports::{Command, Query, RepositoryPort, SecretPort, UseCaseResult};

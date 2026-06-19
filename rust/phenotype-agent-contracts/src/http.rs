@@ -109,9 +109,7 @@ impl Headers {
 
     /// Iterate all header pairs.
     pub fn all(&self) -> impl Iterator<Item = (&str, &str)> {
-        self.inner
-            .iter()
-            .map(|(k, v)| (k.as_str(), v.as_str()))
+        self.inner.iter().map(|(k, v)| (k.as_str(), v.as_str()))
     }
 }
 
@@ -209,7 +207,10 @@ pub trait HttpClientPort: Send + Sync {
 
     /// Convenience GET.
     async fn get(&self, uri: &str) -> Result<Response> {
-        let request = Request::builder().method(http::Method::GET).uri(uri).build()?;
+        let request = Request::builder()
+            .method(http::Method::GET)
+            .uri(uri)
+            .build()?;
         self.execute(request).await
     }
 
