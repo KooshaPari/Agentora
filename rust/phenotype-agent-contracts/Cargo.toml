@@ -1,0 +1,21 @@
+[package]
+name = "phenotype-agent-contracts"
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+description = "HTTP and agent adapter contract traits for the Phenotype ecosystem (Agentora terminal owner)"
+repository = "https://github.com/KooshaPari/Agentora"
+rust-version = "1.75"
+
+[dependencies]
+async-trait = "0.1"
+chrono = { version = "0.4", features = ["serde"] }
+http = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2.0"
+tokio = { version = "1", features = ["sync"] }
+uuid = { version = "1", features = ["v4", "serde"] }
+
+[dev-dependencies]
+tokio = { version = "1", features = ["rt", "macros"] }

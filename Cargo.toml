@@ -15,6 +15,7 @@ exclude = [
     "crates/phenotype-config-loader",
 ]
 members = [
+    "rust/phenotype-agent-contracts",
     "crates/pheno-agent/phenotype-daemon",
     "crates/pheno-agent/phenotype-skills",
     "crates/pheno-proc-runtime/pheno-proc-core",
