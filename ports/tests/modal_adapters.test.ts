@@ -1,12 +1,11 @@
 import { describe, it, expect } from "vitest";
 import {
-  DesktopStage,
-  NullDesktopTransport,
-  MacOsDesktopTransport,
-  LinuxDesktopTransport,
-  type DesktopTransport,
-  type DesktopMcpResult,
+  DesktopStageAdapter,
+  nullDesktopStage,
+  type DesktopStageConfig,
 } from "../adapters/desktop";
+import { NullTransport } from "../adapters/eidolon";
+import type { EidolonTransport, McpResult } from "../adapters/eidolon";
 import {
   MobileDeviceStage,
   NullMobileTransport,
@@ -69,10 +68,10 @@ const MOCK_SCREENSHOT: ScreenshotResult = {
 // Helpers — mock transport factories for each modality
 // ---------------------------------------------------------------------------
 
-function createMockDesktopTransport(dataMap: Record<string, unknown>): DesktopTransport {
+function createMockDesktopTransport(dataMap: Record<string, unknown>): EidolonTransport {
   return {
     name: "mock-desktop",
-    async call<T>(method: string, _params?: Record<string, unknown>): Promise<DesktopMcpResult<T>> {
+    async call<T>(method: string, _params?: Record<string, unknown>): Promise<McpResult<T>> {
       if (method in dataMap) return { ok: true, data: dataMap[method] as T };
       return { ok: false, error: `not implemented: ${method}` };
     },
