@@ -1,0 +1,12 @@
+{
+  "name": "agent-platform-intent-router-example",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "First end-to-end consumer of the DeviceStage abstraction — classifies a free-form user message and dispatches to the correct modal adapter.",
+  "main": "intent-router.ts",
+  "scripts": {
+    "check": "tsc --noEmit",
+    "test": "vitest run test.ts"
+  }
+}
