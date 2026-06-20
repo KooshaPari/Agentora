@@ -27,6 +27,26 @@
 
 # agentkit - Agent Framework
 
+## Quickstart
+
+> Hexagonal-architecture framework for AI agents with skill system, tool registry, two-tier memory
+
+```bash
+# Clone, build, test
+git clone https://github.com/KooshaPari/Agentora.git
+cd Agentora
+```
+
+```bash
+pip install agentora
+```
+```python
+from agentora import ...
+```
+
+See [SPEC.md](SPEC.md) for the full specification and [llms.txt](llms.txt) for machine-readable metadata.
+
+
 ## State
 
 Progress: `[███████░░░] 70%` — Rust hexagonal agent framework (agentkit).

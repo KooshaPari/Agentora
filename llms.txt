@@ -1,0 +1,20 @@
+# Agentora
+
+> Hexagonal-architecture framework for AI agents with skill system, tool registry, two-tier memory. Part of the Phenotype-org fleet canonical substrate registry (see KooshaPari/phenotype-registry).
+
+## Docs
+- [README.md](README.md): entry point and project overview
+- [SPEC.md](SPEC.md): one-page spec (Problem / Solution / Architecture / API / Status)
+- [CHANGELOG.md](CHANGELOG.md): version history
+- [SECURITY.md](SECURITY.md): security policy and reporting
+
+## Optional
+- [WORKLOG.md](WORKLOG.md): pheno-worklog-schema v2.1 (if present)
+- [docs/adr/](docs/adr/): architecture decision records (if present)
+
+## Notes
+- Language/runtime: python
+- Tier: 1
+- Test coverage: 70%
+- Registry entry: KooshaPari/phenotype-registry/registry/components.lock
+- Maintained by: KooshaPari
