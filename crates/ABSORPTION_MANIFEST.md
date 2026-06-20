@@ -9,6 +9,16 @@ Rust agent daemon/skills from `KooshaPari/PhenoAgent` canonical in
 [`docs/absorption/PHENOAGENT_ABSORPTION_2026_06_18.md`](../absorption/PHENOAGENT_ABSORPTION_2026_06_18.md).
 Source repo deprecated; archive gate P5-2 pending.
 
+## phenoRouterMonitor → phenoAI absorption (P5-4, 2026-06-20)
+
+Rust LLM router from `KooshaPari/phenoRouterMonitor` is canonical in
+`KooshaPari/phenoAI/crates/llm-router/` — `LlmProvider` trait, `OpenAiProvider`,
+`LlmRouter` with prefix routing + fallback (`lib.rs`, 7 unit tests, `sk-` redaction
+pinned). Python `ModelLoader` port + `HuggingFaceLoader` + `LocalLoader` adapters
++ 8 smoke tests live in `KooshaPari/phenoAI/ports/`. Source repo was archived
+with only 0-byte placeholders; no code migration. Spec:
+[`docs/operations/p5-4-phenoroutermonitor-absorption-2026-06-20.md`](../../../migration-work/registry-wt/docs/operations/p5-4-phenoroutermonitor-absorption-2026-06-20.md).
+
 ## Workspace policy
 
 Only `pheno-proc-runtime/*`, `pheno-agent/*`, and root `agentkit` are in the default
