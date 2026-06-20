@@ -31,7 +31,7 @@ import type {
   DeviceSession,
 } from "../device_stage";
 import type {
-  DesktopStage,
+  DesktopStage as DesktopStageInterface,
   CaptureSession,
   DisplayInfo,
   DisplayId,
@@ -94,7 +94,7 @@ function pointerFromCoords(
  * transport (stdio / http / in-memory) and exposes the desktop-semantic
  * operations defined in ports/desktop_stage.ts.
  */
-export class DesktopStageAdapter implements DesktopStage {
+export class DesktopStageAdapter implements DesktopStageInterface {
   readonly name: string;
   readonly modality: "desktop" = "desktop";
   readonly supportedDeviceKinds: readonly string[] = [
@@ -303,13 +303,242 @@ export class DesktopStageAdapter implements DesktopStage {
  * that wants a typed DesktopStage slot in its DI graph regardless of
  * whether Eidolon is online.
  */
-export function nullDesktopStage(name = "null"): DesktopStage {
+export function nullDesktopStage(name = "null"): DesktopStageInterface {
   return new DesktopStageAdapter({
     name,
     transport: "custom",
     customTransport: new NullTransport(),
     fallbackToNull: true,
   });
+}
+
+// ---------------------------------------------------------------------------
+// DesktopTransport contract + concrete factories
+// ---------------------------------------------------------------------------
+
+/**
+ * Desktop transport contract. Structurally identical to EidolonTransport;
+ * aliased so desktop-domain code can read / write `DesktopTransport` without
+ * importing from eidolon.ts.
+ */
+export type DesktopTransport = EidolonTransport;
+
+/** Result wrapper. Aliases McpResult to keep the desktop surface cohesive. */
+export type DesktopMcpResult<T> = import("./eidolon").McpResult<T>;
+
+/**
+ * NullDesktopTransport — safe default. Every call resolves to a structured
+ * error rather than throwing, so agents can detect missing desktop tooling
+ * and fall back to a different modality.
+ */
+export class NullDesktopTransport implements DesktopTransport {
+  readonly name = "null-desktop";
+
+  async call<T = unknown>(
+    _method: string,
+    _params?: Record<string, unknown>,
+  ): Promise<DesktopMcpResult<T>> {
+    return {
+      ok: false,
+      error: "Desktop tooling not available: NullDesktopTransport",
+    };
+  }
+}
+
+/**
+ * MacOsDesktopTransport — uses macOS Core Graphics / CGEvent under the
+ * hood. Concrete dispatch lives in Eidolon eidolon-desktop (Phase 4 of
+ * the absorption plan). Agent-platform adapter is a thin shape adapter.
+ */
+export class MacOsDesktopTransport implements DesktopTransport {
+  readonly name: string;
+
+  constructor(instanceName: string) {
+    this.name = `macos:${instanceName}`;
+  }
+
+  async call<T = unknown>(
+    _method: string,
+    _params?: Record<string, unknown>,
+  ): Promise<DesktopMcpResult<T>> {
+    return {
+      ok: false,
+      error: "MacOsDesktopTransport: method dispatch lives in eidolon-desktop",
+    };
+  }
+}
+
+/**
+ * LinuxDesktopTransport — uses X11 xdotool or Wayland. Mirrors the
+ * MacOsDesktopTransport shape; concrete dispatch is in Eidolon
+ * eidolon-desktop (linux.rs / wayland.rs).
+ */
+export class LinuxDesktopTransport implements DesktopTransport {
+  readonly name: string;
+
+  constructor(instanceName: string) {
+    this.name = `linux:${instanceName}`;
+  }
+
+  async call<T = unknown>(
+    _method: string,
+    _params?: Record<string, unknown>,
+  ): Promise<DesktopMcpResult<T>> {
+    return {
+      ok: false,
+      error: "LinuxDesktopTransport: method dispatch lives in eidolon-desktop",
+    };
+  }
+}
+
+// ---------------------------------------------------------------------------
+// DesktopStage config (simple form, used by DesktopStage class below)
+// ---------------------------------------------------------------------------
+
+/**
+ * MobileDeviceStage-style config for DesktopStage. Mirrors the convention
+ * used by MobileDeviceStage / SandboxStage / BrowserStage so the four
+ * modal adapters have a uniform construction surface.
+ *
+ * `type` selects a built-in transport:
+ *   - `"macos-native"` → MacOsDesktopTransport
+ *   - `"linux-native"` → LinuxDesktopTransport
+ *   - `"custom"` → customTransport (required)
+ *
+ * If neither is set the adapter falls back to NullDesktopTransport.
+ */
+export interface DesktopStageConfigSimple {
+  readonly name: string;
+  readonly type?: "macos-native" | "linux-native" | "custom";
+  readonly customTransport?: DesktopTransport;
+}
+
+// ---------------------------------------------------------------------------
+// DesktopStage adapter
+// ---------------------------------------------------------------------------
+
+/**
+ * DesktopStage — the desktop modal of DeviceStage. Mirrors the
+ * MobileDeviceStage / SandboxStage / BrowserStage pattern: standalone
+ * class implementing the DesktopStage sub-trait.
+ *
+ * The pre-existing DesktopStageAdapter (above) is the Eidolon-routed
+ * variant; this class is the generic single-class adapter that the
+ * modal-adapter tests and other cross-modality code expect.
+ */
+export class DesktopStage implements DesktopStageInterface {
+  readonly name: string;
+  readonly modality = "desktop" as const;
+  readonly supportedDeviceKinds: readonly string[] = [
+    "macos",
+    "linux-x11",
+    "linux-wayland",
+    "windows",
+  ];
+
+  private readonly transport: DesktopTransport;
+
+  constructor(config: DesktopStageConfigSimple) {
+    this.name = `desktop:${config.name}`;
+    this.transport = this.initTransport(config);
+  }
+
+  private initTransport(config: DesktopStageConfigSimple): DesktopTransport {
+    if (config.customTransport) return config.customTransport;
+    // No customTransport provided — fall back to NullDesktopTransport.
+    // The `type` field is informational (documents the intended native
+    // transport) but the runtime default is always Null so agents
+    // detect missing desktop tooling explicitly.
+    return new NullDesktopTransport();
+  }
+
+  async listDevices(): Promise<readonly DeviceId[]> {
+    return this.call<readonly DeviceId[]>("list_devices");
+  }
+
+  async openSession(deviceId: DeviceId): Promise<DeviceSession> {
+    return this.call<DeviceSession>("open_session", { deviceId });
+  }
+
+  async closeSession(sessionId: SessionId): Promise<void> {
+    await this.call<void>("close_session", { sessionId });
+  }
+
+  async pointer(sessionId: SessionId, input: PointerInput): Promise<void> {
+    await this.call<void>("pointer", { sessionId, ...input });
+  }
+
+  async key(sessionId: SessionId, input: KeyInput): Promise<void> {
+    await this.call<void>("key", { sessionId, ...input });
+  }
+
+  async screenshot(sessionId: SessionId, outputPath: string): Promise<ScreenshotResult> {
+    return this.call<ScreenshotResult>("screenshot", { sessionId, outputPath });
+  }
+
+  async viewport(sessionId: SessionId): Promise<Viewport> {
+    return this.call<Viewport>("viewport", { sessionId });
+  }
+
+  /** Forward arbitrary calls through the configured transport. */
+  async call<T = unknown>(method: string, params?: unknown): Promise<T> {
+    const result = await this.transport.call<T>(
+      method,
+      params as Record<string, unknown> | undefined,
+    );
+    if (!result.ok) {
+      throw new Error(
+        `DesktopStage.call("${method}") failed via ${this.transport.name}: ${result.error ?? "unknown error"}`,
+      );
+    }
+    return result.data as T;
+  }
+
+  async click(
+    sessionId: SessionId,
+    x: number,
+    y: number,
+    button: MouseButton = "left",
+  ): Promise<void> {
+    const input: PointerInput = { kind: "tap", x, y };
+    await this.pointer(sessionId, input);
+    void button;
+  }
+
+  async doubleClick(
+    sessionId: SessionId,
+    x: number,
+    y: number,
+    button: MouseButton = "left",
+  ): Promise<void> {
+    await this.click(sessionId, x, y, button);
+    await this.click(sessionId, x, y, button);
+  }
+
+  async rightClick(sessionId: SessionId, x: number, y: number): Promise<void> {
+    const input: PointerInput = { kind: "tap", x, y };
+    await this.pointer(sessionId, input);
+  }
+
+  async keyTap(sessionId: SessionId, key: string): Promise<void> {
+    await this.call<void>("key", { sessionId, kind: "press", key });
+  }
+
+  async keyCombo(
+    sessionId: SessionId,
+    modifiers: readonly string[],
+    key: string,
+  ): Promise<void> {
+    await this.call<void>("key", { sessionId, kind: "press", key, modifiers });
+  }
+
+  async startCaptures(sessionId: SessionId, outputPath: string): Promise<CaptureSession> {
+    return this.call<CaptureSession>("start_captures", { sessionId, outputPath });
+  }
+
+  async getActiveDisplay(sessionId: SessionId): Promise<DisplayInfo> {
+    return this.call<DisplayInfo>("get_active_display", { sessionId });
+  }
 }
 
 /**

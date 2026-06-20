@@ -2,6 +2,10 @@ import { describe, it, expect } from "vitest";
 import {
   DesktopStageAdapter,
   nullDesktopStage,
+  DesktopStage,
+  NullDesktopTransport,
+  MacOsDesktopTransport,
+  LinuxDesktopTransport,
   type DesktopStageConfig,
 } from "../adapters/desktop";
 import { NullTransport } from "../adapters/eidolon";
