@@ -132,19 +132,64 @@ runs without network, Docker, or external services.
 remains usable from `tokio::main` and embeddable inside multi-threaded
 runtimes.
 
+## phenoRouterMonitor → phenoAI absorption requirements (FR-LLM)
+
+These requirements are added by the P5-4 absorption plan
+(`docs/operations/p5-agent-runtime-absorption-2026-06-19.md`,
+rows 21, 25) and describe the contract that the absorbed
+`phenoRouterMonitor` crate must satisfy now that it lives in
+`phenoAI`. See `docs/absorption/PHENOROUTERMONITOR_REPOINT.md` for
+the full repoint rationale.
+
+### FR-LLM-001 — phenoRouterMonitor CRATE re-homed under phenoAI
+
+`phenoRouterMonitor` is no longer a standalone KooshaPari repository.
+Its sources, CI workflows, ADRs, and traceability rows are re-homed
+under `KooshaPari/phenoAI` (this repository) as a workspace member
+or a `crates/` subdirectory. The crate is renamed `phenoai-router`
+(or the chosen scoped name) and exposes the same public API surface
+that consumers depended on before the move.
+
+### FR-LLM-002 — phenoAI exposes the routing trait surface
+
+`phenoAI` exposes the routing trait surface that `phenoRouterMonitor`
+used to expose (router config, route selection, request envelope).
+Existing callers repoint their dependency from the archived
+`phenoRouterMonitor` crate to the in-tree `phenoAI` module with
+no source-level API change beyond the package import path.
+
+### FR-LLM-003 — phenoAI inherits the phenoRouterMonitor ADR set
+
+The ADRs that used to live at `KooshaPari/phenoRouterMonitor/docs/adrs/`
+are folded into `phenoAI/docs/adrs/` and cross-linked from the
+`phenoAI` README. The disposition of each ADR (kept, superseded,
+re-issued) is recorded in `docs/specs/TRACEABILITY.md`.
+
+### FR-LLM-004 — phenoAI Tier-1 governance coverage
+
+The absorbed `phenoRouterMonitor` workspace inherits the Tier-1
+governance gate set used by `phenoAI` (workflows, deny, gitleaks,
+CODEOWNERS, secretscan). The gate-flip is recorded in
+`registry/disposition-index.json` under `gate-phenoRouterMonitor`
+with status `absorbed-by:phenoai`.
+
 ## Acceptance test mapping (overview)
 
 Each FR has at least one acceptance test in `tests/` whose name
 contains the FR id and whose leading comment repeats the FR id. The
 mapping is:
 
-| FR       | Test files                                                    |
-|----------|---------------------------------------------------------------|
-| FR-001   | `tests/test_agent_dispatch.rs`                                |
-| FR-002   | `tests/test_skill_registry.rs`                                |
-| FR-003   | `tests/test_tool_registry.rs`                                 |
-| FR-004   | `tests/test_memory_tiers.rs`                                  |
-| FR-005   | `tests/test_executor_and_ports.rs`                            |
+| FR         | Test files                                                    |
+|------------|---------------------------------------------------------------|
+| FR-001     | `tests/test_agent_dispatch.rs`                                |
+| FR-002     | `tests/test_skill_registry.rs`                                |
+| FR-003     | `tests/test_tool_registry.rs`                                 |
+| FR-004     | `tests/test_memory_tiers.rs`                                  |
+| FR-005     | `tests/test_executor_and_ports.rs`                            |
+| FR-LLM-001 | `crates/phenoai-router/tests/repoint_smoke.rs` (added in P5-4) |
+| FR-LLM-002 | `crates/phenoai-router/tests/router_trait.rs` (added in P5-4)  |
+| FR-LLM-003 | `docs/absorption/PHENOROUTERMONITOR_REPOINT.md` cross-link     |
+| FR-LLM-004 | `registry/disposition-index.json` `gate-phenoRouterMonitor` row |
 
 See `docs/specs/TRACEABILITY.md` for the FR → test → impl matrix and
 any impl files that are not under `src/`.

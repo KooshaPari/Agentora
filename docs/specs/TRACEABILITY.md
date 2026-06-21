@@ -21,6 +21,10 @@
 | NFR-002  | `tests/test_feature_flags.rs`                     | `Cargo.toml`                                                                                         |
 | NFR-003  | `tests/test_deterministic_surface.rs`             | `src/adapters/llm/mod.rs`, `src/adapters/memory/mod.rs`, `src/domain/memory/mod.rs`                  |
 | NFR-004  | `tests/test_async_send_sync.rs`                   | `src/domain/agents/mod.rs`, `src/domain/skills/mod.rs`, `src/domain/tools/mod.rs`, `src/domain/ports/mod.rs` |
+| FR-LLM-001 | `tests/test_phenoroutermonitor_dispatch.rs`     | `crates/phenoroutermonitor/src/dispatch.rs`, `crates/phenoroutermonitor/src/router.rs`              |
+| FR-LLM-002 | `tests/test_phenoroutermonitor_provider.rs`     | `crates/phenoroutermonitor/src/provider.rs`, `crates/phenoroutermonitor/src/config.rs`            |
+| FR-LLM-003 | `tests/test_phenoroutermonitor_retry.rs`        | `crates/phenoroutermonitor/src/retry.rs`, `crates/phenoroutermonitor/src/backoff.rs`               |
+| FR-LLM-004 | `tests/test_phenoroutermonitor_telemetry.rs`    | `crates/phenoroutermonitor/src/observability.rs`, `crates/phenoroutermonitor/src/metrics.rs`       |
 
 ## Per-FR detail
 
@@ -119,11 +123,36 @@
   `src/domain/ports/mod.rs:58-62`.
 - Test surface: `tests/test_async_send_sync.rs`.
 
+### FR-LLM-001 — phenoRouterMonitor dispatch
+
+- `Dispatcher` at `crates/phenoroutermonitor/src/dispatch.rs:7-58`.
+- `Router` at `crates/phenoroutermonitor/src/router.rs:9-72`.
+- Re-export: `crates/phenoroutermonitor/src/lib.rs:14-22`.
+- Test surface: `tests/test_phenoroutermonitor_dispatch.rs`.
+
+### FR-LLM-002 — phenoRouterMonitor provider
+
+- `Provider` at `crates/phenoroutermonitor/src/provider.rs:6-44`.
+- `ProviderConfig` at `crates/phenoroutermonitor/src/config.rs:8-37`.
+- Test surface: `tests/test_phenoroutermonitor_provider.rs`.
+
+### FR-LLM-003 — phenoRouterMonitor retry/backoff
+
+- `RetryPolicy` at `crates/phenoroutermonitor/src/retry.rs:5-33`.
+- `BackoffStrategy` at `crates/phenoroutermonitor/src/backoff.rs:7-49`.
+- Test surface: `tests/test_phenoroutermonitor_retry.rs`.
+
+### FR-LLM-004 — phenoRouterMonitor observability
+
+- `Telemetry` at `crates/phenoroutermonitor/src/observability.rs:6-58`.
+- `Metrics` at `crates/phenoroutermonitor/src/metrics.rs:9-71`.
+- Test surface: `tests/test_phenoroutermonitor_telemetry.rs`.
+
 ## Coverage
 
-- FRs covered by ≥1 test: **5 / 5** (FR-001..FR-005).
+- FRs covered by ≥1 test: **5 / 5** (FR-001..FR-005) + **4 LLM** (FR-LLM-001..FR-LLM-004, P5-4 phenoRouterMonitor absorption).
 - NFRs covered by ≥1 test: **4 / 4** (NFR-001..NFR-004).
-- Test files in `tests/`: **9** (≥ the 5-test minimum required for Phase 3).
+- Test files in `tests/`: **9** baseline + **4 LLM** (P5-4).
 - Implementation files referenced: `Cargo.toml`, `src/lib.rs`, every file
   in `src/domain/`, `src/application/`, `src/adapters/llm/`, and
   `src/adapters/memory/`.
