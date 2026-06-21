@@ -1,15 +1,10 @@
 [workspace]
 resolver = "2"
 # `agents/phenoagent/{phenotype-daemon,phenotype-skills}` are
-# legacy duplicates of `crates/pheno-agent/{phenotype-daemon,phenotype-skills}`.
-# The canonical daemon lives at KooshaPari/PhenoAgent (see plan:
-# PHENO_AGENT_RECONCILIATION_PLAN §2). Excluded here to allow the
-# 7 `crates/` members to be registered without a name collision.
-# A follow-up PR will `git rm` the `agents/phenoagent/` copies.
-exclude = [
-    "agents/phenoagent/phenotype-daemon",
-    "agents/phenoagent/phenotype-skills",
-]
+# `agents/phenoagent/` legacy stubs removed in PR absorb/phenoagent-p5-2-closeout.
+# Canonical home: `crates/pheno-agent/{phenotype-daemon,phenotype-skills}`.
+# Source repo `KooshaPari/PhenoAgent` already deleted (P5 absorption, 2026-06-19);
+# P5-2 archive-gate closeout: legacy stubs `git rm`'d, exclude-list dropped.
 members = [
     "crates/pheno-agent/phenotype-daemon",
     "crates/pheno-agent/phenotype-skills",
