@@ -86,10 +86,10 @@
         "reason": "Direct feature-name overlap (skill system). The in-tree crates/pheno-agent/phenotype-skills is currently a stub; a published phenotype-skills crate would replace it."
       },
       {
-        "name": "phenotype-bus",
-        "path": "../phenotype-bus",
+        "name": "phenotype-event-bus",
+        "path": "../phenotype-event-bus",
         "relevance": "HIGH",
-        "reason": "Domain event bus (AgentStarted, AgentCompleted, ToolCalled) is hand-rolled in src/domain/events; phenotype-bus would supply a battle-tested pub/sub."
+        "reason": "Domain event bus (AgentStarted, AgentCompleted, ToolCalled) is hand-rolled in src/domain/events; phenotype-event-bus is the current shared target for lifecycle/event streaming contracts."
       },
       {
         "name": "phenotype-registry",
@@ -266,7 +266,7 @@
       "priority": "P1",
       "title": "Replace the 7 sub-crate stubs with shared pheno-* libraries",
       "effort_estimate": "M (1d)",
-      "impact": "crates/pheno-agent/phenotype-skills duplicates ../phenotype-skills; the bespoke SkillRegistry/ToolRegistry/EventBus in src/domain/ are good candidates to back onto phenotype-bus + phenotype-registry. Each substitution shrinks the local surface and reduces drift risk across the org."
+      "impact": "crates/pheno-agent/phenotype-skills duplicates ../phenotype-skills; the bespoke SkillRegistry/ToolRegistry/EventBus in src/domain/ are good candidates to back onto phenotype-event-bus + phenotype-registry. Each substitution shrinks the local surface and reduces drift risk across the org."
     },
     {
       "priority": "P2",
