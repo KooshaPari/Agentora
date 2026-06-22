@@ -19,6 +19,22 @@ pinned). Python `ModelLoader` port + `HuggingFaceLoader` + `LocalLoader` adapter
 with only 0-byte placeholders; no code migration. Spec:
 [`docs/operations/p5-4-phenoroutermonitor-absorption-2026-06-20.md`](../../../migration-work/registry-wt/docs/operations/p5-4-phenoroutermonitor-absorption-2026-06-20.md).
 
+## agent-platform → Agentora adapter (FR-COLLECTION-2026-06, 2026-06-21)
+
+TypeScript agent runtime (`@opentelemetry/api`, T66 modality coordination)
+from `KooshaPari/agent-platform` is canonical in
+`adapters/web/agent-platform/`. Lives as a TS secondary adapter port (not a
+cargo workspace member). Source repo archived/deleted; verified no remaining
+downstream Cargo deps reference it.
+
+## KlipDot → rich-cli-kit adapter (FR-COLLECTION-2026-06, 2026-06-21)
+
+Note: KlipDot's GitHub description carried an explicit "DO NOT DELETE NOR
+UNARCHIVE" notice; user override recorded in this manifest. The actual
+KlipDot absorption target is `KooshaPari/rich-cli-kit/crates/klipdot/`
+(staged, excluded from `cargo` workspace to avoid crossterm/image version
+conflict with rck 0.29/0.25). Source repo archived/deleted.
+
 ## Workspace policy
 
 Only `pheno-proc-runtime/*`, `pheno-agent/*`, and root `agentkit` are in the default
