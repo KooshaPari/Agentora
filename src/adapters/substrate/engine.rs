@@ -31,14 +31,15 @@ impl AgentEngine {
     }
 
     pub fn set_agent(&self, agent: Arc<dyn Agent>) {
-        *self.agent.lock().unwrap() = Some(agent);
+        let mut guard = self.agent.lock().unwrap_or_else(|e| e.into_inner());
+        *guard = Some(agent);
     }
 
     async fn run_prompt(&self, prompt: &str) -> substrate::Result<String> {
         let agent = self
             .agent
             .lock()
-            .unwrap()
+            .unwrap_or_else(|e| e.into_inner())
             .clone()
             .ok_or_else(|| substrate::SubstrateError::Engine("no agent configured".into()))?;
 
@@ -64,7 +65,10 @@ impl EnginePort for AgentEngine {
     async fn start(&self, task: &Task) -> substrate::Result<Session> {
         let text = self.run_prompt(&task.prompt).await?;
         let conv_id = format!("conv-{}", task.id);
-        self.outputs.lock().unwrap().insert(conv_id.clone(), text);
+        self.outputs
+            .lock()
+            .unwrap_or_else(|e| e.into_inner())
+            .insert(conv_id.clone(), text);
         Ok(Session {
             conv_id,
             pid: None,
@@ -76,7 +80,7 @@ impl EnginePort for AgentEngine {
         let text = self.run_prompt(prompt).await?;
         self.outputs
             .lock()
-            .unwrap()
+            .unwrap_or_else(|e| e.into_inner())
             .insert(conv_id.to_string(), text);
         Ok(Session {
             conv_id: conv_id.into(),
@@ -89,7 +93,7 @@ impl EnginePort for AgentEngine {
         let raw = self
             .outputs
             .lock()
-            .unwrap()
+            .unwrap_or_else(|e| e.into_inner())
             .get(conv_id)
             .cloned()
             .unwrap_or_default();

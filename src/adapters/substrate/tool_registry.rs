@@ -19,9 +19,12 @@ struct ToolHandler {
 
 impl SkillHandler for ToolHandler {
     fn invoke(&self, input: Value) -> substrate::Result<Value> {
-        let call = ToolCall::new(self.tool.name(), input, "invoke");
-        futures::executor::block_on(self.tool.call(call))
-            .map_err(|e| substrate::SubstrateError::Other(e.to_string()))
+        let tool = self.tool.clone();
+        let call = ToolCall::new(tool.name(), input, "invoke");
+        tokio::task::block_in_place(move || {
+            tokio::runtime::Handle::current().block_on(tool.call(call))
+        })
+        .map_err(|e| substrate::SubstrateError::Other(e.to_string()))
     }
 }
 
@@ -52,7 +55,7 @@ impl ToolRegistry {
             output_schema: serde_json::json!({ "type": "object" }),
         };
         SubstrateToolRegistry::register(
-            &mut *self.inner.lock().unwrap(),
+            &mut *self.inner.lock().unwrap_or_else(|e| e.into_inner()),
             descriptor,
             Box::new(ToolHandler { tool: tool.clone() }),
         )
@@ -79,7 +82,11 @@ impl ToolRegistry {
         }
         let id = call.id.clone();
         let name = call.name.clone();
-        match SkillPort::invoke(&*self.inner.lock().unwrap(), &name, call.params) {
+        match SkillPort::invoke(
+            &*self.inner.lock().unwrap_or_else(|e| e.into_inner()),
+            &name,
+            call.params,
+        ) {
             Ok(result) => Ok(ToolResponse::success(id, result)),
             Err(e) => Ok(ToolResponse::failure(id, e.to_string())),
         }

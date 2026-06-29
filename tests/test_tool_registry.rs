@@ -38,7 +38,7 @@ fn fr_003_tool_exposes_json_schema() {
 
 /// FR-003: tool registry — `ToolRegistry::call` resolves a `ToolCall` to a
 /// `ToolResponse` whose `id` matches the call's id.
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn fr_003_dispatch_tool_call_returns_response_with_id() {
     let mut registry = ToolRegistry::new();
     registry
