@@ -16,7 +16,7 @@ pub struct MemStore {
 #[async_trait]
 impl StorePort for MemStore {
     async fn persist(&self, task: &Task) -> substrate::Result<()> {
-        let mut tasks = self.tasks.lock().unwrap();
+        let mut tasks = self.tasks.lock().unwrap_or_else(|e| e.into_inner());
         tasks.retain(|t| t.id != task.id);
         tasks.push(task.clone());
         Ok(())
@@ -25,7 +25,7 @@ impl StorePort for MemStore {
     async fn load(&self, id: &Uuid) -> substrate::Result<Task> {
         self.tasks
             .lock()
-            .unwrap()
+            .unwrap_or_else(|e| e.into_inner())
             .iter()
             .find(|t| &t.id == id)
             .cloned()
@@ -39,7 +39,7 @@ impl StorePort for MemStore {
     ) -> substrate::Result<()> {
         self.results
             .lock()
-            .unwrap()
+            .unwrap_or_else(|e| e.into_inner())
             .push((*task_id, result.clone()));
         Ok(())
     }

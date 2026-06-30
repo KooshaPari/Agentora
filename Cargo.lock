@@ -611,10 +611,10 @@ dependencies = [
 [[package]]
 name = "engine-spec"
 version = "0.1.0"
-source = "git+https://github.com/KooshaPari/substrate#ce90e8a563b7b1939ef2deeae6041ae902963e86"
+source = "git+https://github.com/KooshaPari/substrate?rev=ce90e8a563b7b1939ef2deeae6041ae902963e86#ce90e8a563b7b1939ef2deeae6041ae902963e86"
 dependencies = [
  "serde",
- "substrate-core",
+ "substrate-core 0.1.0 (git+https://github.com/KooshaPari/substrate?rev=ce90e8a563b7b1939ef2deeae6041ae902963e86)",
 ]
 
 [[package]]
@@ -1602,7 +1602,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "runtime-process",
- "substrate-core",
+ "substrate-core 0.1.0 (git+https://github.com/KooshaPari/substrate)",
  "tokio",
  "tokio-test",
  "uuid",
@@ -2142,7 +2142,7 @@ source = "git+https://github.com/KooshaPari/substrate#ce90e8a563b7b1939ef2deeae6
 dependencies = [
  "async-trait",
  "command-group",
- "substrate-core",
+ "substrate-core 0.1.0 (git+https://github.com/KooshaPari/substrate)",
  "tokio",
  "uuid",
 ]
@@ -2545,22 +2545,34 @@ checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 [[package]]
 name = "substrate"
 version = "0.1.0"
-source = "git+https://github.com/KooshaPari/substrate#ce90e8a563b7b1939ef2deeae6041ae902963e86"
+source = "git+https://github.com/KooshaPari/substrate?rev=ce90e8a563b7b1939ef2deeae6041ae902963e86#ce90e8a563b7b1939ef2deeae6041ae902963e86"
 dependencies = [
  "engine-spec",
  "substrate-app",
- "substrate-core",
+ "substrate-core 0.1.0 (git+https://github.com/KooshaPari/substrate?rev=ce90e8a563b7b1939ef2deeae6041ae902963e86)",
 ]
 
 [[package]]
 name = "substrate-app"
 version = "0.1.0"
-source = "git+https://github.com/KooshaPari/substrate#ce90e8a563b7b1939ef2deeae6041ae902963e86"
+source = "git+https://github.com/KooshaPari/substrate?rev=ce90e8a563b7b1939ef2deeae6041ae902963e86#ce90e8a563b7b1939ef2deeae6041ae902963e86"
 dependencies = [
  "async-trait",
  "engine-spec",
  "serde",
- "substrate-core",
+ "substrate-core 0.1.0 (git+https://github.com/KooshaPari/substrate?rev=ce90e8a563b7b1939ef2deeae6041ae902963e86)",
+ "uuid",
+]
+
+[[package]]
+name = "substrate-core"
+version = "0.1.0"
+source = "git+https://github.com/KooshaPari/substrate?rev=ce90e8a563b7b1939ef2deeae6041ae902963e86#ce90e8a563b7b1939ef2deeae6041ae902963e86"
+dependencies = [
+ "async-trait",
+ "serde",
+ "serde_json",
+ "thiserror",
  "uuid",
 ]
 

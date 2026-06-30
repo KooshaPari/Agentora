@@ -17,8 +17,11 @@ struct SkillHandlerBridge {
 
 impl SkillHandler for SkillHandlerBridge {
     fn invoke(&self, input: Value) -> substrate::Result<Value> {
-        let result = futures::executor::block_on(self.skill.execute(input))
-            .map_err(|e| substrate::SubstrateError::Other(e.to_string()))?;
+        let skill = self.skill.clone();
+        let result = tokio::task::block_in_place(move || {
+            tokio::runtime::Handle::current().block_on(skill.execute(input))
+        })
+        .map_err(|e| substrate::SubstrateError::Other(e.to_string()))?;
         if result.success {
             Ok(result.data)
         } else {
@@ -60,7 +63,7 @@ impl SkillRegistry {
             output_schema: serde_json::json!({ "type": "object" }),
         };
         SubstrateToolRegistry::register(
-            &mut *self.inner.lock().unwrap(),
+            &mut *self.inner.lock().unwrap_or_else(|e| e.into_inner()),
             descriptor,
             Box::new(SkillHandlerBridge {
                 skill: skill.clone(),
