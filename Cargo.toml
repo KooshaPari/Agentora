@@ -63,6 +63,11 @@ serde_json = "1.0"
 tokio = { version = "1.0", features = ["full", "macros", "rt-multi-thread"] }
 tracing = "0.1"
 
+# CLI surface (L15): clap with derive so the binary stays declarative and
+# downstream consumers can extend the subcommand tree without manual parser
+# wiring.
+clap = { version = "4", features = ["derive"] }
+
 # LLM support (optional)
 reqwest = { version = "0.13", features = ["json"], optional = true }
 

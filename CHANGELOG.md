@@ -22,4 +22,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `cargo fmt --check` was failing across 10 files (import-group ordering, module-declaration sort, long-line wrapping). Re-formatted; CI gate now passes.
 
+### Added (P3 remediation — top audit findings, batch 2)
+
+- **L15 / L14 / L36 / L30 — Real CLI + structured errors.** Replace the
+  one-line `src/bin/main.rs` placeholder with a `clap`-derived surface:
+  `agentkit version`, `agentkit status`, `agentkit skills list`,
+  `agentkit tools list`, plus `--json` everywhere and `--help`. Errors
+  route through a new `ErrorEnvelope { code, message, cause }` struct
+  re-exported as `agentkit::ErrorEnvelope`, with a stable exit-code
+  ladder (0 success, 2 invalid args, 3 domain error). Adds the `clap`
+  dependency to `Cargo.toml` and a `tests/test_cli.rs` integration suite
+  exercising `--help`, `--json version`, `status`, `skills list`,
+  `tools list`, and the unknown-subcommand failure path.
+- `ErrorEnvelope` unit tests covering variant→code mapping, JSON
+  round-trip, and `Display` formatting.
+
 [Unreleased]: https://github.com/KooshaPari/Agentora/compare/main...HEAD

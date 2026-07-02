@@ -25,3 +25,4 @@ pub use domain::memory::{MemoryEntry, MemoryStore};
 pub use domain::skills::{Skill, SkillResult};
 pub use domain::tools::{Tool, ToolCall, ToolResponse};
 pub use infrastructure::error::{Error, Result};
+pub use domain::errors::ErrorEnvelope;
