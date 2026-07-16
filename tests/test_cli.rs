@@ -15,7 +15,11 @@ fn agentkit_bin() -> Command {
 #[test]
 fn help_lists_subcommands() {
     let output = agentkit_bin().arg("--help").output().expect("run --help");
-    assert!(output.status.success(), "stderr: {}", String::from_utf8_lossy(&output.stderr));
+    assert!(
+        output.status.success(),
+        "stderr: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
     let stdout = String::from_utf8_lossy(&output.stdout);
     assert!(stdout.contains("version"));
     assert!(stdout.contains("status"));
@@ -33,7 +37,10 @@ fn version_subcommand_prints_human_line() {
 
 #[test]
 fn version_subcommand_with_json_flag_emits_object() {
-    let output = agentkit_bin().args(["version", "--output", "json"]).output().expect("run version --output json");
+    let output = agentkit_bin()
+        .args(["version", "--output", "json"])
+        .output()
+        .expect("run version --output json");
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
     let value: serde_json::Value = serde_json::from_str(stdout.trim()).expect("valid JSON");
@@ -52,7 +59,10 @@ fn status_subcommand_returns_zero() {
 
 #[test]
 fn skills_list_with_json_flag_emits_object() {
-    let output = agentkit_bin().args(["skills", "list", "--output", "json"]).output().expect("run skills list --output json");
+    let output = agentkit_bin()
+        .args(["skills", "list", "--output", "json"])
+        .output()
+        .expect("run skills list --output json");
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
     let value: serde_json::Value = serde_json::from_str(stdout.trim()).expect("valid JSON");
@@ -62,7 +72,10 @@ fn skills_list_with_json_flag_emits_object() {
 
 #[test]
 fn tools_list_with_json_flag_emits_object() {
-    let output = agentkit_bin().args(["tools", "list", "--output", "json"]).output().expect("run tools list --output json");
+    let output = agentkit_bin()
+        .args(["tools", "list", "--output", "json"])
+        .output()
+        .expect("run tools list --output json");
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
     let value: serde_json::Value = serde_json::from_str(stdout.trim()).expect("valid JSON");

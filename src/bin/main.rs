@@ -152,14 +152,21 @@ fn emit_status(mode: OutputMode) -> Result<(), ErrorEnvelope> {
     let payload = StatusPayload {
         name: "agentkit",
         version: env!("CARGO_PKG_VERSION"),
-        profile: if cfg!(debug_assertions) { "debug" } else { "release" },
+        profile: if cfg!(debug_assertions) {
+            "debug"
+        } else {
+            "release"
+        },
         target: target_triple(),
         skills,
         tools,
     };
     match mode {
         OutputMode::Human => {
-            println!("agentkit {} ({}, {})", payload.version, payload.profile, payload.target);
+            println!(
+                "agentkit {} ({}, {})",
+                payload.version, payload.profile, payload.target
+            );
             println!("skills: {}", payload.skills);
             println!("tools:  {}", payload.tools);
         }
@@ -171,13 +178,21 @@ fn emit_status(mode: OutputMode) -> Result<(), ErrorEnvelope> {
 }
 
 fn emit_skills(mode: OutputMode) -> Result<(), ErrorEnvelope> {
-    let names: Vec<String> = SkillRegistry::new().list().into_iter().map(|s| s.to_string()).collect();
+    let names: Vec<String> = SkillRegistry::new()
+        .list()
+        .into_iter()
+        .map(|s| s.to_string())
+        .collect();
     write_list("skill", &names, mode);
     Ok(())
 }
 
 fn emit_tools(mode: OutputMode) -> Result<(), ErrorEnvelope> {
-    let names: Vec<String> = ToolRegistry::new().list().into_iter().map(|t| t.to_string()).collect();
+    let names: Vec<String> = ToolRegistry::new()
+        .list()
+        .into_iter()
+        .map(|t| t.to_string())
+        .collect();
     write_list("tool", &names, mode);
     Ok(())
 }
@@ -194,7 +209,10 @@ fn write_list(kind: &str, names: &[String], mode: OutputMode) {
             }
         }
         OutputMode::Json => {
-            let payload = NamedList { kind, names: names.to_vec() };
+            let payload = NamedList {
+                kind,
+                names: names.to_vec(),
+            };
             println!("{}", serde_json::to_string(&payload).unwrap_or_default());
         }
     }
@@ -238,7 +256,10 @@ mod tests {
 
     #[test]
     fn named_list_emits_empty_marker() {
-        let payload = NamedList { kind: "skill", names: vec![] };
+        let payload = NamedList {
+            kind: "skill",
+            names: vec![],
+        };
         let s = serde_json::to_string(&payload).unwrap();
         assert_eq!(s, "{\"kind\":\"skill\",\"names\":[]}");
     }
