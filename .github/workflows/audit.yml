@@ -20,6 +20,13 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v4
-      - uses: rustsec/audit-check@69366f33c96575abad1ee0dba8212993eecbe998 # v2.0.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+      # cargo-audit's lockfile keeps its transitive dependencies compatible
+      # with this repository's pinned Rust 1.95 toolchain.  The audit-check
+      # action installs the latest unlocked dependency graph, which can select
+      # crates requiring a newer compiler.
+      - name: Install cargo-audit
+        run: |
+          cargo install cargo-audit --version 0.22.2 --locked --root "${RUNNER_TEMP}/cargo-audit"
+      - name: Audit dependencies
+        run: |
+          "${RUNNER_TEMP}/cargo-audit/bin/cargo-audit" audit
