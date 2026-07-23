@@ -628,3 +628,7 @@ Hexagonal (ports & adapters) Rust framework for building AI agents — `agentkit
 ## Contributing
 
 PRs welcome. See `CONTRIBUTING.md`. New capabilities belong in the domain layer (`domain/skills/`, `domain/tools/`, `domain/memory/`); new LLM or storage backends implement the `LLM` / `MemoryStore` ports in `adapters/`.
+
+## Phenotype SDK / ADR alignment
+
+See [`docs/PHENOTYPE_SDK_PORTS_ALIGN.md`](docs/PHENOTYPE_SDK_PORTS_ALIGN.md) (ADR-78 Accepted Option C).
