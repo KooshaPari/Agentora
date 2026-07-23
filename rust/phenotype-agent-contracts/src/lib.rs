@@ -13,6 +13,10 @@ pub mod error;
 pub mod http;
 pub mod outbound;
 pub mod ports;
+pub mod sdk_bridges;
+pub mod sdk_dto;
+pub mod sdk_ports;
+pub mod sdk_runtime;
 
 pub use adapters::{InMemoryCache, InMemoryEventBus, InMemoryRepository, InMemorySecretManager};
 pub use agent::{
@@ -27,3 +31,12 @@ pub use http::{
 };
 pub use outbound::{CachePort, ConfigLoader, EventBus, Repository, SecretManager};
 pub use ports::{Command, Query, RepositoryPort, SecretPort, UseCaseResult};
+pub use sdk_bridges::{ExecutorToolBridge, LlmModelBridge, MemorySessionBridge};
+pub use sdk_dto::{
+    AgentMessage, CellRecord, EvalHookRef, EvidenceLabel, MessageRole, ModelParams, ModelRequest,
+    ModelResponse, RunHandle, RunStatus, SdkToolCall, ToolSpec, Usage,
+};
+pub use sdk_ports::{
+    EvalGardenPort, ModelPort, ObservabilityPort, SchedulerQueuePort, SessionMemoryPort, ToolPort,
+};
+pub use sdk_runtime::{InMemoryScheduler, RecordingEvalGarden, UnconfiguredObservability};
