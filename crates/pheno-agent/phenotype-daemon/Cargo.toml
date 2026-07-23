@@ -54,6 +54,7 @@ thiserror = "2"
 
 # CLI
 clap = { version = "4", features = ["derive", "env"] }
+clap-ext = { git = "https://github.com/KooshaPari/clap-ext", tag = "v0.1.0" }
 
 # Process management for auto-spawn detection
 sysinfo = "0.39"
