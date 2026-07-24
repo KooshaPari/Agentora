@@ -81,7 +81,7 @@ substrate = { git = "https://github.com/KooshaPari/substrate", rev = "ce90e8a563
 [dev-dependencies]
 proptest = "1.0"
 tokio-test = "0.4"
-mockall = "0.14"
+mockall = "0.15"
 
 [features]
 default = []
