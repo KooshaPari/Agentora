@@ -18,10 +18,40 @@ jobs:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v4
         with:
           fetch-depth: 0
+      - name: Determine scan range
+        id: scan-range
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          PUSH_BEFORE: ${{ github.event.before }}
+          PUSH_AFTER: ${{ github.event.after }}
+        run: |
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            base="$PR_BASE"
+            head="$PR_HEAD"
+          else
+            base="$PUSH_BEFORE"
+            head="$PUSH_AFTER"
+            # GitHub uses an all-zero `before` SHA for an initial push. An
+            # empty base deliberately asks TruffleHog to scan full history.
+            if [[ "$base" == "0000000000000000000000000000000000000000" ]]; then
+              base=""
+            fi
+          fi
+
+          if [[ -n "$base" && "$base" == "$head" ]]; then
+            echo "::error::TruffleHog base and head must be distinct."
+            exit 1
+          fi
+
+          echo "base=$base" >> "$GITHUB_OUTPUT"
+          echo "head=$head" >> "$GITHUB_OUTPUT"
       - name: TruffleHog OSS
         uses: trufflesecurity/trufflehog@00155c9dc586f34d189adc83d3ac2698c2ec551f # v3.95.8
         with:
           path: ./
-          base: ${{ github.event.repository.default_branch }}
-          head: HEAD
+          base: ${{ steps.scan-range.outputs.base }}
+          head: ${{ steps.scan-range.outputs.head }}
           extra_args: --only-verified
