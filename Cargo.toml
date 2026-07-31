@@ -82,6 +82,11 @@ substrate = { git = "https://github.com/KooshaPari/substrate", rev = "ce90e8a563
 proptest = "1.0"
 tokio-test = "0.4"
 mockall = "0.15"
+# `tests/clap_ext_smoke.rs` is an integration test for this root package, so
+# it needs its own direct dev-dependency even though phenotype-daemon uses the
+# same crate as a workspace member. Keep the source revision immutable; the
+# lockfile records its exact resolution for --locked builds.
+clap-ext = { git = "https://github.com/KooshaPari/clap-ext", rev = "05f6927bfd5477fafebfdc0166a7578ff154f0bf" }
 
 [features]
 default = []

@@ -9,6 +9,7 @@ dependencies = [
  "async-trait",
  "chrono",
  "clap",
+ "clap-ext",
  "futures",
  "mockall",
  "proptest",
@@ -337,6 +338,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "clap-ext"
+version = "0.1.0"
+source = "git+https://github.com/KooshaPari/clap-ext?rev=05f6927bfd5477fafebfdc0166a7578ff154f0bf#05f6927bfd5477fafebfdc0166a7578ff154f0bf"
+dependencies = [
+ "anyhow",
+ "clap",
+ "thiserror",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "clap_builder"
 version = "4.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -346,6 +359,7 @@ dependencies = [
  "anstyle",
  "clap_lex",
  "strsim",
+ "terminal_size",
 ]
 
 [[package]]
@@ -1667,6 +1681,7 @@ dependencies = [
  "async-nats",
  "bytes",
  "clap",
+ "clap-ext",
  "dashmap",
  "phenotype_skills",
  "rmp-serde",
@@ -2676,6 +2691,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "terminal_size"
+version = "0.4.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "230a1b821ccbd75b185820a1f1ff7b14d21da1e442e22c0863ea5f08771a8874"
+dependencies = [
+ "rustix",
+ "windows-sys 0.60.2",
+]
+
+[[package]]
 name = "termtree"
 version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2962,6 +2987,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "tracing-serde"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "704b1aeb7be0d0a84fc9828cae51dab5970fee5088f83d1dd7ee6f6246fc6ff1"
+dependencies = [
+ "serde",
+ "tracing-core",
+]
+
+[[package]]
 name = "tracing-subscriber"
 version = "0.3.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2971,12 +3006,15 @@ dependencies = [
  "nu-ansi-term",
  "once_cell",
  "regex-automata",
+ "serde",
+ "serde_json",
  "sharded-slab",
  "smallvec",
  "thread_local",
  "tracing",
  "tracing-core",
  "tracing-log",
+ "tracing-serde",
 ]
 
 [[package]]

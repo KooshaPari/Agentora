@@ -27,5 +27,6 @@ ignore = [
 [sources]
 allow-registry = ["https://github.com/rust-lang/crates.io-index"]
 allow-git = [
+    "https://github.com/KooshaPari/clap-ext",
     "https://github.com/KooshaPari/substrate",
 ]
