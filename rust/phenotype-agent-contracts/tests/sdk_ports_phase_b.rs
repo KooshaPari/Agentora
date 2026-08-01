@@ -2,7 +2,8 @@
 
 use phenotype_agent_contracts::{
     AgentMessage, EvalGardenPort, EvalHookRef, EvidenceLabel, InMemoryScheduler, MessageRole,
-    ObservabilityPort, RecordingEvalGarden, RunStatus, SchedulerQueuePort, UnconfiguredObservability,
+    ObservabilityPort, RecordingEvalGarden, RunStatus, SchedulerQueuePort,
+    UnconfiguredObservability,
 };
 use serde_json::json;
 

@@ -144,12 +144,7 @@ impl<T: MemoryPort> SessionMemoryPort for MemorySessionBridge<T> {
         let entries = self.inner.recent(usize::MAX)?;
         Ok(entries
             .into_iter()
-            .filter(|e| {
-                e.metadata
-                    .get("session_id")
-                    .and_then(|v| v.as_str())
-                    == Some(session_id)
-            })
+            .filter(|e| e.metadata.get("session_id").and_then(|v| v.as_str()) == Some(session_id))
             .map(memory_to_message)
             .collect())
     }
