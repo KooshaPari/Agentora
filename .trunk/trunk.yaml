@@ -1,3 +1,5 @@
 # Trunk launcher and plugin source configuration.
 # Linter, formatter, security, and CI policy lives in the root trunk.yaml.
 version: 0.1
+cli:
+  version: 1.22.12
