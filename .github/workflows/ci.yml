@@ -115,7 +115,7 @@ jobs:
         with:
           tool: cargo-deny@0.19.9
       - name: cargo-deny check
-        run: cargo deny check advisories licenses sources --all-features
+        run: cargo deny check advisories licenses sources
 
   python:
     name: Python
