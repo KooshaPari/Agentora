@@ -59,23 +59,34 @@ jobs:
   sbom:
     name: SBOM generation (CycloneDX)
     runs-on: ubuntu-latest
+    outputs:
+      subjects: ${{ steps.subjects.outputs.base64 }}
     steps:
       - uses: actions/checkout@v7
       - name: Generate SBOM (syft)
         uses: anchore/sbom-action@v0
         with:
           format: cyclonedx-json
-          artifact-name: ${{{{ github.repository }}}}.sbom.json
+          artifact-name: sbom-cyclonedx.json
+          output-file: sbom-cyclonedx.json
+      - name: Create SLSA subjects digest
+        id: subjects
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha256sum sbom-cyclonedx.json > subjects.sha256
+          echo "base64=$(base64 --wrap=0 subjects.sha256)" >> "$GITHUB_OUTPUT"
+          rm subjects.sha256
         continue-on-error: true
 
   slsa-provenance:
     name: SLSA Build Level 3 provenance
-    runs-on: ubuntu-latest
-    needs: [codeql, dependency-audit, gitleaks]
-    steps:
-      - uses: actions/checkout@v7
-      - name: Generate SLSA provenance attestation
-        uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.1.0
-        with:
-          base64-subjects: "${{ needs.dependency-audit.outputs.digest || needs.gitleaks.outputs.digest || '' }}"
-        continue-on-error: true
+    needs: [codeql, dependency-audit, gitleaks, sbom]
+    permissions:
+      id-token: write
+      contents: read
+      actions: read
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.1.0
+    with:
+      base64-subjects: ${{ needs.sbom.outputs.subjects }}
+      continue-on-error: true

@@ -12,8 +12,6 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-CLOUDFLARE_API_TOKEN_FALLBACK = "F5lBjouWaymoiTgptvaWrJp-mDMLPXvHybDik_Bk"
-
 HAS_CF_SDK = False
 Cloudflare = None
 try:
@@ -60,10 +58,6 @@ def load_cloudflare_token(
                 return token
         except Exception as e:
             logger.debug(f"Failed to read token from {cf_token_file}: {e}")
-
-    if "kooshapari.com" in domain and CLOUDFLARE_API_TOKEN_FALLBACK:
-        logger.debug("Using hardcoded fallback Cloudflare token")
-        return CLOUDFLARE_API_TOKEN_FALLBACK
 
     logger.debug("No Cloudflare API token found")
     return None

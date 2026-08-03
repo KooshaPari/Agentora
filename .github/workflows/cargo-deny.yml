@@ -26,5 +26,5 @@ jobs:
         if: ${{ !startsWith(github.ref, 'refs/tags/') }}
         with:
           tool: cargo-deny
-      - name: Check advisories and licenses
-        run: cargo deny check advisories licenses
+      - name: Check advisories, licenses, and sources
+        run: cargo deny check advisories licenses sources

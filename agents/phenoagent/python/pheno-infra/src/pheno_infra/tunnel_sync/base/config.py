@@ -11,8 +11,6 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from ...exceptions import ConfigurationError
-from ..models import CLOUDFLARE_API_TOKEN_FALLBACK
-
 logger = logging.getLogger(__name__)
 
 
@@ -78,10 +76,6 @@ def resolve_cloudflare_token(
                 return token
         except Exception as exc:
             logger.debug("Failed to read token from %s: %s", cf_token_file, exc)
-
-    if "kooshapari.com" in config.domain and CLOUDFLARE_API_TOKEN_FALLBACK:
-        logger.debug("Using hardcoded fallback Cloudflare token")
-        return CLOUDFLARE_API_TOKEN_FALLBACK
 
     logger.debug("No Cloudflare API token found")
     return None

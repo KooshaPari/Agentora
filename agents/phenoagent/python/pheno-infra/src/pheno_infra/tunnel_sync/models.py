@@ -7,10 +7,6 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass
 
-# Fallback Cloudflare API token (can be overridden via env or file)
-CLOUDFLARE_API_TOKEN_FALLBACK = "F5lBjouWaymoiTgptvaWrJp-mDMLPXvHybDik_Bk"
-
-
 @dataclass
 class TunnelInfo:
     """

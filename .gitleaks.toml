@@ -8,21 +8,21 @@ useDefault = true
 
 [allowlist]
 paths = [
-  'target/',
-  'node_modules/',
-  '.venv/',
-  '__pycache__/',
-  'dist/',
-  'build/',
-  '.cargo/',
-  '.pytest_cache/',
-  '*.lock',
-  'Cargo.lock',
-  'package-lock.json',
-  'yarn.lock',
-  'pnpm-lock.yaml',
-  'poetry.lock',
-  'go.sum',
+  '(^|/)target/',
+  '(^|/)node_modules/',
+  '(^|/)\.venv/',
+  '(^|/)__pycache__/',
+  '(^|/)dist/',
+  '(^|/)build/',
+  '(^|/)\.cargo/',
+  '(^|/)\.pytest_cache/',
+  '(^|/).*\.lock$',
+  '(^|/)Cargo\.lock$',
+  '(^|/)package-lock\.json$',
+  '(^|/)yarn\.lock$',
+  '(^|/)pnpm-lock\.yaml$',
+  '(^|/)poetry\.lock$',
+  '(^|/)go\.sum$',
 ]
 
 regexes = [
