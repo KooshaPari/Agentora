@@ -61,7 +61,7 @@ async fn nfr_006_tool_registry_register_and_dispatch_work() {
     // Dispatching a tool call exercises lock() in SkillPort::invoke and
     // ToolHandler::invoke (which uses block_in_place + Handle::block_on).
     let call = ToolCall::new("calculator", json!({"expression": "2+2"}), "nfr-006");
-    let resp = registry.call(call).await.expect("call should succeed");
+    let resp = registry.call(call).expect("call should succeed");
     assert_eq!(resp.id, "nfr-006");
     assert!(resp.error.is_none());
 }

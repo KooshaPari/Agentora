@@ -31,7 +31,10 @@ impl AgentEngine {
     }
 
     pub fn set_agent(&self, agent: Arc<dyn Agent>) {
-        let mut guard = self.agent.lock().unwrap_or_else(|e| e.into_inner());
+        let mut guard = self
+            .agent
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         *guard = Some(agent);
     }
 
@@ -39,7 +42,7 @@ impl AgentEngine {
         let agent = self
             .agent
             .lock()
-            .unwrap_or_else(|e| e.into_inner())
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
             .clone()
             .ok_or_else(|| substrate::SubstrateError::Engine("no agent configured".into()))?;
 
@@ -67,7 +70,7 @@ impl EnginePort for AgentEngine {
         let conv_id = format!("conv-{}", task.id);
         self.outputs
             .lock()
-            .unwrap_or_else(|e| e.into_inner())
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
             .insert(conv_id.clone(), text);
         Ok(Session {
             conv_id,
@@ -80,7 +83,7 @@ impl EnginePort for AgentEngine {
         let text = self.run_prompt(prompt).await?;
         self.outputs
             .lock()
-            .unwrap_or_else(|e| e.into_inner())
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
             .insert(conv_id.to_string(), text);
         Ok(Session {
             conv_id: conv_id.into(),
@@ -93,7 +96,7 @@ impl EnginePort for AgentEngine {
         let raw = self
             .outputs
             .lock()
-            .unwrap_or_else(|e| e.into_inner())
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
             .get(conv_id)
             .cloned()
             .unwrap_or_default();
