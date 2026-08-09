@@ -1,0 +1,28 @@
+# Clippy lints configuration
+# https://rust-lang.github.io/rust-clippy/
+
+# Warn on these lints
+warn = [
+    "clippy::all",
+    "clippy::pedantic",
+    "clippy::nursery",
+]
+
+# Allow some pedantic lints that are noisy
+allow = [
+    "clippy::module_name_repetitions",
+    "clippy::must_use_candidate",
+    "clippy::missing_errors_doc",
+    "clippy::missing_panics_doc",
+    "clippy::missing_const_for_fn",
+]
+
+# Cognitive complexity threshold
+cognitive-complexity-threshold = 30
+
+# Too many arguments threshold
+too-many-arguments-threshold = 8
+
+# Type complexity threshold
+type-complexity-threshold = 250
+
