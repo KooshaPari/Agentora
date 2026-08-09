@@ -84,20 +84,19 @@ jobs:
     needs: detect
     if: needs.detect.outputs.has_rust == 'true'
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - name: cargo fmt --check
         run: |
-          cargo fmt --all -- --check 2>&1 || echo "::warning::cargo fmt issues (advisory)"
+          cargo fmt --all -- --check
       - name: cargo clippy
         run: |
-          cargo clippy --all-targets -- -D warnings 2>&1 || echo "::warning::clippy issues (advisory)"
+          cargo clippy --all-targets -- -D warnings
       - name: cargo test
         run: |
-          cargo test --workspace --no-fail-fast 2>&1 || echo "::warning::test failures (advisory)"
+          cargo test --workspace --no-fail-fast
 
   cargo-deny:
     name: Cargo Deny (Advisories + Licenses)
