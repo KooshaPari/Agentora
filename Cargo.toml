@@ -51,6 +51,19 @@ categories = ["artificial-intelligence", "development-tools"]
 [lints.rust]
 unsafe_code = "forbid"
 
+# Lint levels belong in Cargo's stable `[lints]` table. Keep the broad groups
+# at lower priority so the documented, narrow exceptions below win without
+# suppressing the rest of the policy.
+[lints.clippy]
+all = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+nursery = { level = "warn", priority = -1 }
+module_name_repetitions = { level = "allow", priority = 1 }
+must_use_candidate = { level = "allow", priority = 1 }
+missing_errors_doc = { level = "allow", priority = 1 }
+missing_panics_doc = { level = "allow", priority = 1 }
+missing_const_for_fn = { level = "allow", priority = 1 }
+
 [dependencies]
 # Core domain
 thiserror = "2.0"

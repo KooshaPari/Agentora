@@ -1,21 +1,8 @@
 # Clippy lints configuration
 # https://rust-lang.github.io/rust-clippy/
 
-# Warn on these lints
-warn = [
-    "clippy::all",
-    "clippy::pedantic",
-    "clippy::nursery",
-]
-
-# Allow some pedantic lints that are noisy
-allow = [
-    "clippy::module_name_repetitions",
-    "clippy::must_use_candidate",
-    "clippy::missing_errors_doc",
-    "clippy::missing_panics_doc",
-    "clippy::missing_const_for_fn",
-]
+# Lint levels are configured in Cargo.toml's stable `[lints.clippy]` table.
+# This file is only for documented Clippy configuration values.
 
 # Cognitive complexity threshold
 cognitive-complexity-threshold = 30
@@ -25,4 +12,3 @@ too-many-arguments-threshold = 8
 
 # Type complexity threshold
 type-complexity-threshold = 250
-
