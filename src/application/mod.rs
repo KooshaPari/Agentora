@@ -58,8 +58,7 @@ impl AgentExecutor {
     {
         self.engine.set_agent(Arc::new(agent));
 
-        let cwd = env::current_dir()
-            .map_or_else(|_| ".".into(), |path| path.display().to_string());
+        let cwd = env::current_dir().map_or_else(|_| ".".into(), |path| path.display().to_string());
 
         let task = Task::new(&input, &cwd);
         let route = AgentRoutingPort
