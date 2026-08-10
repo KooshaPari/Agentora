@@ -10,22 +10,13 @@
 //!   in-process registry contents; useful for shell scripting and CI.
 //!
 //! All subcommands honour `--json` so the same surface serves humans and
-//! automation. Errors are routed through `ErrorEnvelope` (see
-//! `agentkit::ErrorEnvelope`) and a stable exit-code ladder:
-//!
-//! | code | meaning                                                  |
-//! |------|----------------------------------------------------------|
-//! | 0    | success                                                  |
-//! | 1    | generic failure (see stderr/stdout for envelope)        |
-//! | 2    | invalid arguments (clap handles this before `run`)      |
-//! | 3    | domain error (tool/skill/etc. failure surfaced via envelope) |
-
-use std::process::ExitCode;
+//! automation. Argument errors are reported by clap before the command
+//! dispatcher runs.
 
 use clap::{Parser, Subcommand, ValueEnum};
 use serde::Serialize;
 
-use agentkit::{ErrorEnvelope, SkillRegistry, ToolRegistry};
+use agentkit::{SkillRegistry, ToolRegistry};
 
 /// `agentkit` — hexagonal agent framework CLI.
 #[derive(Debug, Parser)]
@@ -96,30 +87,11 @@ struct NamedList<'a> {
     names: Vec<String>,
 }
 
-fn main() -> ExitCode {
-    let cli = Cli::parse();
-
-    match run(cli) {
-        Ok(()) => ExitCode::SUCCESS,
-        Err(envelope) => {
-            emit_error(&envelope);
-            envelope_code_to_exit(&envelope)
-        }
-    }
+fn main() {
+    run(Cli::parse());
 }
 
-fn envelope_code_to_exit(_envelope: &ErrorEnvelope) -> ExitCode {
-    // Domain errors → 3. Anything else falls back to 1 (generic failure).
-    // The function takes the envelope so future refinements (e.g. mapping
-    // specific variant codes to different exit codes) stay local.
-    ExitCode::from(3u8)
-}
-
-fn emit_error(envelope: &ErrorEnvelope) {
-    eprintln!("{}", envelope.to_json());
-}
-
-fn run(cli: Cli) -> Result<(), ErrorEnvelope> {
+fn run(cli: Cli) {
     match cli.command {
         Command::Version => emit_version(cli.output),
         Command::Status => emit_status(cli.output),
@@ -130,7 +102,6 @@ fn run(cli: Cli) -> Result<(), ErrorEnvelope> {
             ToolsAction::List => emit_tools(cli.output),
         },
     }
-    Ok(())
 }
 
 fn emit_version(mode: OutputMode) {
