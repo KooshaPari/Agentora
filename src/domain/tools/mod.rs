@@ -73,7 +73,7 @@ pub struct CalculatorTool;
 
 #[async_trait]
 impl Tool for CalculatorTool {
-    fn name(&self) -> &str {
+    fn name(&self) -> &'static str {
         "calculator"
     }
 

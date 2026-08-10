@@ -109,7 +109,7 @@ pub struct McpToolResponse {
 ///
 /// Mirrors `McpKit.agentmcp.ports.server.Server` but expressed as a
 /// `dyn`-safe async trait so the agent runtime can hold any concrete
-/// transport (FastMCP, stdio, HTTP, …) behind a single trait object.
+/// transport (`FastMCP`, stdio, HTTP, …) behind a single trait object.
 #[async_trait]
 pub trait ServerPort: Send + Sync {
     /// Start serving requests. Implementations should be idempotent —

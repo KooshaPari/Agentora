@@ -30,9 +30,9 @@ fn nfr_002_default_test_suite_has_no_external_dependencies() {
     // The presence of these types in the default build is the assertion.
     // If a regression makes them `#[cfg(feature = "...")]`-gated, this
     // file will stop compiling under `cargo test` (no features).
-    fn _exists<T>(_: T) {}
-    _exists(EchoLLM::new());
-    _exists(InMemoryAdapter::new());
+    fn assert_exists<T>(_: T) {}
+    assert_exists(EchoLLM::new());
+    assert_exists(InMemoryAdapter::new());
 }
 
 /// NFR-002: feature flags — `Cargo.toml` declares `openai`,

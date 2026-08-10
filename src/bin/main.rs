@@ -10,22 +10,13 @@
 //!   in-process registry contents; useful for shell scripting and CI.
 //!
 //! All subcommands honour `--json` so the same surface serves humans and
-//! automation. Errors are routed through `ErrorEnvelope` (see
-//! `agentkit::ErrorEnvelope`) and a stable exit-code ladder:
-//!
-//! | code | meaning                                                  |
-//! |------|----------------------------------------------------------|
-//! | 0    | success                                                  |
-//! | 1    | generic failure (see stderr/stdout for envelope)        |
-//! | 2    | invalid arguments (clap handles this before `run`)      |
-//! | 3    | domain error (tool/skill/etc. failure surfaced via envelope) |
-
-use std::process::ExitCode;
+//! automation. Argument errors are reported by clap before the command
+//! dispatcher runs.
 
 use clap::{Parser, Subcommand, ValueEnum};
 use serde::Serialize;
 
-use agentkit::{ErrorEnvelope, SkillRegistry, ToolRegistry};
+use agentkit::{SkillRegistry, ToolRegistry};
 
 /// `agentkit` — hexagonal agent framework CLI.
 #[derive(Debug, Parser)]
@@ -96,30 +87,11 @@ struct NamedList<'a> {
     names: Vec<String>,
 }
 
-fn main() -> ExitCode {
-    let cli = Cli::parse();
-
-    match run(cli) {
-        Ok(()) => ExitCode::SUCCESS,
-        Err(envelope) => {
-            emit_error(&envelope);
-            envelope_code_to_exit(&envelope)
-        }
-    }
+fn main() {
+    run(Cli::parse());
 }
 
-fn envelope_code_to_exit(_envelope: &ErrorEnvelope) -> ExitCode {
-    // Domain errors → 3. Anything else falls back to 1 (generic failure).
-    // The function takes the envelope so future refinements (e.g. mapping
-    // specific variant codes to different exit codes) stay local.
-    ExitCode::from(3u8)
-}
-
-fn emit_error(envelope: &ErrorEnvelope) {
-    eprintln!("{}", envelope.to_json());
-}
-
-fn run(cli: Cli) -> Result<(), ErrorEnvelope> {
+fn run(cli: Cli) {
     match cli.command {
         Command::Version => emit_version(cli.output),
         Command::Status => emit_status(cli.output),
@@ -132,7 +104,7 @@ fn run(cli: Cli) -> Result<(), ErrorEnvelope> {
     }
 }
 
-fn emit_version(mode: OutputMode) -> Result<(), ErrorEnvelope> {
+fn emit_version(mode: OutputMode) {
     let version = env!("CARGO_PKG_VERSION");
     match mode {
         OutputMode::Human => {
@@ -140,13 +112,12 @@ fn emit_version(mode: OutputMode) -> Result<(), ErrorEnvelope> {
         }
         OutputMode::Json => {
             let payload = serde_json::json!({ "name": "agentkit", "version": version });
-            println!("{}", payload);
+            println!("{payload}");
         }
     }
-    Ok(())
 }
 
-fn emit_status(mode: OutputMode) -> Result<(), ErrorEnvelope> {
+fn emit_status(mode: OutputMode) {
     let skills = SkillRegistry::new().list().len();
     let tools = ToolRegistry::new().list().len();
     let payload = StatusPayload {
@@ -174,27 +145,24 @@ fn emit_status(mode: OutputMode) -> Result<(), ErrorEnvelope> {
             println!("{}", serde_json::to_string(&payload).unwrap_or_default());
         }
     }
-    Ok(())
 }
 
-fn emit_skills(mode: OutputMode) -> Result<(), ErrorEnvelope> {
+fn emit_skills(mode: OutputMode) {
     let names: Vec<String> = SkillRegistry::new()
         .list()
         .into_iter()
-        .map(|s| s.to_string())
+        .map(ToString::to_string)
         .collect();
     write_list("skill", &names, mode);
-    Ok(())
 }
 
-fn emit_tools(mode: OutputMode) -> Result<(), ErrorEnvelope> {
+fn emit_tools(mode: OutputMode) {
     let names: Vec<String> = ToolRegistry::new()
         .list()
         .into_iter()
-        .map(|t| t.to_string())
+        .map(ToString::to_string)
         .collect();
     write_list("tool", &names, mode);
-    Ok(())
 }
 
 fn write_list(kind: &str, names: &[String], mode: OutputMode) {

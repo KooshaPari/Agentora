@@ -153,8 +153,8 @@ impl<S: MemoryStore> LongTermMemory<S> {
         Self { store }
     }
 
-    pub fn add(&mut self, entry: MemoryEntry) -> Result<(), String> {
-        self.store.save(&entry)
+    pub fn add(&mut self, entry: &MemoryEntry) -> Result<(), String> {
+        self.store.save(entry)
     }
 
     pub fn search(&self, query: &str, limit: usize) -> Result<Vec<MemoryEntry>, String> {

@@ -69,7 +69,7 @@ fn fr_004_in_memory_store_save_and_search() {
 #[test]
 fn fr_004_long_term_memory_delegates_to_store() {
     let mut ltm: LongTermMemory<InMemoryStore> = LongTermMemory::new(InMemoryStore::new());
-    ltm.add(MemoryEntry::user("remember: rust ownership"))
+    ltm.add(&MemoryEntry::user("remember: rust ownership"))
         .expect("add should succeed");
 
     let results = ltm.search("ownership", 5).expect("search should succeed");

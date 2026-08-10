@@ -47,6 +47,7 @@ impl MemoryPort for InMemoryAdapter {
         let mut all = store
             .search("", usize::MAX)
             .map_err(crate::domain::Error::Memory)?;
+        drop(store);
         all.reverse();
         all.truncate(limit);
         Ok(all)

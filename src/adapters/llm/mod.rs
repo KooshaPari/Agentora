@@ -4,7 +4,7 @@
 //!
 //! * [`EchoLLM`] - a deterministic stub useful for tests and offline runs.
 //!   It returns a short echo of the input without making any network calls.
-//! * [`OpenAIChatLLM`] - an OpenAI Chat Completions client. Activated by the
+//! * [`OpenAIChatLLM`] - an `OpenAI` Chat Completions client. Activated by the
 //!   `openai` cargo feature (pulls in `reqwest`). The context is serialized
 //!   as a `[system, user]` pair, where the system message summarizes the
 //!   memory entries and tool calls, and the user message is the `Context::input`.
@@ -47,10 +47,10 @@ impl EchoLLM {
 #[async_trait]
 impl LLM for EchoLLM {
     async fn complete(&self, prompt: &str) -> Result<String> {
-        Ok(match &self.prefix {
-            Some(p) => format!("{p}{prompt}"),
-            None => prompt.to_string(),
-        })
+        Ok(self
+            .prefix
+            .as_ref()
+            .map_or_else(|| prompt.to_string(), |prefix| format!("{prefix}{prompt}")))
     }
 
     async fn generate(&self, context: &Context) -> Result<String> {

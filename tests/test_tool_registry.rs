@@ -46,7 +46,7 @@ async fn fr_003_dispatch_tool_call_returns_response_with_id() {
         .expect("register should succeed");
 
     let call = ToolCall::new("calculator", json!({ "expression": "1+1" }), "call-1");
-    let resp = registry.call(call).await.expect("call should succeed");
+    let resp = registry.call(call).expect("call should succeed");
     assert_eq!(resp.id, "call-1");
     assert!(resp.error.is_none());
     assert!(resp.result.get("expression").is_some());
@@ -58,10 +58,7 @@ async fn fr_003_dispatch_tool_call_returns_response_with_id() {
 async fn fr_003_unknown_tool_returns_error() {
     let registry = ToolRegistry::new();
     let call = ToolCall::new("nope", json!({}), "call-x");
-    let err = registry
-        .call(call)
-        .await
-        .expect_err("unknown tool should fail");
+    let err = registry.call(call).expect_err("unknown tool should fail");
     let msg = err.to_string();
     assert!(msg.contains("Tool"), "got: {msg}");
     assert!(msg.contains("nope"), "got: {msg}");

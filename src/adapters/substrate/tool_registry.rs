@@ -55,7 +55,10 @@ impl ToolRegistry {
             output_schema: serde_json::json!({ "type": "object" }),
         };
         SubstrateToolRegistry::register(
-            &mut *self.inner.lock().unwrap_or_else(|e| e.into_inner()),
+            &mut *self
+                .inner
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner),
             descriptor,
             Box::new(ToolHandler { tool: tool.clone() }),
         )
@@ -65,28 +68,34 @@ impl ToolRegistry {
     }
 
     pub fn get(&self, name: &str) -> Option<&dyn Tool> {
-        self.tools.get(name).map(|t| t.as_ref())
+        self.tools.get(name).map(AsRef::as_ref)
     }
 
     pub fn list(&self) -> Vec<&str> {
-        self.tools.keys().map(|s| s.as_str()).collect()
+        self.tools.keys().map(String::as_str).collect()
     }
 
     pub fn has(&self, name: &str) -> bool {
         self.tools.contains_key(name)
     }
 
-    pub async fn call(&self, call: ToolCall) -> Result<ToolResponse> {
+    pub fn call(&self, call: ToolCall) -> Result<ToolResponse> {
         if !self.has(&call.name) {
             return Err(Error::Tool(format!("Tool '{}' not found", call.name)));
         }
         let id = call.id.clone();
         let name = call.name.clone();
-        match SkillPort::invoke(
-            &*self.inner.lock().unwrap_or_else(|e| e.into_inner()),
+        let registry = self
+            .inner
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        let invocation = SkillPort::invoke(
+            &*registry,
             &name,
             call.params,
-        ) {
+        );
+        drop(registry);
+        match invocation {
             Ok(result) => Ok(ToolResponse::success(id, result)),
             Err(e) => Ok(ToolResponse::failure(id, e.to_string())),
         }
@@ -102,6 +111,6 @@ impl Default for ToolRegistry {
 #[async_trait]
 impl ToolExecutor for ToolRegistry {
     async fn execute(&self, call: ToolCall) -> Result<ToolResponse> {
-        self.call(call).await
+        self.call(call)
     }
 }

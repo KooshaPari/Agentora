@@ -10,12 +10,12 @@ pub trait Agent: Send + Sync {
     async fn run(&self, ctx: &Context) -> Result<Output>;
 
     /// Get agent name
-    fn name(&self) -> &str {
+    fn name(&self) -> &'static str {
         "agent"
     }
 
     /// Get agent version
-    fn version(&self) -> &str {
+    fn version(&self) -> &'static str {
         "1.0.0"
     }
 }
@@ -52,11 +52,13 @@ impl AgentConfig {
         }
     }
 
+    #[must_use]
     pub fn model(mut self, model: impl Into<String>) -> Self {
         self.model = model.into();
         self
     }
 
+    #[must_use]
     pub fn temperature(mut self, temp: f32) -> Self {
         self.temperature = temp;
         self
@@ -107,6 +109,6 @@ mod tests {
 
         assert_eq!(config.name, "test");
         assert_eq!(config.model, "gpt-3.5");
-        assert_eq!(config.temperature, 0.5);
+        assert!((config.temperature - 0.5).abs() < f32::EPSILON);
     }
 }

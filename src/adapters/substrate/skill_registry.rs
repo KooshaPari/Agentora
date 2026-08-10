@@ -63,7 +63,10 @@ impl SkillRegistry {
             output_schema: serde_json::json!({ "type": "object" }),
         };
         SubstrateToolRegistry::register(
-            &mut *self.inner.lock().unwrap_or_else(|e| e.into_inner()),
+            &mut *self
+                .inner
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner),
             descriptor,
             Box::new(SkillHandlerBridge {
                 skill: skill.clone(),
@@ -75,11 +78,11 @@ impl SkillRegistry {
     }
 
     pub fn get(&self, name: &str) -> Option<&dyn Skill> {
-        self.skills.get(name).map(|s| s.as_ref())
+        self.skills.get(name).map(AsRef::as_ref)
     }
 
     pub fn list(&self) -> Vec<&str> {
-        self.skills.keys().map(|s| s.as_str()).collect()
+        self.skills.keys().map(String::as_str).collect()
     }
 
     pub fn has(&self, name: &str) -> bool {
