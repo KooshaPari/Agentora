@@ -6,7 +6,7 @@
 
 use std::sync::Mutex;
 
-/// NFR-006: panic safety — Mutex::lock().unwrap() has been replaced with
+/// NFR-006: panic safety — `Mutex::lock().unwrap()` has been replaced with
 /// poison-tolerant `.unwrap_or_else(|e| e.into_inner())` across all adapter
 /// code. This test verifies the recovery pattern compiles and works.
 #[test]
@@ -22,11 +22,14 @@ fn nfr_006_mutex_poison_recovery_compiles_and_recovers() {
     assert!(result.is_err(), "mutex should be poisoned");
 
     // Verify that unwrap_or_else(|e| e.into_inner()) recovers the data.
-    let guard = lock.lock().unwrap_or_else(|e| e.into_inner());
+    let guard = lock
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
     assert_eq!(*guard, vec![1, 2, 3], "data survives poison");
+    drop(guard);
 }
 
-/// NFR-006: panic safety — AgentEngine's set_agent works after a simulated
+/// NFR-006: panic safety — `AgentEngine`'s `set_agent` works after a simulated
 /// concurrent panic would have poisoned an unrelated mutex.
 #[tokio::test(flavor = "multi_thread")]
 async fn nfr_006_engine_outputs_accessible_after_recovery() {
@@ -45,7 +48,7 @@ async fn nfr_006_engine_outputs_accessible_after_recovery() {
     }
 }
 
-/// NFR-006: panic safety — ToolRegistry operations that lock the inner
+/// NFR-006: panic safety — `ToolRegistry` operations that lock the inner
 /// registry use poison-tolerant locking.
 #[tokio::test(flavor = "multi_thread")]
 async fn nfr_006_tool_registry_register_and_dispatch_work() {

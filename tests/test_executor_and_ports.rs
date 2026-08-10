@@ -1,5 +1,5 @@
 //! FR-005 acceptance tests: Application orchestration (`AgentExecutor`)
-//! and adapter ports (LLM / MemoryPort / ToolExecutor).
+//! and adapter ports (LLM / `MemoryPort` / `ToolExecutor`).
 //!
 //! Each `#[test]` in this module is annotated with the FR it exercises.
 //! FR-005: executor and ports

@@ -18,7 +18,7 @@ impl Agent for EchoAgent {
         Ok(Output::text(format!("echo:{}", ctx.input)))
     }
 
-    fn name(&self) -> &str {
+    fn name(&self) -> &'static str {
         "echo"
     }
 }

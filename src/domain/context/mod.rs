@@ -32,11 +32,13 @@ impl Context {
         }
     }
 
+    #[must_use]
     pub fn with_session(mut self, session_id: impl Into<String>) -> Self {
         self.session_id = session_id.into();
         self
     }
 
+    #[must_use]
     pub fn with_metadata(mut self, key: impl Into<String>, value: Value) -> Self {
         self.metadata.insert(key.into(), value);
         self

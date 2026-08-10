@@ -3,11 +3,11 @@ use agentkit::{Error, Result};
 use async_trait::async_trait;
 use serde_json::{json, Value};
 
-/// Routes TweetClaw jobs into Agentora skill result payloads.
+/// Routes `TweetClaw` jobs into Agentora skill result payloads.
 #[derive(Clone, Debug)]
 struct TweetClawWorkflowSkill;
 
-/// TweetClaw jobs that only collect or inspect public source material.
+/// `TweetClaw` jobs that only collect or inspect public source material.
 const SOURCE_COLLECTION_JOBS: &[&str] = &[
     "scrape_tweets",
     "search_tweets",
@@ -17,7 +17,7 @@ const SOURCE_COLLECTION_JOBS: &[&str] = &[
     "media_download",
 ];
 
-/// TweetClaw jobs that need explicit operator approval before execution.
+/// `TweetClaw` jobs that need explicit operator approval before execution.
 const APPROVAL_REQUIRED_JOBS: &[&str] = &[
     "post_tweets",
     "post_tweet_replies",
@@ -31,7 +31,7 @@ const APPROVAL_REQUIRED_JOBS: &[&str] = &[
 #[async_trait]
 impl Skill for TweetClawWorkflowSkill {
     /// Returns the registry key used by this example skill.
-    fn name(&self) -> &str {
+    fn name(&self) -> &'static str {
         "tweetclaw_workflow"
     }
 
@@ -40,7 +40,7 @@ impl Skill for TweetClawWorkflowSkill {
         "Route TweetClaw X/Twitter jobs through source or approval workflows".to_string()
     }
 
-    /// Routes a requested TweetClaw job to source collection or account action handling.
+    /// Routes a requested `TweetClaw` job to source collection or account action handling.
     async fn execute(&self, params: Value) -> Result<SkillResult> {
         let job = params
             .get("job")

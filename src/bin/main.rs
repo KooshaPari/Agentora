@@ -130,9 +130,10 @@ fn run(cli: Cli) -> Result<(), ErrorEnvelope> {
             ToolsAction::List => emit_tools(cli.output),
         },
     }
+    Ok(())
 }
 
-fn emit_version(mode: OutputMode) -> Result<(), ErrorEnvelope> {
+fn emit_version(mode: OutputMode) {
     let version = env!("CARGO_PKG_VERSION");
     match mode {
         OutputMode::Human => {
@@ -140,13 +141,12 @@ fn emit_version(mode: OutputMode) -> Result<(), ErrorEnvelope> {
         }
         OutputMode::Json => {
             let payload = serde_json::json!({ "name": "agentkit", "version": version });
-            println!("{}", payload);
+            println!("{payload}");
         }
     }
-    Ok(())
 }
 
-fn emit_status(mode: OutputMode) -> Result<(), ErrorEnvelope> {
+fn emit_status(mode: OutputMode) {
     let skills = SkillRegistry::new().list().len();
     let tools = ToolRegistry::new().list().len();
     let payload = StatusPayload {
@@ -174,27 +174,24 @@ fn emit_status(mode: OutputMode) -> Result<(), ErrorEnvelope> {
             println!("{}", serde_json::to_string(&payload).unwrap_or_default());
         }
     }
-    Ok(())
 }
 
-fn emit_skills(mode: OutputMode) -> Result<(), ErrorEnvelope> {
+fn emit_skills(mode: OutputMode) {
     let names: Vec<String> = SkillRegistry::new()
         .list()
         .into_iter()
-        .map(|s| s.to_string())
+        .map(ToString::to_string)
         .collect();
     write_list("skill", &names, mode);
-    Ok(())
 }
 
-fn emit_tools(mode: OutputMode) -> Result<(), ErrorEnvelope> {
+fn emit_tools(mode: OutputMode) {
     let names: Vec<String> = ToolRegistry::new()
         .list()
         .into_iter()
-        .map(|t| t.to_string())
+        .map(ToString::to_string)
         .collect();
     write_list("tool", &names, mode);
-    Ok(())
 }
 
 fn write_list(kind: &str, names: &[String], mode: OutputMode) {

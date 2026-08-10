@@ -47,7 +47,7 @@ pub struct WebSearchSkill;
 
 #[async_trait]
 impl Skill for WebSearchSkill {
-    fn name(&self) -> &str {
+    fn name(&self) -> &'static str {
         "web_search"
     }
 

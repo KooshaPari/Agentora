@@ -40,11 +40,13 @@ impl AgentExecutor {
         }
     }
 
+    #[must_use]
     pub fn with_skills(mut self, skills: SkillRegistry) -> Self {
         self.skills = Arc::new(skills);
         self
     }
 
+    #[must_use]
     pub fn with_tools(mut self, tools: ToolRegistry) -> Self {
         self.tools = Arc::new(tools);
         self
@@ -57,8 +59,7 @@ impl AgentExecutor {
         self.engine.set_agent(Arc::new(agent));
 
         let cwd = env::current_dir()
-            .map(|p| p.display().to_string())
-            .unwrap_or_else(|_| ".".into());
+            .map_or_else(|_| ".".into(), |path| path.display().to_string());
 
         let task = Task::new(&input, &cwd);
         let route = AgentRoutingPort
@@ -112,7 +113,7 @@ impl Agent for SimpleAgent {
         Ok(Output::text(format!("Echo: {}", ctx.input)))
     }
 
-    fn name(&self) -> &str {
+    fn name(&self) -> &'static str {
         "simple"
     }
 }
