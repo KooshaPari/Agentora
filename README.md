@@ -646,6 +646,16 @@ cargo run --bin agentkit
 
 MIT OR Apache-2.0
 
+### Release metadata authority gate
+
+The `agentkit` package metadata declares `MIT OR Apache-2.0`, while the
+repository's checked-in `LICENSE` file and GitHub repository metadata currently
+identify MIT only. This is a release-authority decision, not a documentation
+shortcut: do not publish or relabel a release until the license holder confirms
+the intended policy and every public metadata surface is aligned. The package
+repository URL is `https://github.com/KooshaPari/Agentora` and its documentation
+URL is `https://docs.rs/agentkit`.
+
 ## Description
 
 Hexagonal (ports & adapters) Rust framework for building AI agents — `agentkit`. Pluggable skill system, JSON-schema tool registry, two-tier memory (short-term ring buffer + long-term persistent stores), and serializable domain events.
