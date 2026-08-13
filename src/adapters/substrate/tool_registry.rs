@@ -89,11 +89,7 @@ impl ToolRegistry {
             .inner
             .lock()
             .unwrap_or_else(std::sync::PoisonError::into_inner);
-        let invocation = SkillPort::invoke(
-            &*registry,
-            &name,
-            call.params,
-        );
+        let invocation = SkillPort::invoke(&*registry, &name, call.params);
         drop(registry);
         match invocation {
             Ok(result) => Ok(ToolResponse::success(id, result)),

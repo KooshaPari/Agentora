@@ -14,7 +14,6 @@ permissions:
   contents: read
   packages: read
   security-events: write
-  id-token: write   # required for SLSA provenance
 
 jobs:
   codeql:
@@ -89,4 +88,3 @@ jobs:
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.1.0
     with:
       base64-subjects: ${{ needs.sbom.outputs.subjects }}
-      continue-on-error: true

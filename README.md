@@ -38,11 +38,13 @@ cd Agentora
 ```
 
 ```bash
-pip install agentora
+# Run the local crate without installing it globally.
+cargo run --locked --bin agentkit -- --output json status
 ```
-```python
-from agentora import ...
-```
+
+`Agentora` is the repository name; the published Rust package and CLI are
+`agentkit`. This repository does not provide a Python package named
+`agentora`.
 
 See [SPEC.md](SPEC.md) for the full specification and [llms.txt](llms.txt) for machine-readable metadata.
 
@@ -85,6 +87,29 @@ Or via CLI:
 ```bash
 cargo add agentkit
 ```
+
+### Local CLI smoke
+
+For a deterministic, no-global-install dogfood check from a checkout, run:
+
+```bash
+cargo run --locked --bin agentkit -- --help
+cargo run --locked --bin agentkit -- --output json version
+cargo run --locked --bin agentkit -- --output json status
+cargo run --locked --bin agentkit -- skills list --output json
+cargo run --locked --bin agentkit -- tools list --output json
+```
+
+To install the local binary into Cargo's bin directory after the smoke passes:
+
+```bash
+cargo install --path . --locked
+agentkit --output json status
+```
+
+The smoke commands exercise the checked-in `Cargo.lock` and do not assert that
+`agentkit` has been published to crates.io. The automated equivalent lives in
+[`tests/test_cli.rs`](tests/test_cli.rs).
 
 ### Feature Flags
 
@@ -620,6 +645,16 @@ cargo run --bin agentkit
 ## License
 
 MIT OR Apache-2.0
+
+### Release metadata authority gate
+
+The `agentkit` package metadata declares `MIT OR Apache-2.0`, while the
+repository's checked-in `LICENSE` file and GitHub repository metadata currently
+identify MIT only. This is a release-authority decision, not a documentation
+shortcut: do not publish or relabel a release until the license holder confirms
+the intended policy and every public metadata surface is aligned. The package
+repository URL is `https://github.com/KooshaPari/Agentora` and its documentation
+URL is `https://docs.rs/agentkit`.
 
 ## Description
 
