@@ -2,6 +2,23 @@
 # Docs: https://docs.mergify.com/
 
 pull_request_rules:
+  # Kill Mergify-bot regression loop: the mergify[bot] periodically force-pushes
+  # to `mergify/configuration-deprecated-update` to "upgrade" config. The PRs are
+  # no-op (branch is byte-identical to main). Auto-close + auto-delete-branch on sight.
+  - name: Kill mergify/configuration-deprecated-update regression
+    conditions:
+      - base=main
+      - head~=^mergify/configuration-deprecated-update$
+      - -closed
+    actions:
+      comment:
+        message: >
+          Auto-closing: this is a Mergify[bot] regression (the bot force-pushes
+          the deprecated-config branch on a schedule). Branch is byte-identical
+          to main; no unique work. Closed by the kill-loop rule in `.mergify.yml`.
+      close: {}
+      delete_head_branch: {}
+
   # Auto-merge only after the branch-protection checks and a human review pass.
   - name: Auto-merge when approved + CI green
     conditions:
