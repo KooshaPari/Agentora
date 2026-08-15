@@ -17,7 +17,6 @@ pull_request_rules:
           the deprecated-config branch on a schedule). Branch is byte-identical
           to main; no unique work. Closed by the kill-loop rule in `.mergify.yml`.
       close: {}
-      delete_head_branch: {}
 
   # Auto-merge only after the branch-protection checks and a human review pass.
   - name: Auto-merge when approved + CI green
@@ -33,7 +32,7 @@ pull_request_rules:
         method: squash
         commit_message_template: |
           {{ title }} (#{{ number }})
-          
+
           Co-authored-by: {{ author }}
 
   # Label PRs based on changed files
