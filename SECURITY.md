@@ -50,23 +50,20 @@ Out of scope:
 
 ## 6. Security Tooling
 
-This repository runs the following security tooling on every push and weekly cron:
-
-- `cargo audit` / `pip-audit` / `npm audit` / `govulncheck` - dependency CVE scanning
-- `gitleaks` - secret detection (`.gitleaks.toml` allowlists known false positives)
-- `trivy` - image and filesystem vulnerability scanning
-- `cargo-cyclonedx` / `syft` - SBOM generation (CycloneDX format)
-- `slsa-github-generator` - SLSA Build Level 3 provenance attestation
-- CodeQL - static analysis for the primary language
-
-See `.github/workflows/security.yml` and `scripts/audit.sh` for full configuration.
+This repository configures security checks in `.github/workflows/security.yml`
+and `scripts/audit.sh`, including dependency scanning, Gitleaks, CodeQL, SBOM
+generation, and SLSA provenance generation. Successful current-main workflow
+evidence is pending; this policy therefore does not claim that every check
+runs on every event, that an SBOM has been published, or that a SLSA level has
+been achieved.
 
 ## 7. Dependencies and Supply Chain
 
-- All dependencies pinned via lockfile (Cargo.lock / poetry.lock / package-lock.json / go.sum)
-- `dependabot.yml` configured for security-only updates (see `.github/dependabot.yml`)
+- Rust dependencies are locked in `Cargo.lock`.
+- `.github/dependabot.yml` configures dependency-update policy.
 - Renovate is not used
-- SBOMs are generated on every release and attached to the GitHub release
+- SBOM generation and release attachment require successful workflow evidence;
+  neither is asserted by this policy until it has been verified for a release.
 
 ## 8. Acknowledgements
 

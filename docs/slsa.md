@@ -1,32 +1,30 @@
 # SLSA Build Attestation
 
-This repository publishes build provenance for release artifacts in
-accordance with [SLSA (Supply-chain Levels for Software Artifacts)][slsa]
-Build specifications. SLSA provenance allows downstream consumers to
-verify that an artifact was built from the expected source repository,
-at the expected commit, by the expected build platform.
+This document describes the repository's configured path for generating build
+provenance in accordance with [SLSA (Supply-chain Levels for Software
+Artifacts)][slsa] Build specifications. No published release artifact or
+attestation has been verified for this repository yet, so this document does
+not claim an achieved SLSA level.
 
 ## Target Level
 
-**Current target: SLSA Build L2 (achieved today)**
+**Current target: SLSA Build L2 (configuration present; execution evidence pending)**
 
-The release pipeline is hosted on GitHub Actions, an isolated build
-platform that is owned and administered by GitHub. Provenance is
-generated automatically for every published release using
-[`slsa-framework/slsa-github-generator`][slsa-gh-gen] and the
-`attest-build-provenance` action. Provenance is signed by a GitHub-
-hosted OIDC token and stored in the [GitHub Artifact Attestations][ghaa]
-log alongside the artifact.
+The release workflow is configured to use GitHub Actions and
+[`slsa-framework/slsa-github-generator`][slsa-gh-gen]'s
+`attest-build-provenance` action. A successful release run and independent
+attestation verification are required before asserting provenance generation,
+artifact distribution, signing, or any SLSA level.
 
 | Requirement                                 | Status       |
 | ------------------------------------------- | ------------ |
-| Provenance generated automatically          | ✅ L2        |
-| Provenance distributed alongside artifact   | ✅ L2        |
-| Build platform hosted and isolated          | ✅ L2        |
-| Provenance authenticity (OIDC-signed)       | ✅ L2        |
-| Build platform isolated from build request | ⏭ L3 target |
-| Hardened build platform                     | ⏭ L3 target |
-| Provenance non-forgeable (sigstore/cosign)  | ⏭ L3 target |
+| Provenance generation configured            | Evidence pending |
+| Artifact provenance distribution            | Evidence pending |
+| Build-platform isolation                    | Evidence pending |
+| OIDC provenance authenticity                | Evidence pending |
+| Build-platform isolation from request       | Future target |
+| Hardened build platform                     | Future target |
+| Non-forgeable provenance (sigstore/cosign)  | Future target |
 
 ## Workflow
 
@@ -55,8 +53,8 @@ and is triggered:
 
 ## Verification
 
-Consumers can verify a release artifact's provenance using the
-[GitHub CLI][gh-cli]:
+After a release attestation has been generated, consumers can verify the
+artifact using the [GitHub CLI][gh-cli]:
 
 ```bash
 gh attestation verify <artifact> --owner <org>
@@ -71,8 +69,9 @@ cosign verify-attestation \
   <artifact>
 ```
 
-The in-toto provenance attestation (`slsa-github-generator/actions/attest-build-provenance`)
-contains:
+When generated, the in-toto provenance attestation
+(`slsa-github-generator/actions/attest-build-provenance`) is expected to
+contain:
 
 - `builder.id` — `https://github.com/actions/runner`
 - `invocation.config.source.uri` — repository URL
@@ -85,8 +84,9 @@ contains:
 
 ## Path to SLSA Build L3
 
-The current pipeline satisfies L2. To graduate to L3, the following
-additions are required:
+The configured workflow does not establish an achieved level. After a
+successful and independently verified L2 release, the following additions
+would be required to pursue L3:
 
 1. **Isolated build environment** — move from a hosted runner to
    ephemeral, single-tenant builders (e.g.
