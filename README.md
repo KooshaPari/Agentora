@@ -42,9 +42,10 @@ cd Agentora
 cargo run --locked --bin agentkit -- --output json status
 ```
 
-`Agentora` is the repository name; the published Rust package and CLI are
-`agentkit`. This repository does not provide a Python package named
-`agentora`.
+`Agentora` is the repository name; this checkout contains the Rust crate and
+CLI named `agentkit`. Registry publication for this crate name has not been
+verified for this repository, so use the local source instructions below. This
+repository does not provide a Python package named `agentora`.
 
 See [SPEC.md](SPEC.md) for the full specification and [llms.txt](llms.txt) for machine-readable metadata.
 
@@ -57,8 +58,6 @@ _Updated 2026-06-08 — audit pass._
 
 [![Build](https://img.shields.io/github/actions/workflow/status/KooshaPari/Agentora/ci.yml?branch=main&label=build)](https://github.com/KooshaPari/Agentora/actions)
 [![Release](https://img.shields.io/github/v/release/KooshaPari/Agentora?include_prereleases&sort=semver)](https://github.com/KooshaPari/Agentora/releases)
-[![crates.io](https://img.shields.io/crates/v/agentkit)](https://crates.io/crates/agentkit)
-[![docs.rs](https://img.shields.io/docsrs/agentkit)](https://docs.rs/agentkit)
 [![License](https://img.shields.io/github/license/KooshaPari/Agentora)](LICENSE)
 [![Phenotype](https://img.shields.io/badge/Phenotype-org-blueviolet)](https://github.com/KooshaPari)
 
@@ -77,15 +76,16 @@ agentkit is a Rust framework for building AI agents. It provides:
 
 ## Installation
 
-```toml
-[dependencies]
-agentkit = "0.1.0"
-```
-
-Or via CLI:
+Until the release owner establishes a registry identity, consume the crate from
+a local checkout:
 
 ```bash
-cargo add agentkit
+cargo add agentkit --path ../Agentora
+```
+
+```toml
+[dependencies]
+agentkit = { path = "../Agentora" }
 ```
 
 ### Local CLI smoke
@@ -121,7 +121,7 @@ The smoke commands exercise the checked-in `Cargo.lock` and do not assert that
 
 ```toml
 [dependencies]
-agentkit = { version = "0.1.0", features = ["openai", "sqlite-memory"] }
+agentkit = { path = "../Agentora", features = ["openai", "sqlite-memory"] }
 ```
 
 ## Architecture
@@ -653,8 +653,9 @@ repository's checked-in `LICENSE` file and GitHub repository metadata currently
 identify MIT only. This is a release-authority decision, not a documentation
 shortcut: do not publish or relabel a release until the license holder confirms
 the intended policy and every public metadata surface is aligned. The package
-repository URL is `https://github.com/KooshaPari/Agentora` and its documentation
-URL is `https://docs.rs/agentkit`.
+source is `https://github.com/KooshaPari/Agentora`; documentation is maintained
+in this repository until a release owner establishes a verified external
+publication surface.
 
 ## Description
 
