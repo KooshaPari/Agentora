@@ -3,6 +3,7 @@
 <!-- Slop issues are expected and intentionally present as part of an HITL-less -->
 <!-- /minimized AI-DD metaproject of learning, refining, and building brute-force -->
 <!-- training for both agents and the human operator. -->
+
 ![Downloads](https://img.shields.io/github/downloads/KooshaPari/Agentora/total?style=flat-square&label=downloads&color=blue)
 ![GitHub release](https://img.shields.io/github/v/release/KooshaPari/Agentora?style=flat-square&label=release)
 ![License](https://img.shields.io/github/license/KooshaPari/Agentora?style=flat-square)
@@ -18,8 +19,10 @@
 > on learning, refining, and brute-force training both the agents and the
 > human operator. Bug reports and contributions are still welcome, but please
 > expect AI-generated code, comments, and documentation throughout.
+
 <!-- AI-DD-META:END -->
 <!-- work-state: active | [========8/10] Block B consolidation in progress -->
+
 > **Work state:** ACTIVE · **Progress:** `███████░░░ 70%`
 > Rust hexagonal agent framework (agentkit): skills, tool registry, two-tier memory, lifecycle events · updated 2026-06-02
 
@@ -49,7 +52,6 @@ repository does not provide a Python package named `agentora`.
 
 See [SPEC.md](SPEC.md) for the full specification and [llms.txt](llms.txt) for machine-readable metadata.
 
-
 ## State
 
 Progress: `[███████░░░] 70%` — Rust hexagonal agent framework (agentkit).
@@ -60,7 +62,6 @@ _Updated 2026-06-08 — audit pass._
 [![Release](https://img.shields.io/github/v/release/KooshaPari/Agentora?include_prereleases&sort=semver)](https://github.com/KooshaPari/Agentora/releases)
 [![License](https://img.shields.io/github/license/KooshaPari/Agentora)](LICENSE)
 [![Phenotype](https://img.shields.io/badge/Phenotype-org-blueviolet)](https://github.com/KooshaPari)
-
 
 > A hexagonal architecture framework for building AI agents with skill systems, tool registries, and memory management.
 
@@ -113,10 +114,10 @@ The smoke commands exercise the checked-in `Cargo.lock` and do not assert that
 
 ### Feature Flags
 
-| Feature | Description | Dependencies |
-|---------|-------------|-------------|
-| `openai` | OpenAI API support | `reqwest 0.13` |
-| `redis-memory` | Redis memory backend | `redis 1.2` |
+| Feature         | Description           | Dependencies    |
+| --------------- | --------------------- | --------------- |
+| `openai`        | OpenAI API support    | `reqwest 0.13`  |
+| `redis-memory`  | Redis memory backend  | `redis 1.2`     |
 | `sqlite-memory` | SQLite memory backend | `rusqlite 0.40` |
 
 ```toml
@@ -212,11 +213,11 @@ pub trait Agent: Send + Sync {
 }
 ```
 
-| Method | Required | Description |
-|--------|----------|-------------|
-| `run` | Yes | Execute the agent with the given context |
-| `name` | No | Agent identifier (default: `"agent"`) |
-| `version` | No | Agent version (default: `"1.0.0"`) |
+| Method    | Required | Description                              |
+| --------- | -------- | ---------------------------------------- |
+| `run`     | Yes      | Execute the agent with the given context |
+| `name`    | No       | Agent identifier (default: `"agent"`)    |
+| `version` | No       | Agent version (default: `"1.0.0"`)       |
 
 ### `Skill` — Modular agent capabilities
 
@@ -231,11 +232,11 @@ pub trait Skill: Send + Sync {
 }
 ```
 
-| Method | Required | Description |
-|--------|----------|-------------|
-| `name` | Yes | Skill identifier |
-| `description` | No | Human-readable description |
-| `execute` | Yes | Run the skill with JSON parameters |
+| Method        | Required | Description                        |
+| ------------- | -------- | ---------------------------------- |
+| `name`        | Yes      | Skill identifier                   |
+| `description` | No       | Human-readable description         |
+| `execute`     | Yes      | Run the skill with JSON parameters |
 
 ### `Tool` — Extensible tool integration
 
@@ -251,12 +252,12 @@ pub trait Tool: Send + Sync {
 }
 ```
 
-| Method | Required | Description |
-|--------|----------|-------------|
-| `name` | Yes | Tool identifier |
-| `description` | No | Human-readable description |
-| `parameters` | No | JSON Schema for tool parameters |
-| `call` | Yes | Execute the tool with a ToolCall |
+| Method        | Required | Description                      |
+| ------------- | -------- | -------------------------------- |
+| `name`        | Yes      | Tool identifier                  |
+| `description` | No       | Human-readable description       |
+| `parameters`  | No       | JSON Schema for tool parameters  |
+| `call`        | Yes      | Execute the tool with a ToolCall |
 
 ### `MemoryStore` — Long-term memory backend
 
@@ -616,12 +617,12 @@ use agentkit::prelude::*;
 
 ## Built-in Implementations
 
-| Type | Name | Description |
-|------|------|-------------|
-| Skill | `WebSearchSkill` | Placeholder web search skill |
-| Tool | `CalculatorTool` | Placeholder math expression evaluator |
-| MemoryStore | `InMemoryStore` | In-memory store for testing |
-| Agent | `SimpleAgent` | Echo agent (returns input prefixed with "Echo:") |
+| Type        | Name             | Description                                      |
+| ----------- | ---------------- | ------------------------------------------------ |
+| Skill       | `WebSearchSkill` | Placeholder web search skill                     |
+| Tool        | `CalculatorTool` | Placeholder math expression evaluator            |
+| MemoryStore | `InMemoryStore`  | In-memory store for testing                      |
+| Agent       | `SimpleAgent`    | Echo agent (returns input prefixed with "Echo:") |
 
 ## Development
 

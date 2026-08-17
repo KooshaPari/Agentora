@@ -2,10 +2,10 @@
 
 ## 1. Supported Versions
 
-| Version | Supported          |
-| ------- | ------------------ |
-| latest  | :white_check_mark: |
-| < latest| :x:                |
+| Version  | Supported          |
+| -------- | ------------------ |
+| latest   | :white_check_mark: |
+| < latest | :x:                |
 
 Only the latest tagged release receives security updates. Older versions are not patched; please upgrade.
 
@@ -39,11 +39,13 @@ Cadence is codified in ADR-042 (security audit cadence, monthly sweep via `scrip
 ## 5. Scope
 
 In scope:
+
 - The `Agentora` source tree on the default branch
 - Tagged releases on the default branch
 - Pre-built artifacts published from CI (crates.io / PyPI / npm / Go modules)
 
 Out of scope:
+
 - Issues in transitive dependencies (report upstream)
 - Issues requiring physical access to the user's machine
 - Denial-of-service via resource exhaustion in user-supplied inputs (best-effort mitigation only)

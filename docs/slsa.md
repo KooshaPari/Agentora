@@ -16,15 +16,15 @@ The release workflow is configured to use GitHub Actions and
 attestation verification are required before asserting provenance generation,
 artifact distribution, signing, or any SLSA level.
 
-| Requirement                                 | Status       |
-| ------------------------------------------- | ------------ |
-| Provenance generation configured            | Evidence pending |
-| Artifact provenance distribution            | Evidence pending |
-| Build-platform isolation                    | Evidence pending |
-| OIDC provenance authenticity                | Evidence pending |
-| Build-platform isolation from request       | Future target |
-| Hardened build platform                     | Future target |
-| Non-forgeable provenance (sigstore/cosign)  | Future target |
+| Requirement                                | Status           |
+| ------------------------------------------ | ---------------- |
+| Provenance generation configured           | Evidence pending |
+| Artifact provenance distribution           | Evidence pending |
+| Build-platform isolation                   | Evidence pending |
+| OIDC provenance authenticity               | Evidence pending |
+| Build-platform isolation from request      | Future target    |
+| Hardened build platform                    | Future target    |
+| Non-forgeable provenance (sigstore/cosign) | Future target    |
 
 ## Workflow
 
