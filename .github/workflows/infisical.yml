@@ -13,6 +13,13 @@ on:
       - ".github/workflows/infisical.yml"
   pull_request:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: infisical-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   sync-secrets:
     name: Pull secrets from Infisical
