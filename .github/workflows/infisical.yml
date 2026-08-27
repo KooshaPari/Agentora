@@ -49,4 +49,3 @@ jobs:
             --env "$INFISICAL_ENV" \
             --token "$INFISICAL_TOKEN" \
             -- bash -c 'echo "Secrets loaded into the isolated process environment"'
-
