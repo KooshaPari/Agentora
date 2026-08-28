@@ -11,16 +11,24 @@ permissions:
   contents: read
 jobs:
   sonar:
+    # External-fork code must never receive the Infisical machine identity.
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v4
         with:
           fetch-depth: 0
+          persist-credentials: false
       - name: Load Sonar token from Infisical
         env:
           INFISICAL_TOKEN: ${{ secrets.INFISICAL_TOKEN }}
           INFISICAL_PROJECT_ID: ${{ vars.INFISICAL_PROJECT_ID || '8efe392e-56a6-4c3c-89f9-8141183dd7e8' }}
-          INFISICAL_ENV: ${{ vars.INFISICAL_ENV || 'prod' }}
+          # Sonar uses the centrally managed token environment, not github.ref:
+          # pull-request refs are ephemeral and must not change secret scope.
+          INFISICAL_ENV: ${{ vars.INFISICAL_SONAR_ENV || 'prod' }}
+          INFISICAL_PATH: ${{ vars.INFISICAL_SONAR_PATH || '/' }}
         run: |
           set -euo pipefail
           if [ -z "$INFISICAL_TOKEN" ]; then
@@ -36,11 +44,11 @@ jobs:
           mkdir -p "$install_dir"
           tar -xzf "$archive" -C "$install_dir" infisical
           export PATH="$install_dir:$PATH"
-          sonar_token="$(infisical --silent run \
+          sonar_token="$(infisical --silent secrets get SONAR_TOKEN \
             --projectId "$INFISICAL_PROJECT_ID" \
             --env "$INFISICAL_ENV" \
-            --token "$INFISICAL_TOKEN" \
-            -- bash -c "printf '%s' \"\$SONAR_TOKEN\"")"
+            --path "$INFISICAL_PATH" \
+            --plain)"
           if [ -z "$sonar_token" ]; then
             echo "::error::SONAR_TOKEN not found in configured Infisical environment"
             exit 1
