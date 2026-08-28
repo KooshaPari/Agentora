@@ -10,22 +10,42 @@ on:
   push:
     branches: [main, master]
     paths:
-      - '.github/workflows/infisical.yml'
+      - ".github/workflows/infisical.yml"
   pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: infisical-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   sync-secrets:
     name: Pull secrets from Infisical
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-22.04
     timeout-minutes: 5
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
 
-      - name: Install Infisical CLI
+      - name: Install verified Infisical CLI
+        env:
+          INFISICAL_CLI_VERSION: "0.43.114"
+          INFISICAL_CLI_SHA256: "c35cdd1c4908b3ea6c0773279f8ae6993f9ec03b5e2d4a7cdc2f38ce89eb33d0"
         run: |
-          curl -1sLf "https://dl.cloudsmith.io/public/infisical/infisical-cli/setup.deb.sh" | sudo -E bash
-          sudo apt-get install -y infisical
+          set -euo pipefail
+          archive="$RUNNER_TEMP/infisical-cli-${INFISICAL_CLI_VERSION}-linux-amd64.tar.gz"
+          install_dir="$RUNNER_TEMP/infisical-cli"
+          curl --fail --location --proto '=https' --tlsv1.2 --retry 3 \
+            --output "$archive" \
+            "https://github.com/Infisical/cli/releases/download/v${INFISICAL_CLI_VERSION}/cli_${INFISICAL_CLI_VERSION}_linux_amd64.tar.gz"
+          printf '%s  %s\n' "$INFISICAL_CLI_SHA256" "$archive" | sha256sum --check --status
+          mkdir -p "$install_dir"
+          tar -xzf "$archive" -C "$install_dir" infisical
+          printf '%s\n' "$install_dir" >> "$GITHUB_PATH"
 
       - name: Pull secrets to .env
         env:
@@ -48,12 +68,4 @@ jobs:
             --projectId "$INFISICAL_PROJECT_ID" \
             --env "$INFISICAL_ENV" \
             --token "$INFISICAL_TOKEN" \
-            -- bash -c 'echo "Secrets loaded into env successfully" && env | grep -E "^[A-Z_]+=" | grep -v -E "^(PATH|HOME|PWD|SHELL|HOSTNAME|TERM|GITHUB_|RUNNER_|CARGO_|DEPLOY_|INPUT_|IMAGE_|ACTIONS_|STEP_|BOOT_|GRUB_|LS_COLORS|INVOCATION_ID|JOURNAL_)" | head -20'
-
-      - name: Upload secrets as artifact (debug only, never published)
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: infisical-debug
-          path: .env
-          retention-days: 1
+            -- bash -c 'echo "Secrets loaded into the isolated process environment"'

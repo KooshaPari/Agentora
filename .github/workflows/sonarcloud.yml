@@ -11,13 +11,52 @@ permissions:
   contents: read
 jobs:
   sonar:
+    # External-fork code must never receive the Infisical machine identity.
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v4
         with:
           fetch-depth: 0
+          persist-credentials: false
+      - name: Load Sonar token from Infisical
+        env:
+          INFISICAL_TOKEN: ${{ secrets.INFISICAL_TOKEN }}
+          INFISICAL_PROJECT_ID: ${{ vars.INFISICAL_PROJECT_ID || secrets.INFISICAL_PROJECT_ID || '8efe392e-56a6-4c3c-89f9-8141183dd7e8' }}
+          # A dedicated Sonar environment may override the shared ref mapping.
+          # Otherwise this mirrors Infisical Sync; pull-request refs select dev.
+          INFISICAL_ENV: ${{ vars.INFISICAL_SONAR_ENV || vars.INFISICAL_ENV || github.ref == 'refs/heads/main' && 'prod' || github.ref == 'refs/heads/staging' && 'staging' || 'dev' }}
+          INFISICAL_PATH: ${{ vars.INFISICAL_SONAR_PATH || '/' }}
+        run: |
+          set -euo pipefail
+          if [ -z "$INFISICAL_TOKEN" ]; then
+            echo "::error::INFISICAL_TOKEN secret not configured in repo settings"
+            exit 1
+          fi
+          archive="$RUNNER_TEMP/infisical-cli-0.43.114-linux-amd64.tar.gz"
+          install_dir="$RUNNER_TEMP/infisical-cli"
+          curl --fail --location --proto '=https' --tlsv1.2 --retry 3 \
+            --output "$archive" \
+            "https://github.com/Infisical/cli/releases/download/v0.43.114/cli_0.43.114_linux_amd64.tar.gz"
+          printf '%s  %s\n' "c35cdd1c4908b3ea6c0773279f8ae6993f9ec03b5e2d4a7cdc2f38ce89eb33d0" "$archive" | sha256sum --check --status
+          mkdir -p "$install_dir"
+          tar -xzf "$archive" -C "$install_dir" infisical
+          export PATH="$install_dir:$PATH"
+          sonar_token="$(infisical --silent secrets get SONAR_TOKEN \
+            --projectId "$INFISICAL_PROJECT_ID" \
+            --env "$INFISICAL_ENV" \
+            --path "$INFISICAL_PATH" \
+            --plain)"
+          if [ -z "$sonar_token" ]; then
+            echo "::error::SONAR_TOKEN not found in configured Infisical environment"
+            exit 1
+          fi
+          echo "::add-mask::$sonar_token"
+          printf 'SONAR_TOKEN=%s\n' "$sonar_token" >> "$GITHUB_ENV"
+          unset sonar_token
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v8
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
