@@ -27,8 +27,15 @@ jobs:
             echo "::error::INFISICAL_TOKEN secret not configured in repo settings"
             exit 1
           fi
-          curl --proto '=https' --tlsv1.2 -1sLf "https://dl.cloudsmith.io/public/infisical/infisical-cli/setup.deb.sh" | sudo -E bash
-          sudo apt-get install -y infisical
+          archive="$RUNNER_TEMP/infisical-cli-0.43.114-linux-amd64.tar.gz"
+          install_dir="$RUNNER_TEMP/infisical-cli"
+          curl --fail --location --proto '=https' --tlsv1.2 --retry 3 \
+            --output "$archive" \
+            "https://github.com/Infisical/cli/releases/download/v0.43.114/cli_0.43.114_linux_amd64.tar.gz"
+          printf '%s  %s\n' "c35cdd1c4908b3ea6c0773279f8ae6993f9ec03b5e2d4a7cdc2f38ce89eb33d0" "$archive" | sha256sum --check --status
+          mkdir -p "$install_dir"
+          tar -xzf "$archive" -C "$install_dir" infisical
+          export PATH="$install_dir:$PATH"
           sonar_token="$(infisical --silent run \
             --projectId "$INFISICAL_PROJECT_ID" \
             --env "$INFISICAL_ENV" \
