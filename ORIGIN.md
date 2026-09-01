@@ -167,3 +167,35 @@ ADR-035 (see `docs/adr/2026-06-15/` and `docs/adr/2026-06-18/`).
 
 **L5-110 audit complete.** No content loss. No destructive migration.
 Canonical repo (`KooshaPari/Agentora`) verified at commit `031e40b feat(domain): add MCP ports and integration documentation (#87)`.
+
+
+---
+
+## Upstream divorce (2026-09-01, G1 forensic pass)
+
+As of the G1 repo-triage forensic pass (2026-09-01), the upstream parent
+declared by this fork's `parent.full_name` field — `kriptoburak/Agentora`
+— **no longer exists on GitHub**. Verified via:
+
+| Probe | Result |
+|---|---|
+| `gh api repos/kriptoburak/Agentora` | 404 Not Found |
+| `gh api repos/kriptoburak-org/Agentora` | 404 |
+| `gh api repos/Kriptoburak/Agentora` (case variant) | 404 |
+| `gh api search/repositories?q=user:kooshapari+agentora` | no results |
+| `gh api search/repositories?q=Agentora+hexagonal+rust` | no results |
+
+This fork has therefore **divorced** from its original upstream. It is now
+a self-governing repository within the KooshaPari/Phenotype org. The
+fork relationship metadata in `parent.full_name` will remain stale on GitHub
+until/unless the upstream is restored at that path.
+
+**Implications:**
+
+- All future PRs go to `KooshaPari/Agentora` only; there is no upstream to upstream.
+- License declaration (MIT OR Apache-2.0) is the inheritance from the now-orphaned upstream; **PR #203 (2026-09-01) reconciles this to Apache-2.0** to match the canonical `Cargo.toml`.
+- Active development, releases, governance, and CI remain fully under `KooshaPari/Agentora` control.
+
+**If upstream returns:** this section can be removed; merge base will need re-evaluation.
+
+**Status flag:** Active — no action required unless PR #203 closes without merge.
