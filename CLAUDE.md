@@ -5,13 +5,13 @@
 
 ## Project Overview
 
-| Field | Value |
-|-------|-------|
-| Package | `agentkit` |
-| Repository | KooshaPari/Agentora |
-| License | Apache-2.0 |
-| Edition | 2021 |
-| Stack | Rust (tokio, async-trait, serde, thiserror, tracing) |
+| Field      | Value                                                |
+| ---------- | ---------------------------------------------------- |
+| Package    | `agentkit`                                           |
+| Repository | KooshaPari/Agentora                                  |
+| License    | Apache-2.0                                           |
+| Edition    | 2021                                                 |
+| Stack      | Rust (tokio, async-trait, serde, thiserror, tracing) |
 
 ## Architecture
 
@@ -41,10 +41,10 @@ domain (no external deps) ← application ← adapters ← infrastructure
 
 ## Feature Flags
 
-| Flag | Description | Extra deps |
-|------|-------------|------------|
-| `openai` | OpenAI API support | `reqwest 0.13` |
-| `redis-memory` | Redis memory backend | `redis 1.2` |
+| Flag            | Description           | Extra deps      |
+| --------------- | --------------------- | --------------- |
+| `openai`        | OpenAI API support    | `reqwest 0.13`  |
+| `redis-memory`  | Redis memory backend  | `redis 1.2`     |
 | `sqlite-memory` | SQLite memory backend | `rusqlite 0.40` |
 
 ## Key Commands
@@ -78,34 +78,34 @@ cargo fmt --check && cargo clippy --all-targets --all-features -- -D warnings &&
 
 ## Core Traits
 
-| Trait | Purpose |
-|-------|---------|
-| `Agent` | Main agent interface (`run(&self, ctx: &Context) -> Result<Output>`) |
-| `Skill` | Modular, composable agent capabilities |
-| `Tool` | Extensible tool integration with JSON schema parameter support |
-| `MemoryStore` | Long-term memory backend (implement for any storage) |
-| `LLM` | Language model port (implement for any provider) |
-| `MemoryPort` | Memory access port |
-| `ToolExecutor` | Tool execution port |
+| Trait          | Purpose                                                              |
+| -------------- | -------------------------------------------------------------------- |
+| `Agent`        | Main agent interface (`run(&self, ctx: &Context) -> Result<Output>`) |
+| `Skill`        | Modular, composable agent capabilities                               |
+| `Tool`         | Extensible tool integration with JSON schema parameter support       |
+| `MemoryStore`  | Long-term memory backend (implement for any storage)                 |
+| `LLM`          | Language model port (implement for any provider)                     |
+| `MemoryPort`   | Memory access port                                                   |
+| `ToolExecutor` | Tool execution port                                                  |
 
 ## Key Types
 
-| Type | Description |
-|------|-------------|
-| `Context` | Passed to `Agent::run` — input, memory, tool calls, session_id, metadata |
-| `Output` | Returned from `Agent::run` — content (Text/Json/Error), tool_calls, metrics |
-| `AgentConfig` | Builder-pattern config (model, temperature) |
-| `MemoryEntry` | Memory record with role (System/User/Assistant/Tool), content, timestamp |
-| `Error` | Unified error enum with domain variants (Agent, Skill, Tool, Memory, LLM, Config, Execution) |
+| Type          | Description                                                                                  |
+| ------------- | -------------------------------------------------------------------------------------------- |
+| `Context`     | Passed to `Agent::run` — input, memory, tool calls, session_id, metadata                     |
+| `Output`      | Returned from `Agent::run` — content (Text/Json/Error), tool_calls, metrics                  |
+| `AgentConfig` | Builder-pattern config (model, temperature)                                                  |
+| `MemoryEntry` | Memory record with role (System/User/Assistant/Tool), content, timestamp                     |
+| `Error`       | Unified error enum with domain variants (Agent, Skill, Tool, Memory, LLM, Config, Execution) |
 
 ## Built-in Implementations
 
-| Type | Name | Note |
-|------|------|------|
-| Skill | `WebSearchSkill` | Placeholder |
-| Tool | `CalculatorTool` | Placeholder math evaluator |
-| MemoryStore | `InMemoryStore` | In-memory for testing |
-| Agent | `SimpleAgent` | Echo agent |
+| Type        | Name             | Note                       |
+| ----------- | ---------------- | -------------------------- |
+| Skill       | `WebSearchSkill` | Placeholder                |
+| Tool        | `CalculatorTool` | Placeholder math evaluator |
+| MemoryStore | `InMemoryStore`  | In-memory for testing      |
+| Agent       | `SimpleAgent`    | Echo agent                 |
 
 ## Documentation
 

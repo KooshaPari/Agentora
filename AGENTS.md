@@ -13,10 +13,10 @@ Rust hexagonal-architecture framework for AI agents — skill system, tool regis
 
 ## Feature flags (verified from README)
 
-| Feature | Description | Pulls in |
-|---------|-------------|----------|
-| `openai` | OpenAI API support | `reqwest 0.13` |
-| `redis-memory` | Redis memory backend | `redis 1.2` |
+| Feature         | Description           | Pulls in        |
+| --------------- | --------------------- | --------------- |
+| `openai`        | OpenAI API support    | `reqwest 0.13`  |
+| `redis-memory`  | Redis memory backend  | `redis 1.2`     |
 | `sqlite-memory` | SQLite memory backend | `rusqlite 0.40` |
 
 ## Build & test

@@ -9,16 +9,25 @@ from pathlib import Path
 EXPECTED_LICENSE = "Apache-2.0"
 
 IDENTITY_FIELDS = {
-    "AGENTS.md": re.compile(r"^-\s+License:\s*(.*?)\s*$", re.MULTILINE),
-    "CLAUDE.md": re.compile(
-        r"^\|\s*License\s*\|\s*(.*?)\s*\|\s*$", re.MULTILINE
+    "AGENTS.md": re.compile(
+        r"^-[ \t]+License:[ \t]*([^ \t\r\n][^\r\n]*)$", re.MULTILINE
     ),
-    "CITATION.cff": re.compile(r"^license:\s*(.*?)\s*$", re.MULTILINE),
-    "ORIGIN.md": re.compile(r"^-\s+\*\*License:\*\*\s*(.*?)\s*$", re.MULTILINE),
+    "CLAUDE.md": re.compile(
+        r"^\|[ \t]*License[ \t]*\|[ \t]*([^ \t|\r\n][^|\r\n]*)\|[ \t]*$",
+        re.MULTILINE,
+    ),
+    "CITATION.cff": re.compile(
+        r"^license:[ \t]*([^ \t\r\n][^\r\n]*)$", re.MULTILINE
+    ),
+    "ORIGIN.md": re.compile(
+        r"^-[ \t]+\*\*License:\*\*[ \t]*([^ \t\r\n][^\r\n]*)$",
+        re.MULTILINE,
+    ),
 }
 
 
 def normalized_value(file_name, value):
+    value = value.strip()
     if file_name == "AGENTS.md" and value.endswith("."):
         value = value[:-1].rstrip()
     if len(value) >= 2 and value[0] == value[-1] and value[0] in "'\"`":

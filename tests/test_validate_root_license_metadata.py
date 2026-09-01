@@ -106,6 +106,23 @@ class RootLicenseMetadataValidatorTests(unittest.TestCase):
                     f"{file_name} must contain exactly one authoritative License field; found 2",
                 )
 
+    def test_rejects_multiline_pseudo_fields_in_each_identity_file(self):
+        multiline_fields = {
+            "AGENTS.md": "# Agentora\n\n- License:\n  `Apache-2.0`.\n",
+            "CLAUDE.md": (
+                "| Field | Value |\n| --- | --- |\n"
+                "| License |\n  Apache-2.0 |\n"
+            ),
+            "CITATION.cff": "cff-version: 1.2.0\nlicense:\n  Apache-2.0\n",
+            "ORIGIN.md": "# Origin\n\n- **License:**\n  Apache-2.0\n",
+        }
+        for file_name, content in multiline_fields.items():
+            with self.subTest(file_name=file_name):
+                self.assert_rejected(
+                    {file_name: content},
+                    f"{file_name} must contain exactly one authoritative License field; found 0",
+                )
+
 
 if __name__ == "__main__":
     unittest.main()

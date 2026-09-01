@@ -17,16 +17,16 @@ occurs. Any third-party copy must be reconciled against `main` here.
 ### Primary canonical location
 
 - **GitHub:** `KooshaPari/Agentora` (case-insensitive; `KooshaPari/agentora` resolves identically)
-- **Description:** *Rust hexagonal-architecture framework for AI agents — skill system, tool registry, two-tier memory (ring + persistent), and serializable lifecycle events*
+- **Description:** _Rust hexagonal-architecture framework for AI agents — skill system, tool registry, two-tier memory (ring + persistent), and serializable lifecycle events_
 - **License:** Apache-2.0
 - **Local clone:** `/Users/kooshapari/CodeProjects/Phenotype/repos/agentora/`
 
 ### Previously-nested copies (now retired)
 
-| Source                                          | Status                  | Resolution                                                                                                                          |
-| :---------------------------------------------- | :---------------------- | :---------------------------------------------------------------------------------------------------------------------------------- |
-| `KooshaPari/McpKit/rust/agentora/` (nested)     | RETIRED — McpKit archived 2026-06-17 | Was a stale v0.1.0 snapshot (13 commits, 2026-03-25 → 2026-04-25). All content subsumed by canonical repo. See § "Absorption history". |
-| `KooshaPari/McpKit/rust/agentora/.git/`         | RETIRED                 | Nested git history superseded by canonical repo (147 commits at time of absorption).                                                |
+| Source                                      | Status                               | Resolution                                                                                                                             |
+| :------------------------------------------ | :----------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------- |
+| `KooshaPari/McpKit/rust/agentora/` (nested) | RETIRED — McpKit archived 2026-06-17 | Was a stale v0.1.0 snapshot (13 commits, 2026-03-25 → 2026-04-25). All content subsumed by canonical repo. See § "Absorption history". |
+| `KooshaPari/McpKit/rust/agentora/.git/`     | RETIRED                              | Nested git history superseded by canonical repo (147 commits at time of absorption).                                                   |
 
 ---
 
@@ -55,9 +55,9 @@ Any reference to "the agentkit repo" or "the agentora repo" resolves here.
 ### L5-110 — McpKit absorption audit (2026-06-18)
 
 **Trigger:** User directive (per AGENTS.md `STALE / warnings` §):
-*"merge all over to kooshapari → then reconcile/absorb to proper repos.
+_"merge all over to kooshapari → then reconcile/absorb to proper repos.
 e.g. dispatch-mcp should be deleted as it needs to have all remaining
-work fully absorbed to substrate"* — applied generally to MCP and
+work fully absorbed to substrate"_ — applied generally to MCP and
 non-MCP nested sub-repos in McpKit.
 
 **Scope:** `KooshaPari/McpKit/rust/agentora/` (13 commits, 26 files,
@@ -65,13 +65,13 @@ non-MCP nested sub-repos in McpKit.
 
 **Audit classification (per McpKit absorption rubric):**
 
-| Dimension        | Verdict                                                                                                   |
-| :--------------- | :-------------------------------------------------------------------------------------------------------- |
-| Domain fit       | **NO_MERIT (for MCP)** — agent framework, not MCP server. Out-of-domain for McpKit's MCP absorption.       |
-| Lifecycle risk   | **MEDIUM** — has its own `.git/`, `Cargo.toml`, `README.md`, `.github/workflows/`. Not a transient file.   |
-| Reuse value      | **MEDIUM** — hexagonal scaffold, but only ~1,200 LoC, low test coverage (~1%).                           |
-| Content overlap  | **100% subsumed** — all 26 files exist in canonical `KooshaPari/Agentora` and the canonical is newer (147 commits). |
-| Recommended action | **Document and retain canonical-only** — do not migrate; the canonical is already authoritative.       |
+| Dimension          | Verdict                                                                                                             |
+| :----------------- | :------------------------------------------------------------------------------------------------------------------ |
+| Domain fit         | **NO_MERIT (for MCP)** — agent framework, not MCP server. Out-of-domain for McpKit's MCP absorption.                |
+| Lifecycle risk     | **MEDIUM** — has its own `.git/`, `Cargo.toml`, `README.md`, `.github/workflows/`. Not a transient file.            |
+| Reuse value        | **MEDIUM** — hexagonal scaffold, but only ~1,200 LoC, low test coverage (~1%).                                      |
+| Content overlap    | **100% subsumed** — all 26 files exist in canonical `KooshaPari/Agentora` and the canonical is newer (147 commits). |
+| Recommended action | **Document and retain canonical-only** — do not migrate; the canonical is already authoritative.                    |
 
 **Decision:** No migration. The canonical `KooshaPari/Agentora` already
 contains all McpKit sub-repo content with strictly newer revisions (thiserror
@@ -107,15 +107,15 @@ All 26 files have a superseding counterpart in canonical `KooshaPari/Agentora`.
 
 ## Active canonical locations
 
-| What                              | Where                                                          |
-| :-------------------------------- | :------------------------------------------------------------- |
-| Crate source (agentkit v0.1.0)    | `src/` at repo root                                            |
-| Crate source (47 staged members) | `crates/` (phenotype-*, bifrost-routing, forgecode-core, etc.) |
-| Integration tests                | `tests/` (9 files)                                             |
-| Documentation                     | `docs/` (12 files)                                             |
-| CI                                | `.github/workflows/` (9 workflows: ci, audit, cargo-deny, governance, pages-deploy, release-attestation, scorecard, sonarcloud, trufflehog) |
-| Cargo workspace                   | Root `Cargo.toml` (47 members + 2 excluded for name collision) |
-| Governance                        | `AGENTS.md`, `CLAUDE.md`, `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`, `SECURITY.md`, `CODEOWNERS`, `FUNDING.yml` |
+| What                             | Where                                                                                                                                       |
+| :------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------ |
+| Crate source (agentkit v0.1.0)   | `src/` at repo root                                                                                                                         |
+| Crate source (47 staged members) | `crates/` (phenotype-\*, bifrost-routing, forgecode-core, etc.)                                                                             |
+| Integration tests                | `tests/` (9 files)                                                                                                                          |
+| Documentation                    | `docs/` (12 files)                                                                                                                          |
+| CI                               | `.github/workflows/` (9 workflows: ci, audit, cargo-deny, governance, pages-deploy, release-attestation, scorecard, sonarcloud, trufflehog) |
+| Cargo workspace                  | Root `Cargo.toml` (47 members + 2 excluded for name collision)                                                                              |
+| Governance                       | `AGENTS.md`, `CLAUDE.md`, `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`, `SECURITY.md`, `CODEOWNERS`, `FUNDING.yml`                               |
 
 ---
 

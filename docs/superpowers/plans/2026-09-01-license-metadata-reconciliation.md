@@ -10,7 +10,7 @@
 
 ---
 
-### Task 1: Add the failing root-license consistency validator
+## Task 1: Add the failing root-license consistency validator
 
 **Files:**
 
@@ -40,7 +40,7 @@ Expected: all negative fixtures are rejected for the intended reason and the exa
 
 Run the validator tests and validator from the governance workflow, and trigger that workflow for pull requests targeting `main` as well as pushes, schedules, and manual dispatches.
 
-### Task 2: Align omitted root identity surfaces
+## Task 2: Align omitted root identity surfaces
 
 **Files:**
 
@@ -86,6 +86,6 @@ git add .github/workflows/governance.yml AGENTS.md CLAUDE.md CITATION.cff ORIGIN
 git commit -m "fix(metadata): complete Apache-2.0 alignment"
 ```
 
-### Cross-Project Reuse Opportunities
+## Cross-Project Reuse Opportunities
 
 None. This assertion intentionally governs Agentora's root publication metadata only; nested absorbed components retain their own license authorities.
