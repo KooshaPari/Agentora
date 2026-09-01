@@ -211,18 +211,20 @@ complete forensic evidence table (creation dates, commit timelines, user-account
 probes, fork-network metadata). That record will be linked from here once written.
 
 **Fork-network audit (effective 2026-09-01):** for any `isFork=true` repo, apply the
-following ordered test to establish canonical lineage. Return the highest-confidence
-verdict reached; if no tier is conclusive, return `unknown`.
+following ordered test to establish canonical lineage. Apply each tier in order; return
+the verdict at the highest tier with a conclusive signal. If no tier is conclusive,
+return `unknown`. An "upstream default" is an operational assumption only — it
+cannot authorise PR routing decisions or license provenance without durable evidence.
 
-| Tier | Signal                                                                              | Verdict                                 | When to trust it                                |
-| ---- | ----------------------------------------------------------------------------------- | --------------------------------------- | ----------------------------------------------- |
-| 1    | GitHub `parent.full_name` field                                                     | Confirms fork relationship if populated | Reliable when parent repo still exists          |
-| 1    | GitHub fork-network API (`/repos/{owner}/{repo}` → `fork`, `parent`)                | Direct metadata                         | Authoritative when parent is alive              |
-| 2    | Commit ancestry — shared commit SHA on both repos                                   | Proves fork relationship                | Reliable; git will not lie about shared history |
-| 2    | First-commit date on each repo (`--format="%ci" --reverse`)                         | Resolves which came first               | Reliable for most public repos                  |
-| 3    | `parent.full_name` field pointing to a 404 / deleted-account repo                   | Strong evidence of stale metadata       | Treat as `unknown` until verified               |
-| 3    | Repo creation date for claimed parent AFTER our creation date                       | Impossible for a genuine fork           | Marks claim as fabricated                       |
-| 3    | References to owner/organisation in early commits (authorship, remotes, CI configs) | Hints at original locus                 | Supportive only; not conclusive alone           |
+| Tier | Signal                                                                              | Verdict                                                   | When to trust it                                          |
+| ---- | ----------------------------------------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------------- |
+| 1    | GitHub `parent.full_name` field                                                     | Confirms fork relationship if populated                   | Reliable when parent repo still exists                    |
+| 1    | GitHub fork-network API (`/repos/{owner}/{repo}` → `fork`, `parent`)                | Direct metadata                                           | Authoritative when parent is alive                        |
+| 2    | Commit ancestry — shared commit SHA on both repos                                   | Proves shared commit origin (fork direction undetermined) | Reliable for common history; does not establish direction |
+| 2    | First-commit date on each repo (`--format="%ci" --reverse`)                         | Resolves which came first                                 | Reliable for most public repos                            |
+| 3    | `parent.full_name` field pointing to a 404 / deleted-account repo                   | Strong evidence of stale metadata                         | Treat as `unknown` until verified                         |
+| 3    | Repo creation date for claimed parent AFTER our creation date                       | Impossible for a genuine fork                             | Marks claim as fabricated                                 |
+| 3    | References to owner/organisation in early commits (authorship, remotes, CI configs) | Hints at original locus                                   | Supportive only; not conclusive alone                     |
 
 **Rule for this repo:** `kriptoburak/Agentora` scores Tier-3 on all three signals — the
 field is 404, the creation date contradicts the fork premise, and authorship history
