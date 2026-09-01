@@ -17,16 +17,16 @@ occurs. Any third-party copy must be reconciled against `main` here.
 ### Primary canonical location
 
 - **GitHub:** `KooshaPari/Agentora` (case-insensitive; `KooshaPari/agentora` resolves identically)
-- **Description:** *Rust hexagonal-architecture framework for AI agents — skill system, tool registry, two-tier memory (ring + persistent), and serializable lifecycle events*
-- **License:** MIT OR Apache-2.0
+- **Description:** _Rust hexagonal-architecture framework for AI agents — skill system, tool registry, two-tier memory (ring + persistent), and serializable lifecycle events_
+- **License:** Apache-2.0
 - **Local clone:** `/Users/kooshapari/CodeProjects/Phenotype/repos/agentora/`
 
 ### Previously-nested copies (now retired)
 
-| Source                                          | Status                  | Resolution                                                                                                                          |
-| :---------------------------------------------- | :---------------------- | :---------------------------------------------------------------------------------------------------------------------------------- |
-| `KooshaPari/McpKit/rust/agentora/` (nested)     | RETIRED — McpKit archived 2026-06-17 | Was a stale v0.1.0 snapshot (13 commits, 2026-03-25 → 2026-04-25). All content subsumed by canonical repo. See § "Absorption history". |
-| `KooshaPari/McpKit/rust/agentora/.git/`         | RETIRED                 | Nested git history superseded by canonical repo (147 commits at time of absorption).                                                |
+| Source                                      | Status                               | Resolution                                                                                                                             |
+| :------------------------------------------ | :----------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------- |
+| `KooshaPari/McpKit/rust/agentora/` (nested) | RETIRED — McpKit archived 2026-06-17 | Was a stale v0.1.0 snapshot (13 commits, 2026-03-25 → 2026-04-25). All content subsumed by canonical repo. See § "Absorption history". |
+| `KooshaPari/McpKit/rust/agentora/.git/`     | RETIRED                              | Nested git history superseded by canonical repo (147 commits at time of absorption).                                                   |
 
 ---
 
@@ -55,9 +55,9 @@ Any reference to "the agentkit repo" or "the agentora repo" resolves here.
 ### L5-110 — McpKit absorption audit (2026-06-18)
 
 **Trigger:** User directive (per AGENTS.md `STALE / warnings` §):
-*"merge all over to kooshapari → then reconcile/absorb to proper repos.
+_"merge all over to kooshapari → then reconcile/absorb to proper repos.
 e.g. dispatch-mcp should be deleted as it needs to have all remaining
-work fully absorbed to substrate"* — applied generally to MCP and
+work fully absorbed to substrate"_ — applied generally to MCP and
 non-MCP nested sub-repos in McpKit.
 
 **Scope:** `KooshaPari/McpKit/rust/agentora/` (13 commits, 26 files,
@@ -65,13 +65,13 @@ non-MCP nested sub-repos in McpKit.
 
 **Audit classification (per McpKit absorption rubric):**
 
-| Dimension        | Verdict                                                                                                   |
-| :--------------- | :-------------------------------------------------------------------------------------------------------- |
-| Domain fit       | **NO_MERIT (for MCP)** — agent framework, not MCP server. Out-of-domain for McpKit's MCP absorption.       |
-| Lifecycle risk   | **MEDIUM** — has its own `.git/`, `Cargo.toml`, `README.md`, `.github/workflows/`. Not a transient file.   |
-| Reuse value      | **MEDIUM** — hexagonal scaffold, but only ~1,200 LoC, low test coverage (~1%).                           |
-| Content overlap  | **100% subsumed** — all 26 files exist in canonical `KooshaPari/Agentora` and the canonical is newer (147 commits). |
-| Recommended action | **Document and retain canonical-only** — do not migrate; the canonical is already authoritative.       |
+| Dimension          | Verdict                                                                                                             |
+| :----------------- | :------------------------------------------------------------------------------------------------------------------ |
+| Domain fit         | **NO_MERIT (for MCP)** — agent framework, not MCP server. Out-of-domain for McpKit's MCP absorption.                |
+| Lifecycle risk     | **MEDIUM** — has its own `.git/`, `Cargo.toml`, `README.md`, `.github/workflows/`. Not a transient file.            |
+| Reuse value        | **MEDIUM** — hexagonal scaffold, but only ~1,200 LoC, low test coverage (~1%).                                      |
+| Content overlap    | **100% subsumed** — all 26 files exist in canonical `KooshaPari/Agentora` and the canonical is newer (147 commits). |
+| Recommended action | **Document and retain canonical-only** — do not migrate; the canonical is already authoritative.                    |
 
 **Decision:** No migration. The canonical `KooshaPari/Agentora` already
 contains all McpKit sub-repo content with strictly newer revisions (thiserror
@@ -107,15 +107,15 @@ All 26 files have a superseding counterpart in canonical `KooshaPari/Agentora`.
 
 ## Active canonical locations
 
-| What                              | Where                                                          |
-| :-------------------------------- | :------------------------------------------------------------- |
-| Crate source (agentkit v0.1.0)    | `src/` at repo root                                            |
-| Crate source (47 staged members) | `crates/` (phenotype-*, bifrost-routing, forgecode-core, etc.) |
-| Integration tests                | `tests/` (9 files)                                             |
-| Documentation                     | `docs/` (12 files)                                             |
-| CI                                | `.github/workflows/` (9 workflows: ci, audit, cargo-deny, governance, pages-deploy, release-attestation, scorecard, sonarcloud, trufflehog) |
-| Cargo workspace                   | Root `Cargo.toml` (47 members + 2 excluded for name collision) |
-| Governance                        | `AGENTS.md`, `CLAUDE.md`, `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`, `SECURITY.md`, `CODEOWNERS`, `FUNDING.yml` |
+| What                             | Where                                                                                                                                       |
+| :------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------ |
+| Crate source (agentkit v0.1.0)   | `src/` at repo root                                                                                                                         |
+| Crate source (47 staged members) | `crates/` (phenotype-\*, bifrost-routing, forgecode-core, etc.)                                                                             |
+| Integration tests                | `tests/` (9 files)                                                                                                                          |
+| Documentation                    | `docs/` (12 files)                                                                                                                          |
+| CI                               | `.github/workflows/` (9 workflows: ci, audit, cargo-deny, governance, pages-deploy, release-attestation, scorecard, sonarcloud, trufflehog) |
+| Cargo workspace                  | Root `Cargo.toml` (47 members + 2 excluded for name collision)                                                                              |
+| Governance                       | `AGENTS.md`, `CLAUDE.md`, `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`, `SECURITY.md`, `CODEOWNERS`, `FUNDING.yml`                               |
 
 ---
 
@@ -167,3 +167,76 @@ ADR-035 (see `docs/adr/2026-06-15/` and `docs/adr/2026-06-18/`).
 
 **L5-110 audit complete.** No content loss. No destructive migration.
 Canonical repo (`KooshaPari/Agentora`) verified at commit `031e40b feat(domain): add MCP ports and integration documentation (#87)`.
+
+---
+
+## Lineage correction (2026-09-01, G1 forensic pass)
+
+This repository (`KooshaPari/Agentora`, published as the `agentkit` Rust crate)
+has always been the **canonical original** of this codebase. It is **not a fork**.
+
+GitHub's metadata field `parent.full_name` for this repo currently reads
+`kriptoburak/Agentora`, which would imply we are a fork of that account. We treat
+this metadata as **unreliable**, but we do not claim a specific root cause. The
+recorded parent repo and parent user account both return 404 today; whether that
+field was ever accurate, was mis-keyed at creation, or was corrupted by a later
+GitHub-side operation is not knowable from inside the repo. Evidence:
+
+| Probe                                                   | Result                                                                                   |
+| ------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Our creation date (`KooshaPari/Agentora`)               | 2026-04-26                                                                               |
+| Parent's claimed creation date (`kriptoburak/Agentora`) | 2026-06-12 — **impossible**: a fork cannot be created before the upstream it forked from |
+| `kriptoburak/Agentora` current state                    | **404 — does not exist**                                                                 |
+| `kriptoburak` user account                              | **404 — account gone**                                                                   |
+| `gh api search/users?q=kriptoburak`                     | no result                                                                                |
+| Our earliest commit (`aa25b5a`)                         | 2026-03-25 — verified by `git log --reverse` on this repo                                |
+| `AGENTS.md`, `CLAUDE.md`, `CODEOWNERS` history          | references the Phenotype org from day one                                                |
+
+The honest reading: **`kriptoburak/Agentora` is not currently a real, public
+repository** — it returns 404 alongside the `kriptoburak` user account, and the
+recorded creation date is chronologically impossible for a genuine fork. The
+specific cause of the stale `parent.full_name` field is unknown from inside the
+repo; what we can say is that GitHub's own fork-network test is satisfied
+("parent is a 404" + "claimed parent created after child"), which is sufficient
+to disregard the metadata per the rules below.
+
+**Implications:**
+
+- All future PRs go to `KooshaPari/Agentora` only.
+- License declaration: the canonical `Cargo.toml` and the audit history consistently say
+  Apache-2.0. The header in this file (`ORIGIN.md`) has been updated to match.
+  The MIT OR Apache-2.0 wording in historical metadata (e.g. GitHub's repo description
+  template) is stale and does not reflect the authoritative `Cargo.toml` declaration.
+- The `parent.full_name` field will remain stale on GitHub until/unless GitHub
+  provides a way to clear it. We will not silently accept the wrong lineage;
+  this section exists to correct the public record.
+
+**Planned action:** create `docs/forensics/REG-001-lineage-correction.md` to host the
+complete forensic evidence table (creation dates, commit timelines, user-account
+probes, fork-network metadata). That record will be linked from here once written.
+
+**Fork-network audit (effective 2026-09-01):** for any `isFork=true` repo, apply the
+following ordered test to establish canonical lineage. Apply each tier in order; return
+the verdict at the highest tier with a conclusive signal. If no tier is conclusive,
+return `unknown`. An "upstream default" is an operational assumption only — it
+cannot authorise PR routing decisions or license provenance without durable evidence.
+
+| Tier | Signal                                                                              | Verdict                                                   | When to trust it                                          |
+| ---- | ----------------------------------------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------------- |
+| 1    | GitHub `parent.full_name` field                                                     | Confirms fork relationship if populated                   | Reliable when parent repo still exists                    |
+| 1    | GitHub fork-network API (`/repos/{owner}/{repo}` → `fork`, `parent`)                | Direct metadata                                           | Authoritative when parent is alive                        |
+| 2    | Commit ancestry — shared commit SHA on both repos                                   | Proves shared commit origin (fork direction undetermined) | Reliable for common history; does not establish direction |
+| 2    | First-commit date on each repo (`--format="%ci" --reverse`)                         | Resolves which came first                                 | Reliable for most public repos                            |
+| 3    | `parent.full_name` field pointing to a 404 / deleted-account repo                   | Strong evidence of stale metadata                         | Treat as `unknown` until verified                         |
+| 3    | Repo creation date for claimed parent AFTER our creation date                       | Impossible for a genuine fork                             | Marks claim as fabricated                                 |
+| 3    | References to owner/organisation in early commits (authorship, remotes, CI configs) | Hints at original locus                                   | Supportive only; not conclusive alone                     |
+
+**Rule for this repo:** `kriptoburak/Agentora` scores Tier-3 on all three signals — the
+field is 404, the creation date contradicts the fork premise, and authorship history
+shows no `kriptoburak` involvement. Tier-1 and Tier-2 cannot be checked (parent
+gone). Result: **canonical original (high confidence)**.
+
+**Operator-stated default rule (effective 2026-09-01):** for any future `isFork=true`
+repo, lineage truth defaults to **"we are the upstream unless proven otherwise"**.
+Proven otherwise requires Tier-1 or Tier-2 evidence — not a creation-date heuristic
+alone.
