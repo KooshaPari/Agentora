@@ -86,6 +86,17 @@ class RootLicenseMetadataValidatorTests(unittest.TestCase):
             "AGENTS.md License field must be exactly 'Apache-2.0'; found 'MIT OR Apache-2.0'",
         )
 
+    def test_ignores_fenced_agents_license_example(self):
+        result = self.run_validator(
+            {
+                "AGENTS.md": (
+                    "# Agentora\n\n- License: `Apache-2.0`.\n\n"
+                    "```markdown\n- License: MIT\n```\n"
+                )
+            }
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+
     def test_rejects_alternate_reordered_dual_license_spelling(self):
         self.assert_rejected(
             {"ORIGIN.md": "# Origin\n\n- **License:** Apache-2.0 OR MIT\n"},

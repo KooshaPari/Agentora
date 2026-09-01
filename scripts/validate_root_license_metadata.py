@@ -7,6 +7,7 @@ from pathlib import Path
 
 
 EXPECTED_LICENSE = "Apache-2.0"
+MARKDOWN_FILES = {"AGENTS.md", "CLAUDE.md", "ORIGIN.md"}
 
 IDENTITY_FIELDS = {
     "AGENTS.md": re.compile(
@@ -33,6 +34,24 @@ def normalized_value(file_name, value):
     if len(value) >= 2 and value[0] == value[-1] and value[0] in "'\"`":
         value = value[1:-1]
     return value
+
+
+def without_fenced_markdown(content):
+    visible_lines = []
+    fence = None
+    for line in content.splitlines(keepends=True):
+        stripped = line.lstrip()
+        marker = stripped[:3]
+        if fence is None and marker in {"```", "~~~"}:
+            fence = marker
+            visible_lines.append("\n" if line.endswith("\n") else "")
+        elif fence is not None:
+            if stripped.startswith(fence):
+                fence = None
+            visible_lines.append("\n" if line.endswith("\n") else "")
+        else:
+            visible_lines.append(line)
+    return "".join(visible_lines)
 
 
 def validate_cargo_toml(repository_root):
@@ -64,6 +83,9 @@ def validate_identity_file(repository_root, file_name, pattern):
         content = path.read_text(encoding="utf-8")
     except FileNotFoundError:
         return [f"{file_name} is missing"]
+
+    if file_name in MARKDOWN_FILES:
+        content = without_fenced_markdown(content)
 
     values = pattern.findall(content)
     if len(values) != 1:
