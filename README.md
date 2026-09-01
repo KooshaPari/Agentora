@@ -645,18 +645,14 @@ cargo run --bin agentkit
 
 ## License
 
-MIT OR Apache-2.0
+Apache-2.0
 
 ### Release metadata authority gate
 
-The `agentkit` package metadata declares `MIT OR Apache-2.0`, while the
-repository's checked-in `LICENSE` file and GitHub repository metadata currently
-identify MIT only. This is a release-authority decision, not a documentation
-shortcut: do not publish or relabel a release until the license holder confirms
-the intended policy and every public metadata surface is aligned. The package
-source is `https://github.com/KooshaPari/Agentora`; documentation is maintained
-in this repository until a release owner establishes a verified external
-publication surface.
+The `agentkit` package and repository are distributed under the Apache License,
+Version 2.0. The package source is `https://github.com/KooshaPari/Agentora`;
+documentation is maintained in this repository until a release owner
+establishes a verified external publication surface.
 
 ## Description
 
