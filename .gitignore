@@ -26,3 +26,10 @@ target
 .env
 .env.*
 !.env.example
+
+# Python coverage artifacts
+.coverage
+.coverage.*
+coverage.xml
+__pycache__/
+*.py[cod]

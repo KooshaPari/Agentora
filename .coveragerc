@@ -1,0 +1,8 @@
+[run]
+branch = True
+include = scripts/validate_root_license_metadata.py
+parallel = True
+patch = subprocess
+
+[report]
+show_missing = True
