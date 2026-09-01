@@ -2,8 +2,10 @@ name: Governance
 
 on:
   schedule:
-    - cron: '0 6 * * 1'  # weekly Monday 06:00 UTC
+    - cron: "0 6 * * 1" # weekly Monday 06:00 UTC
   workflow_dispatch:
+  pull_request:
+    branches: [main]
   push:
     branches: [main]
 
@@ -24,6 +26,11 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
       - name: Verify required governance artifacts
         run: |
           set -euo pipefail
@@ -35,25 +42,11 @@ jobs:
           test -f CHANGELOG.md           || { echo "::warning::Missing CHANGELOG.md"; }
           echo "All required governance files present."
 
+      - name: Test root package license validator
+        run: python3 -m unittest -v tests/test_validate_root_license_metadata.py
+
       - name: Verify root package license metadata
-        run: |
-          set -euo pipefail
-          package_license="$(sed -n 's/^license = "\([^"]*\)"/\1/p' Cargo.toml | head -n 1)"
-          if [ "$package_license" != "Apache-2.0" ]; then
-            echo "::error file=Cargo.toml::Expected root package license Apache-2.0, found '$package_license'"
-            exit 1
-          fi
-          for identity_file in AGENTS.md CLAUDE.md CITATION.cff ORIGIN.md; do
-            if grep -Fq "MIT OR Apache-2.0" "$identity_file"; then
-              echo "::error file=$identity_file::Stale dual-license declaration conflicts with Cargo.toml"
-              exit 1
-            fi
-            if ! grep -Fq "Apache-2.0" "$identity_file"; then
-              echo "::error file=$identity_file::Missing Apache-2.0 package license declaration"
-              exit 1
-            fi
-          done
-          echo "Root package license metadata is consistent: Apache-2.0"
+        run: python3 scripts/validate_root_license_metadata.py
 
       - name: git-cliff dry-run (best-effort)
         run: |
