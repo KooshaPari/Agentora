@@ -18,6 +18,12 @@ Thumbs.db
 # Logs
 *.log
 
+# Python test and coverage artifacts
+__pycache__/
+.coverage
+.coverage.*
+coverage.xml
+
 # Repo-specific lines preserved from prior .gitignore:
 debug
 target
