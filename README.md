@@ -4,7 +4,7 @@
 <!-- /minimized AI-DD metaproject of learning, refining, and building brute-force -->
 <!-- training for both agents and the human operator. -->
 
-![Downloads](https://img.shields.io/github/downloads/KooshaPari/Agentora/total?style=flat-square&label=downloads&color=blue)
+![Downloads](https://img.shields.io/github/downloads/KooshaPari/Agentora/total?style=flat-square&label=downloads&color=blue) [![AI slop inside](https://sladge.net/badge.svg)](https://sladge.net)
 ![GitHub release](https://img.shields.io/github/v/release/KooshaPari/Agentora?style=flat-square&label=release)
 ![License](https://img.shields.io/github/license/KooshaPari/Agentora?style=flat-square)
 ![AI-Slop](https://img.shields.io/badge/AI--DD-Slop%20Expected-orange?style=flat-square)
