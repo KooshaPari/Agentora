@@ -167,3 +167,47 @@ ADR-035 (see `docs/adr/2026-06-15/` and `docs/adr/2026-06-18/`).
 
 **L5-110 audit complete.** No content loss. No destructive migration.
 Canonical repo (`KooshaPari/Agentora`) verified at commit `031e40b feat(domain): add MCP ports and integration documentation (#87)`.
+
+---
+
+## Lineage correction (2026-09-01, G1 forensic pass)
+
+This repository (`KooshaPari/Agentora`, published as the `agentkit` Rust crate)
+has always been the **canonical original** of this codebase. It is **not a fork**.
+
+GitHub's metadata field `parent.full_name` for this repo currently reads
+`kriptoburak/Agentora`, which would imply we are a fork of that account. This
+metadata is **incorrect**, almost certainly a residual artifact from a GitHub
+backup-restore operation that lost the original lineage table. Evidence:
+
+| Probe | Result |
+|---|---|
+| Our creation date (`KooshaPari/Agentora`) | 2026-04-26 |
+| Parent's claimed creation date (`kriptoburak/Agentora`) | 2026-06-12 — **impossible**: a fork cannot be created before the upstream it forked from |
+| `kriptoburak/Agentora` current state | **404 — does not exist** |
+| `kriptoburak` user account | **404 — account gone** |
+| `gh api search/users?q=kriptoburak` | no result |
+| Earliest commits on this repo | predate the supposed parent by 4+ weeks |
+| `AGENTS.md`, `CLAUDE.md`, `CODEOWNERS` history | references the Phenotype org from day one |
+
+The honest reading: **`kriptoburak/Agentora` may never have been a real, public
+repository** — the entry in GitHub's fork-metadata table for our repo was likely
+fabricated or restored from a corrupted snapshot. We were the canonical source
+all along.
+
+**Implications:**
+
+- All future PRs go to `KooshaPari/Agentora` only.
+- License declaration: the canonical `Cargo.toml` and the audit history
+  consistently say Apache-2.0. PR #203 reconciles any metadata drift.
+- The `parent.full_name` field will remain stale on GitHub until/unless GitHub
+  provides a way to clear it. We will not silently accept the wrong lineage;
+  this section exists to correct the public record.
+
+**Action taken:** see `docs/forensics/REG-001-lineage-correction.md` (forthcoming).
+
+**Operator-stated lineage rule (effective 2026-09-01):** for any future
+`isFork=true` repo, lineage truth defaults to **"we are the upstream unless
+proven otherwise"**. Proven otherwise requires (a) parent creation date
+*earlier* than ours, (b) parent alive today, and (c) the parent's commits
+predate ours.
