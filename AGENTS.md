@@ -7,7 +7,7 @@ Rust hexagonal-architecture framework for AI agents — skill system, tool regis
 - Language: Rust (edition 2021, see `rust-toolchain.toml`).
 - Crate name: `agentkit` (verified in `Cargo.toml`).
 - Version: `0.1.0`.
-- License: `MIT OR Apache-2.0`.
+- License: `Apache-2.0`.
 - Entry point: `Cargo.toml` (root); source under `src/`.
 - Architecture: 4-layer hexagonal (Domain / Application / Adapters / Infrastructure).
 

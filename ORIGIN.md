@@ -18,7 +18,7 @@ occurs. Any third-party copy must be reconciled against `main` here.
 
 - **GitHub:** `KooshaPari/Agentora` (case-insensitive; `KooshaPari/agentora` resolves identically)
 - **Description:** *Rust hexagonal-architecture framework for AI agents — skill system, tool registry, two-tier memory (ring + persistent), and serializable lifecycle events*
-- **License:** MIT OR Apache-2.0
+- **License:** Apache-2.0
 - **Local clone:** `/Users/kooshapari/CodeProjects/Phenotype/repos/agentora/`
 
 ### Previously-nested copies (now retired)

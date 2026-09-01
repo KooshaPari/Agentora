@@ -35,6 +35,26 @@ jobs:
           test -f CHANGELOG.md           || { echo "::warning::Missing CHANGELOG.md"; }
           echo "All required governance files present."
 
+      - name: Verify root package license metadata
+        run: |
+          set -euo pipefail
+          package_license="$(sed -n 's/^license = "\([^"]*\)"/\1/p' Cargo.toml | head -n 1)"
+          if [ "$package_license" != "Apache-2.0" ]; then
+            echo "::error file=Cargo.toml::Expected root package license Apache-2.0, found '$package_license'"
+            exit 1
+          fi
+          for identity_file in AGENTS.md CLAUDE.md CITATION.cff ORIGIN.md; do
+            if grep -Fq "MIT OR Apache-2.0" "$identity_file"; then
+              echo "::error file=$identity_file::Stale dual-license declaration conflicts with Cargo.toml"
+              exit 1
+            fi
+            if ! grep -Fq "Apache-2.0" "$identity_file"; then
+              echo "::error file=$identity_file::Missing Apache-2.0 package license declaration"
+              exit 1
+            fi
+          done
+          echo "Root package license metadata is consistent: Apache-2.0"
+
       - name: git-cliff dry-run (best-effort)
         run: |
           if command -v git-cliff >/dev/null 2>&1; then

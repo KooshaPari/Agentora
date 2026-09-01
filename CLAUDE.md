@@ -9,7 +9,7 @@
 |-------|-------|
 | Package | `agentkit` |
 | Repository | KooshaPari/Agentora |
-| License | MIT OR Apache-2.0 |
+| License | Apache-2.0 |
 | Edition | 2021 |
 | Stack | Rust (tokio, async-trait, serde, thiserror, tracing) |
 
