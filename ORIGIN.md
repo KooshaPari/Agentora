@@ -176,9 +176,11 @@ This repository (`KooshaPari/Agentora`, published as the `agentkit` Rust crate)
 has always been the **canonical original** of this codebase. It is **not a fork**.
 
 GitHub's metadata field `parent.full_name` for this repo currently reads
-`kriptoburak/Agentora`, which would imply we are a fork of that account. This
-metadata is **incorrect**, almost certainly a residual artifact from a GitHub
-backup-restore operation that lost the original lineage table. Evidence:
+`kriptoburak/Agentora`, which would imply we are a fork of that account. We treat
+this metadata as **unreliable**, but we do not claim a specific root cause. The
+recorded parent repo and parent user account both return 404 today; whether that
+field was ever accurate, was mis-keyed at creation, or was corrupted by a later
+GitHub-side operation is not knowable from inside the repo. Evidence:
 
 | Probe                                                   | Result                                                                                   |
 | ------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
@@ -187,13 +189,16 @@ backup-restore operation that lost the original lineage table. Evidence:
 | `kriptoburak/Agentora` current state                    | **404 — does not exist**                                                                 |
 | `kriptoburak` user account                              | **404 — account gone**                                                                   |
 | `gh api search/users?q=kriptoburak`                     | no result                                                                                |
-| Earliest commits on this repo                           | predate the supposed parent by 4+ weeks                                                  |
+| Our earliest commit (`aa25b5a`)                         | 2026-03-25 — verified by `git log --reverse` on this repo                                |
 | `AGENTS.md`, `CLAUDE.md`, `CODEOWNERS` history          | references the Phenotype org from day one                                                |
 
-The honest reading: **`kriptoburak/Agentora` may never have been a real, public
-repository** — the entry in GitHub's fork-metadata table for our repo was likely
-fabricated or restored from a corrupted snapshot. We were the canonical source
-all along.
+The honest reading: **`kriptoburak/Agentora` is not currently a real, public
+repository** — it returns 404 alongside the `kriptoburak` user account, and the
+recorded creation date is chronologically impossible for a genuine fork. The
+specific cause of the stale `parent.full_name` field is unknown from inside the
+repo; what we can say is that GitHub's own fork-network test is satisfied
+("parent is a 404" + "claimed parent created after child"), which is sufficient
+to disregard the metadata per the rules below.
 
 **Implications:**
 
