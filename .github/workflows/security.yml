@@ -7,7 +7,7 @@ on:
     branches: [main]
   schedule:
     # Weekly Monday 09:00 PDT cron (ADR-042 cadence)
-    - cron: '0 16 * * 1'
+    - cron: "0 16 * * 1"
   workflow_dispatch:
 
 permissions:
