@@ -68,6 +68,25 @@ pull_request_rules:
         add:
           - typescript
 
+  # Auto-merge owner PRs when CI passes (no self-review required)
+  - name: Auto-merge owner PRs + CI green
+    conditions:
+      - author=KooshaPari
+      - check-success=ci / lint
+      - check-success=ci / test
+      - -conflict
+      - -closed
+      - -draft
+    actions:
+      merge:
+        method: squash
+        commit_message_template: |
+          {{ title }} (#{{ number }})
+
+          Co-authored-by: {{ author }}
+      post_merge:
+        action: close
+
   # Warn on large PRs
   - name: Warn on large PRs
     conditions:
