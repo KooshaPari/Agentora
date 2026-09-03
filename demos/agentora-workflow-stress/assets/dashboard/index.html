@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Agentora workflow stress — live dashboard</title>
+<style>
+  :root { color-scheme: dark; --bg:#0b0d10; --panel:#14181d; --panel-2:#1b2128; --text:#e6edf3; --muted:#7d8590; --ok:#3fb950; --warn:#d29922; --err:#f85149; --accent:#58a6ff; --border:#30363d; }
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;}
+  header{padding:18px 24px;border-bottom:1px solid var(--border);display:flex;gap:16px;align-items:baseline;}
+  header h1{margin:0;font-size:16px;font-weight:600;}
+  header .badge{background:var(--panel-2);color:var(--muted);padding:2px 8px;border-radius:999px;font-size:11px;}
+  main{display:grid;grid-template-columns:repeat(12,1fr);gap:16px;padding:16px 24px;}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px;}
+  .card h2{margin:0 0 10px;font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+  .metric{font-size:28px;font-weight:600;font-variant-numeric:tabular-nums;}
+  .metric small{font-size:13px;color:var(--muted);font-weight:400;margin-left:6px;}
+  .span-3{grid-column:span 3;} .span-4{grid-column:span 4;} .span-6{grid-column:span 6;} .span-12{grid-column:span 12;}
+  table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;}
+  th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--border);}
+  th{color:var(--muted);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.4px;}
+  .ok{color:var(--ok);} .warn{color:var(--warn);} .err{color:var(--err);}
+  .bar{height:8px;background:var(--panel-2);border-radius:999px;overflow:hidden;margin-top:4px;}
+  .bar > i{display:block;height:100%;background:var(--accent);}
+  .row{display:flex;align-items:baseline;justify-content:space-between;gap:12px;}
+  footer{padding:8px 24px 18px;color:var(--muted);font-size:11px;}
+  code{background:var(--panel-2);padding:1px 6px;border-radius:4px;font-size:12px;}
+</style>
+</head>
+<body>
+<header>
+  <h1>Agentora workflow stress</h1>
+  <span class="badge">substrate · routes · approval-gate</span>
+  <span class="badge" id="ts">live</span>
+</header>
+<main>
+  <section class="card span-3"><h2>Completed runs</h2><div class="metric"><span id="completed">0</span></div></section>
+  <section class="card span-3"><h2>Throughput</h2><div class="metric"><span id="throughput">0.0</span><small>runs/s</small></div></section>
+  <section class="card span-3"><h2>Avg latency</h2><div class="metric"><span id="lat_avg">0</span><small>ms</small></div></section>
+  <section class="card span-3"><h2>p99 latency</h2><div class="metric"><span id="lat_p99">0</span><small>ms</small></div></section>
+
+  <section class="card span-6">
+    <h2>Approval gate</h2>
+    <div class="row"><span>routes visited</span><span id="routes_total">0</span></div>
+    <div class="row"><span>routes requiring approval</span><span id="routes_approval" class="warn">0</span></div>
+    <div class="bar"><i id="approval_bar" style="width:0%"></i></div>
+    <div class="row" style="margin-top:6px;"><span>approval rate</span><span id="approval_rate">0.00%</span></div>
+  </section>
+
+  <section class="card span-6">
+    <h2>Latency envelope</h2>
+    <div class="row"><span>min</span><span id="lat_min">0</span><small>ms</small></div>
+    <div class="row"><span>p50</span><span id="lat_p50">0</span><small>ms</small></div>
+    <div class="row"><span>max</span><span id="lat_max">0</span><small>ms</small></div>
+  </section>
+
+  <section class="card span-12">
+    <h2>Per-worker</h2>
+    <table id="by_worker">
+      <thead><tr><th>worker</th><th>runs</th><th>avg ms</th><th>routes</th><th>approval</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section class="card span-12">
+    <h2>What this stresses</h2>
+    <p>Concurrent <code>tweetclaw_workflow</code> runs through agentkit's substrate routing layer. The dashboard measures per-worker run latency, the approval-gate flag rate (the schema's <code>requires_approval</code> field), and aggregate throughput. A green board means the substrate routed all runs to completion under contention.</p>
+    <p>Run: <code>bash demos/agentora-workflow-stress/scripts/stress.sh &amp;&amp; python3 demos/agentora-workflow-stress/scripts/aggregate.py --watch --port 9000</code></p>
+  </section>
+</main>
+<footer>
+  agentora-workflow-stress · render-target for the Agentora closure demo · numbers pulled from <code>/metrics.json</code>
+</footer>
+<script>
+async function tick() {
+  try {
+    const res = await fetch('/metrics.json', { cache: 'no-cache' });
+    if (!res.ok) return;
+    const m = await res.json();
+    document.getElementById('ts').textContent = new Date(m.ts_ms).toLocaleTimeString();
+    document.getElementById('completed').textContent = (m.completed_runs || 0).toLocaleString();
+    document.getElementById('throughput').textContent = (m.throughput_per_s || 0).toFixed(2);
+    document.getElementById('lat_avg').textContent = m.lat_ms.avg.toLocaleString();
+    document.getElementById('lat_p99').textContent = m.lat_ms.p99.toLocaleString();
+    document.getElementById('lat_min').textContent = m.lat_ms.min.toLocaleString();
+    document.getElementById('lat_p50').textContent = m.lat_ms.p50.toLocaleString();
+    document.getElementById('lat_max').textContent = m.lat_ms.max.toLocaleString();
+    document.getElementById('routes_total').textContent = m.approval_gate.total_routes.toLocaleString();
+    document.getElementById('routes_approval').textContent = m.approval_gate.approval_required.toLocaleString();
+    document.getElementById('approval_rate').textContent = (m.approval_gate.approval_rate * 100).toFixed(2) + '%';
+    document.getElementById('approval_bar').style.width = (m.approval_gate.approval_rate * 100).toFixed(1) + '%';
+
+    const tbody = document.querySelector('#by_worker tbody');
+    tbody.innerHTML = '';
+    const workers = Object.entries(m.by_worker).sort((a, b) => b[1].runs - a[1].runs);
+    for (const [name, w] of workers) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = '<td><code>w' + name + '</code></td>' +
+                      '<td>' + w.runs.toLocaleString() + '</td>' +
+                      '<td>' + w.avg_lat_ms.toFixed(1) + '</td>' +
+                      '<td>' + w.total_routes.toLocaleString() + '</td>' +
+                      '<td class="' + (w.approval_routes > 0 ? 'warn' : '') + '">' + w.approval_routes.toLocaleString() + '</td>';
+      tbody.appendChild(tr);
+    }
+  } catch (e) { /* swallow */ }
+}
+tick();
+setInterval(tick, 1000);
+</script>
+</body>
+</html>
