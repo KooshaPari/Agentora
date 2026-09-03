@@ -17,7 +17,6 @@ OUT_JSONL="${HERE}/../artifacts/runs.jsonl"
 mkdir -p "$(dirname "$OUT_JSONL")"
 : > "$OUT_JSONL"
 STOP_FILE="$(mktemp -u)"
-trap 'rm -f "$STOP_FILE"' EXIT
 ( sleep "$DURATION_S"; touch "$STOP_FILE" ) &
 for ((i=0;i<N;i++)); do
   (
@@ -41,4 +40,6 @@ except: print(0)' 2>/dev/null || echo 0)
   ) &
 done
 wait
+rm -f "$STOP_FILE"
+
 echo "wrote $OUT_JSONL ($(wc -l < "$OUT_JSONL") runs)"
