@@ -1,0 +1,31 @@
+{
+  "completed_runs": 56,
+  "throughput_per_s": 0.93,
+  "lat_ms": {
+    "avg": 21,
+    "p50": 12,
+    "p99": 263,
+    "max": 263,
+    "min": 11
+  },
+  "approval_gate": {
+    "total_routes": 112,
+    "approval_required": 56,
+    "approval_rate": 0.5
+  },
+  "by_worker": {
+    "1": {
+      "runs": 28,
+      "avg_lat_ms": 21.39,
+      "approval_routes": 28,
+      "total_routes": 56
+    },
+    "0": {
+      "runs": 28,
+      "avg_lat_ms": 21.54,
+      "approval_routes": 28,
+      "total_routes": 56
+    }
+  },
+  "ts_ms": 1788416538623
+}

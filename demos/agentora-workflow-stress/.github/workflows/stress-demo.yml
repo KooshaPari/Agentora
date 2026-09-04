@@ -1,0 +1,31 @@
+name: agentora-workflow-stress
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'examples/tweetclaw_workflow.rs'
+      - 'demos/agentora-workflow-stress/**'
+  workflow_dispatch:
+
+jobs:
+  demo:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@nightly
+      - name: Build tweetclaw_workflow example
+        run: cargo build --release --example tweetclaw_workflow
+      - name: Run stress driver (15s, N=8)
+        run: |
+          cd demos/agentora-workflow-stress
+          N=8 duration_s=15 bash scripts/stress.sh
+          mkdir -p artifacts
+          python3 scripts/aggregate.py > artifacts/metrics.json
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: agentora-workflow-stress
+          path: demos/agentora-workflow-stress/artifacts/
+          if-no-files-found: warn
